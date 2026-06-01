@@ -1,0 +1,151 @@
+# .htaccess - Klyze.gg Güvenlik Ayarları
+
+# ============================================
+# 🔒 HTTPS ZORLAMASI
+# ============================================
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ============================================
+# 🛡️ GÜVENLİK HEADERS
+# ============================================
+<IfModule mod_headers.c>
+    # Clickjacking Koruması
+    Header always set X-Frame-Options "DENY"
+    
+    # XSS Koruması
+    Header always set X-XSS-Protection "1; mode=block"
+    
+    # MIME Type Sniffing Koruması
+    Header always set X-Content-Type-Options "nosniff"
+    
+    # Referrer Policy
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    
+    # HSTS (HTTP Strict Transport Security)
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    
+    # Permissions Policy
+    Header always set Permissions-Policy "geolocation=(), microphone=(), camera=(), payment=()"
+    
+    # Content Security Policy - Firebase için güncellenmiş
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://fonts.googleapis.com https://*.firebaseio.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: http:; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com wss://*.firebaseio.com; frame-src 'self' https://*.firebaseio.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+    
+    # Remove Server Header
+    Header unset Server
+    Header unset X-Powered-By
+</IfModule>
+
+# ============================================
+# 🚫 DOSYA ERİŞİM KISITLAMALARI
+# ============================================
+# Hassas dosyaları engelle
+<FilesMatch "\.(json|md|log|bak|config|sql|ini|sh)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# .git klasörünü engelle
+<DirectoryMatch "\.git">
+    Order allow,deny
+    Deny from all
+</DirectoryMatch>
+
+# .kiro klasörünü engelle
+<DirectoryMatch "\.kiro">
+    Order allow,deny
+    Deny from all
+</DirectoryMatch>
+
+# Güvenlik raporlarını engelle
+<FilesMatch "GUVENLIK|RAPOR">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# ============================================
+# 🔐 DOSYA İNDİRME GÜVENLİĞİ
+# ============================================
+# .exe dosyaları için güvenlik header'ları
+<FilesMatch "\.exe$">
+    Header set Content-Disposition "attachment"
+    Header set X-Content-Type-Options "nosniff"
+    Header set Content-Type "application/octet-stream"
+</FilesMatch>
+
+# ============================================
+# ⚡ PERFORMANS & CACHE
+# ============================================
+<IfModule mod_expires.c>
+    ExpiresActive On
+    
+    # Images
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+    
+    # CSS and JavaScript
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    
+    # HTML
+    ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# ============================================
+# 🚫 DIRECTORY LISTING ENGELLEME
+# ============================================
+Options -Indexes
+
+# ============================================
+# 🛡️ HOTLINK KORUMASI
+# ============================================
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP_REFERER} !^$
+    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?klyze\.gg [NC]
+    RewriteRule \.(jpg|jpeg|png|gif|svg|exe)$ - [F,L]
+</IfModule>
+
+# ============================================
+# 🔒 PHP GÜVENLİK (Eğer PHP kullanılıyorsa)
+# ============================================
+<IfModule mod_php7.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_flag expose_php Off
+</IfModule>
+
+# ============================================
+# 🚫 RATE LIMITING (Mod_evasive gerekli)
+# ============================================
+# <IfModule mod_evasive20.c>
+#     DOSHashTableSize 3097
+#     DOSPageCount 5
+#     DOSSiteCount 50
+#     DOSPageInterval 1
+#     DOSSiteInterval 1
+#     DOSBlockingPeriod 10
+# </IfModule>
+
+# ============================================
+# 📝 ERROR PAGES
+# ============================================
+ErrorDocument 403 /403.html
+ErrorDocument 404 /404.html
+ErrorDocument 500 /500.html
+
+# ============================================
+# 🔒 CORS AYARLARI
+# ============================================
+<IfModule mod_headers.c>
+    # Sadece kendi domain'imize izin ver
+    Header set Access-Control-Allow-Origin "https://klyze.gg"
+    Header set Access-Control-Allow-Methods "GET, POST"
+    Header set Access-Control-Allow-Headers "Content-Type"
+</IfModule>

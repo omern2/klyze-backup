@@ -1,0 +1,25 @@
+# robots.txt - Klyze.gg
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: /.git/
+Disallow: /.kiro/
+Disallow: /node_modules/
+Disallow: /downloads.json
+Disallow: /firebase-security-rules.json
+
+# Sitemap
+Sitemap: https://klyze.gg/sitemap.xml
+
+# Crawl delay (saniye)
+Crawl-delay: 1
+
+# Güvenlik - hassas dosyaları engelle
+User-agent: *
+Disallow: /*.json$
+Disallow: /*.md$
+Disallow: /*.exe$
+Disallow: /*GUVENLIK*
+Disallow: /*RAPOR*

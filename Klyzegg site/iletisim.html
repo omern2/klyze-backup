@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>İletişim - Klyze.gg</title>
+<link rel="icon" type="image/png" href="klyzeee.png">
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #0A0A0A;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --border: rgba(255,255,255,0.15);
+  --font-heading: 'Oxanium', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.8;
+}
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 24px;
+}
+.back-link {
+  display: inline-block;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--text-primary); }
+h1 {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #FFFFFF, #CCCCCC);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  margin-bottom: 48px;
+}
+h2 {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  margin-top: 40px;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+p {
+  margin-bottom: 16px;
+  color: var(--text-secondary);
+}
+.contact-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+  margin: 40px 0;
+}
+.contact-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.contact-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(255,255,255,0.3);
+}
+.contact-icon {
+  font-size: 2.5rem;
+  margin-bottom: 16px;
+}
+.contact-title {
+  font-family: var(--font-heading);
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+.contact-info {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+.contact-info a {
+  color: #CCCCCC;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.contact-info a:hover {
+  color: #FFFFFF;
+}
+.faq {
+  margin-top: 60px;
+}
+.faq-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+.faq-question {
+  font-family: var(--font-heading);
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  color: var(--text-primary);
+}
+.faq-answer {
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="klyze.html" class="back-link">← Ana Sayfaya Dön</a>
+  
+  <h1>İletişim</h1>
+  <p class="subtitle">Sorularınız, önerileriniz veya destek talepleriniz için bizimle iletişime geçin.</p>
+
+  <div class="contact-grid">
+    <div class="contact-card">
+      <div class="contact-icon">📧</div>
+      <div class="contact-title">E-posta</div>
+      <div class="contact-info">
+        Genel: <a href="mailto:info@klyze.gg">info@klyze.gg</a><br>
+        Destek: <a href="mailto:support@klyze.gg">support@klyze.gg</a>
+      </div>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-icon">💬</div>
+      <div class="contact-title">Discord</div>
+      <div class="contact-info">
+        <a href="#">discord.gg/klyze</a><br>
+        7/24 Topluluk Desteği
+      </div>
+    </div>
+
+    <div class="contact-card">
+      <div class="contact-icon">🐦</div>
+      <div class="contact-title">Twitter</div>
+      <div class="contact-info">
+        <a href="#">@klyzegg</a><br>
+        Güncellemeler ve Duyurular
+      </div>
+    </div>
+  </div>
+
+  <h2>Destek Saatleri</h2>
+  <p>E-posta desteğimiz Pazartesi-Cuma 09:00-18:00 saatleri arasında aktiftir. Discord topluluğumuz 7/24 aktiftir.</p>
+
+  <h2>Ofis Adresi</h2>
+  <p>Klyze Gaming Technologies<br>
+  Teknoloji Geliştirme Bölgesi<br>
+  İstanbul, Türkiye</p>
+
+  <div class="faq">
+    <h2>Sık Sorulan Sorular</h2>
+    
+    <div class="faq-item">
+      <div class="faq-question">Destek talebime ne kadar sürede yanıt alırım?</div>
+      <div class="faq-answer">E-posta desteği için ortalama yanıt süremiz 24-48 saattir. Acil durumlar için Discord sunucumuzu kullanabilirsiniz.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Teknik sorun yaşıyorum, ne yapmalıyım?</div>
+      <div class="faq-answer">Öncelikle uygulamayı yeniden başlatmayı deneyin. Sorun devam ederse support@klyze.gg adresine hata detaylarını ve ekran görüntülerini gönderin.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">Özellik önerisi nasıl yapabilirim?</div>
+      <div class="faq-answer">Discord sunucumuzda #öneriler kanalını kullanabilir veya info@klyze.gg adresine e-posta gönderebilirsiniz. Tüm öneriler değerlendirilir.</div>
+    </div>
+
+    <div class="faq-item">
+      <div class="faq-question">İş birliği teklifleri için kimle iletişime geçmeliyim?</div>
+      <div class="faq-answer">İş birliği ve ortaklık teklifleri için partnerships@klyze.gg adresine detaylı bilgi ile başvurabilirsiniz.</div>
+    </div>
+  </div>
+
+  <h2>Sosyal Medya</h2>
+  <p>Bizi sosyal medyada takip edin ve topluluğumuzun bir parçası olun:</p>
+  <p>
+    Twitter: <a href="#" style="color: #CCCCCC;">@klyzegg</a><br>
+    Instagram: <a href="#" style="color: #CCCCCC;">@klyze.gg</a><br>
+    YouTube: <a href="#" style="color: #CCCCCC;">Klyze Gaming</a><br>
+    Discord: <a href="#" style="color: #CCCCCC;">discord.gg/klyze</a>
+  </p>
+</div>
+</body>
+</html>

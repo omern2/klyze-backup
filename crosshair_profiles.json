@@ -1,0 +1,44 @@
+{
+  "Büyük": {
+    "Color": "Red",
+    "InnerLength": 12,
+    "InnerThickness": 3,
+    "InnerGap": 3,
+    "OuterLines": true,
+    "OuterLength": 6,
+    "OuterThickness": 1,
+    "OuterGap": 2,
+    "CenterDot": false,
+    "CenterDotSize": 2,
+    "Scale": 1.0,
+    "Opacity": 100
+  },
+  "Pro": {
+    "Color": "Red",
+    "InnerLength": 6,
+    "InnerThickness": 1,
+    "InnerGap": 1,
+    "OuterLines": true,
+    "OuterLength": 3,
+    "OuterThickness": 1,
+    "OuterGap": 1,
+    "CenterDot": false,
+    "CenterDotSize": 2,
+    "Scale": 1.0,
+    "Opacity": 100
+  },
+  "Minimal": {
+    "Color": "Red",
+    "InnerLength": 3,
+    "InnerThickness": 1,
+    "InnerGap": 0,
+    "OuterLines": false,
+    "OuterLength": 4,
+    "OuterThickness": 1,
+    "OuterGap": 2,
+    "CenterDot": true,
+    "CenterDotSize": 1,
+    "Scale": 1.0,
+    "Opacity": 100
+  }
+}

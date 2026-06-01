@@ -1,0 +1,67 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.sln.docstates
+.vs/
+*.DotSettings.user
+.csproj.user
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# NuGet
+*.nupkg
+**/[Pp]ackages/*
+!**/[Pp]ackages/build/
+*.nuget.props
+*.nuget.targets
+
+# Visual Studio
+*.sln.ide/
+*.VC.db
+*.VC.opendb
+*.opensdf
+*.sdf
+*.cache
+*.log
+ipch/
+
+# Rider
+.idea/
+*.sln.iml
+
+# Native AOT / publish output
+publish/
+published/
+
+# exe copy
+**/exe/**/*.exe
+**/exe/**/*.dll
+**/exe/**/*.pdb
+!**/exe/.gitkeep
+
+# Logs
+*.log
+error.log
+
+# User data
+data/
+!data/.gitkeep
+
+# Config with secrets
+config.json
+*.key
+*.pem

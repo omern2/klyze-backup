@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil - Klyze.gg</title>
+<link rel="icon" type="image/png" href="klyzeee.png">
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-primary: #000000;
+  --bg-secondary: #0A0A0A;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A0A0A0;
+  --border: rgba(255,255,255,0.15);
+  --font-heading: 'Oxanium', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.container {
+  max-width: 500px;
+  width: 100%;
+  padding: 24px;
+}
+.profile-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 48px;
+  text-align: center;
+}
+.logo {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #FFFFFF, #CCCCCC);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 32px;
+}
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+  border: 3px solid rgba(255,255,255,0.2);
+}
+.profile-name {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+.profile-email {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 32px;
+}
+.btn-google {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  color: #1F2937;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 32px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: transform 0.2s, box-shadow 0.2s;
+  width: 100%;
+  justify-content: center;
+}
+.btn-google:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255,255,255,0.2);
+}
+.btn-logout {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--text-secondary);
+  padding: 12px 32px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all 0.2s;
+  margin-top: 16px;
+}
+.btn-logout:hover {
+  border-color: rgba(255,255,255,0.4);
+  color: var(--text-primary);
+}
+.google-icon {
+  width: 24px;
+  height: 24px;
+}
+.loading {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+#login-section { display: block; }
+#profile-section { display: none; }
+.back-link {
+  display: inline-block;
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--text-primary); }
+</style>
+</head>
+<body>
+<div class="container">
+  <a href="klyze.html" class="back-link">← Ana Sayfaya Dön</a>
+  
+  <div class="profile-card">
+    <div class="logo">KLYZE.GG</div>
+    
+    <!-- Giriş Bölümü -->
+    <div id="login-section">
+      <h2 style="margin-bottom: 16px;">Hoş Geldiniz</h2>
+      <p style="color: var(--text-secondary); margin-bottom: 32px;">
+        Devam etmek için Google hesabınızla giriş yapın
+      </p>
+      <button id="google-login-btn" class="btn-google">
+        <svg class="google-icon" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Google ile Giriş Yap
+      </button>
+    </div>
+    
+    <!-- Profil Bölümü -->
+    <div id="profile-section">
+      <img id="user-avatar" class="profile-avatar" src="" alt="Avatar">
+      <div id="user-name" class="profile-name"></div>
+      <div id="user-email" class="profile-email"></div>
+      <button id="logout-btn" class="btn-logout">Çıkış Yap</button>
+    </div>
+    
+    <!-- Yükleniyor -->
+    <div id="loading-section" class="loading" style="display: none;">
+      Yükleniyor...
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+
+  // Firebase yapılandırması
+  const firebaseConfig = {
+    apiKey: "AIzaSyDIVzy4-HXXseudNlzQttP7wlZlTyrZCdE",
+    authDomain: "klyzegg.firebaseapp.com",
+    databaseURL: "https://klyzegg-default-rtdb.firebaseio.com",
+    projectId: "klyzegg",
+    storageBucket: "klyzegg.firebasestorage.app",
+    messagingSenderId: "801722049589",
+    appId: "1:801722049589:web:d313b883e03bed3c783d7c",
+    measurementId: "G-NDV7B3WJ3E"
+  };
+
+  // Firebase başlat
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+
+  // DOM elementleri
+  const loginSection = document.getElementById('login-section');
+  const profileSection = document.getElementById('profile-section');
+  const loadingSection = document.getElementById('loading-section');
+  const googleLoginBtn = document.getElementById('google-login-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  const userAvatar = document.getElementById('user-avatar');
+  const userName = document.getElementById('user-name');
+  const userEmail = document.getElementById('user-email');
+
+  // Kullanıcı durumunu dinle
+  onAuthStateChanged(auth, (user) => {
+    loadingSection.style.display = 'none';
+    
+    if (user) {
+      // Kullanıcı giriş yapmış
+      loginSection.style.display = 'none';
+      profileSection.style.display = 'block';
+      
+      userAvatar.src = user.photoURL || 'placeholder.png';
+      userName.textContent = user.displayName || 'Kullanıcı';
+      userEmail.textContent = user.email;
+      
+      console.log('✅ Kullanıcı giriş yaptı:', user.email);
+    } else {
+      // Kullanıcı çıkış yapmış
+      loginSection.style.display = 'block';
+      profileSection.style.display = 'none';
+      
+      console.log('❌ Kullanıcı çıkış yaptı');
+    }
+  });
+
+  // Google ile giriş
+  googleLoginBtn.addEventListener('click', async () => {
+    try {
+      loadingSection.style.display = 'block';
+      loginSection.style.display = 'none';
+      
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      console.log('✅ Giriş başarılı:', user.email);
+    } catch (error) {
+      console.error('❌ Giriş hatası:', error);
+      alert('Giriş yapılamadı: ' + error.message);
+      
+      loadingSection.style.display = 'none';
+      loginSection.style.display = 'block';
+    }
+  });
+
+  // Çıkış yap
+  logoutBtn.addEventListener('click', async () => {
+    try {
+      await signOut(auth);
+      console.log('✅ Çıkış yapıldı');
+    } catch (error) {
+      console.error('❌ Çıkış hatası:', error);
+      alert('Çıkış yapılamadı: ' + error.message);
+    }
+  });
+</script>
+</body>
+</html>

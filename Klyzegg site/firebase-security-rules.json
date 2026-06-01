@@ -1,0 +1,37 @@
+{
+  "rules": {
+    "reviews": {
+      ".read": true,
+      ".write": "auth != null",
+      "$reviewId": {
+        ".validate": "newData.hasChildren(['userName', 'rating', 'text', 'timestamp', 'likes', 'csrfToken'])",
+        "userName": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50"
+        },
+        "userPhoto": {
+          ".validate": "newData.isString() && newData.val().length <= 500"
+        },
+        "rating": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5"
+        },
+        "text": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 500"
+        },
+        "timestamp": {
+          ".validate": "newData.isNumber() && newData.val() <= now + 60000"
+        },
+        "likes": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999999"
+        },
+        "csrfToken": {
+          ".validate": "newData.isString() && newData.val().length == 64"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+    ".read": false,
+    ".write": false
+  }
+}
