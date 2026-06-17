@@ -1,0 +1,14 @@
+{
+  "tenz": {
+    "Color": "Blue",
+    "InnerLength": 19,
+    "InnerThickness": 2,
+    "InnerGap": 0,
+    "OuterLines": false,
+    "OuterLength": 6,
+    "OuterThickness": 1,
+    "CenterDot": false,
+    "CenterDotSize": 2,
+    "Opacity": 100
+  }
+}

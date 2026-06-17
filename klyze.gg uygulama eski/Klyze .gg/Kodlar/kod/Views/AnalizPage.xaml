@@ -1,0 +1,744 @@
+<UserControl x:Class="ValorantAutoClicker.Views.AnalizPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:h="clr-namespace:ValorantAutoClicker.Helpers">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <h:InverseBoolToVisibilityConverter x:Key="InvBoolToVis"/>
+        <h:StringToVisibilityConverter x:Key="StrToVis"/>
+        <h:PerformansRenkConverter x:Key="PRenkConv"/>
+        <h:PerformansGenislikConverter x:Key="PGenislikConv"/>
+    </UserControl.Resources>
+
+    <Grid Background="#0D0D0D">
+        <StackPanel>
+
+            <!-- YUKLENIYOR -->
+            <StackPanel Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"
+                        HorizontalAlignment="Center" Margin="0,60,0,0">
+                <TextBlock Text="Veriler yukleniyor..." FontSize="12" Foreground="#555555"
+                           HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                <ProgressBar IsIndeterminate="True" Height="2" Width="180"
+                             Background="#252525" Foreground="#555555"/>
+            </StackPanel>
+
+            <!-- HATA -->
+            <Border Background="#1A0808" CornerRadius="10" Padding="20,16"
+                    BorderBrush="#FF4655" BorderThickness="1"
+                    HorizontalAlignment="Center" Margin="0,50,0,0" MaxWidth="380"
+                    Visibility="{Binding HasError, Converter={StaticResource BoolToVis}}">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="Veri yuklenemedi" FontSize="14" FontWeight="Bold"
+                               Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                    <TextBlock Text="{Binding ErrorMessage}" FontSize="12" Foreground="#FFAAAA"
+                               HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
+                               Margin="0,0,0,14"/>
+                    <Button Content="Tekrar Dene" Height="34" Padding="18,0" Cursor="Hand"
+                            Command="{Binding YenileCommand}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Background="#252525" CornerRadius="7"
+                                        Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bd" Property="Background" Value="#333333"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </Border>
+
+            <!-- ANA ICERIK -->
+            <StackPanel Visibility="{Binding HasData, Converter={StaticResource BoolToVis}}">
+
+                <!-- BASLIK -->
+                <Grid Margin="0,0,0,16">
+                    <TextBlock Text="Performans" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                    <Button HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Height="30" Padding="14,0" Cursor="Hand" Command="{Binding YenileCommand}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Background="#1E1E1E" BorderBrush="#2A2A2A"
+                                        BorderThickness="1" CornerRadius="7"
+                                        Padding="{TemplateBinding Padding}">
+                                    <TextBlock Text="Yenile" FontSize="11" Foreground="#777777"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bd" Property="Background" Value="#252525"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
+
+                <!-- 3x3 METRIK KUTUSU -->
+                <Border Background="#141414" BorderBrush="#222222" BorderThickness="1" CornerRadius="12">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- ═══ SATIR 1 ═══ -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Kazanma Orani -->
+                            <Border Grid.Column="0" Padding="14,14,14,12">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                        <TextBlock Text="{Binding PerformansMetrikleri[0].DegerText}"
+                                                   FontSize="20" FontWeight="Bold" Foreground="White"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                            <TextBlock Text="{Binding PerformansMetrikleri[0].DegisimOk}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[0].DegisimRenk}"/>
+                                            <TextBlock Text="{Binding PerformansMetrikleri[0].DegisimText}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[0].DegisimRenk}" Margin="2,0,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding PerformansMetrikleri[0].Adi}"
+                                               FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
+                                    <Grid Height="3">
+                                        <Border Background="#252525" CornerRadius="2"/>
+                                        <Border CornerRadius="2" HorizontalAlignment="Left">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{StaticResource PRenkConv}">
+                                                    <Binding Path="PerformansMetrikleri[0].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[0].Maksimum"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Border.Width>
+                                                <MultiBinding Converter="{StaticResource PGenislikConv}" ConverterParameter="999">
+                                                    <Binding Path="PerformansMetrikleri[0].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[0].Maksimum"/>
+                                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}"/>
+                                                </MultiBinding>
+                                            </Border.Width>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Background="#222222"/>
+
+                            <!-- ADR -->
+                            <Border Grid.Column="2" Padding="14,14,14,12">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                        <TextBlock Text="{Binding PerformansMetrikleri[1].DegerText}"
+                                                   FontSize="20" FontWeight="Bold" Foreground="White"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                            <TextBlock Text="{Binding PerformansMetrikleri[1].DegisimOk}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[1].DegisimRenk}"/>
+                                            <TextBlock Text="{Binding PerformansMetrikleri[1].DegisimText}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[1].DegisimRenk}" Margin="2,0,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding PerformansMetrikleri[1].Adi}"
+                                               FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
+                                    <Grid Height="3">
+                                        <Border Background="#252525" CornerRadius="2"/>
+                                        <Border CornerRadius="2" HorizontalAlignment="Left">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{StaticResource PRenkConv}">
+                                                    <Binding Path="PerformansMetrikleri[1].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[1].Maksimum"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Border.Width>
+                                                <MultiBinding Converter="{StaticResource PGenislikConv}" ConverterParameter="999">
+                                                    <Binding Path="PerformansMetrikleri[1].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[1].Maksimum"/>
+                                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}"/>
+                                                </MultiBinding>
+                                            </Border.Width>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="3" Background="#222222"/>
+
+                            <!-- K/R -->
+                            <Border Grid.Column="4" Padding="14,14,14,12">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                        <TextBlock Text="{Binding PerformansMetrikleri[2].DegerText}"
+                                                   FontSize="20" FontWeight="Bold" Foreground="White"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                            <TextBlock Text="{Binding PerformansMetrikleri[2].DegisimOk}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[2].DegisimRenk}"/>
+                                            <TextBlock Text="{Binding PerformansMetrikleri[2].DegisimText}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[2].DegisimRenk}" Margin="2,0,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding PerformansMetrikleri[2].Adi}"
+                                               FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
+                                    <Grid Height="3">
+                                        <Border Background="#252525" CornerRadius="2"/>
+                                        <Border CornerRadius="2" HorizontalAlignment="Left">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{StaticResource PRenkConv}">
+                                                    <Binding Path="PerformansMetrikleri[2].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[2].Maksimum"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Border.Width>
+                                                <MultiBinding Converter="{StaticResource PGenislikConv}" ConverterParameter="999">
+                                                    <Binding Path="PerformansMetrikleri[2].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[2].Maksimum"/>
+                                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}"/>
+                                                </MultiBinding>
+                                            </Border.Width>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                        <Border Grid.Row="0" Height="1" Background="#222222" VerticalAlignment="Bottom"/>
+
+                        <!-- ═══ SATIR 2 ═══ -->
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Bitis Basarisi -->
+                            <Border Grid.Column="0" Padding="14,14,14,12">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                        <TextBlock Text="{Binding PerformansMetrikleri[3].DegerText}"
+                                                   FontSize="20" FontWeight="Bold" Foreground="White"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                            <TextBlock Text="{Binding PerformansMetrikleri[3].DegisimOk}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[3].DegisimRenk}"/>
+                                            <TextBlock Text="{Binding PerformansMetrikleri[3].DegisimText}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[3].DegisimRenk}" Margin="2,0,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding PerformansMetrikleri[3].Adi}"
+                                               FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
+                                    <Grid Height="3">
+                                        <Border Background="#252525" CornerRadius="2"/>
+                                        <Border CornerRadius="2" HorizontalAlignment="Left">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{StaticResource PRenkConv}">
+                                                    <Binding Path="PerformansMetrikleri[3].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[3].Maksimum"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Border.Width>
+                                                <MultiBinding Converter="{StaticResource PGenislikConv}" ConverterParameter="999">
+                                                    <Binding Path="PerformansMetrikleri[3].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[3].Maksimum"/>
+                                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}"/>
+                                                </MultiBinding>
+                                            </Border.Width>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Background="#222222"/>
+
+                            <!-- Giris Basarili -->
+                            <Border Grid.Column="2" Padding="14,14,14,12">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                        <TextBlock Text="{Binding PerformansMetrikleri[4].DegerText}"
+                                                   FontSize="20" FontWeight="Bold" Foreground="White"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                            <TextBlock Text="{Binding PerformansMetrikleri[4].DegisimOk}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[4].DegisimRenk}"/>
+                                            <TextBlock Text="{Binding PerformansMetrikleri[4].DegisimText}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[4].DegisimRenk}" Margin="2,0,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding PerformansMetrikleri[4].Adi}"
+                                               FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
+                                    <Grid Height="3">
+                                        <Border Background="#252525" CornerRadius="2"/>
+                                        <Border CornerRadius="2" HorizontalAlignment="Left">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{StaticResource PRenkConv}">
+                                                    <Binding Path="PerformansMetrikleri[4].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[4].Maksimum"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Border.Width>
+                                                <MultiBinding Converter="{StaticResource PGenislikConv}" ConverterParameter="999">
+                                                    <Binding Path="PerformansMetrikleri[4].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[4].Maksimum"/>
+                                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}"/>
+                                                </MultiBinding>
+                                            </Border.Width>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="3" Background="#222222"/>
+
+                            <!-- Headshot % -->
+                            <Border Grid.Column="4" Padding="14,14,14,12">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                        <TextBlock Text="{Binding PerformansMetrikleri[5].DegerText}"
+                                                   FontSize="20" FontWeight="Bold" Foreground="White"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                            <TextBlock Text="{Binding PerformansMetrikleri[5].DegisimOk}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[5].DegisimRenk}"/>
+                                            <TextBlock Text="{Binding PerformansMetrikleri[5].DegisimText}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[5].DegisimRenk}" Margin="2,0,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding PerformansMetrikleri[5].Adi}"
+                                               FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
+                                    <Grid Height="3">
+                                        <Border Background="#252525" CornerRadius="2"/>
+                                        <Border CornerRadius="2" HorizontalAlignment="Left">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{StaticResource PRenkConv}">
+                                                    <Binding Path="PerformansMetrikleri[5].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[5].Maksimum"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Border.Width>
+                                                <MultiBinding Converter="{StaticResource PGenislikConv}" ConverterParameter="999">
+                                                    <Binding Path="PerformansMetrikleri[5].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[5].Maksimum"/>
+                                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}"/>
+                                                </MultiBinding>
+                                            </Border.Width>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                        <Border Grid.Row="1" Height="1" Background="#222222" VerticalAlignment="Bottom"/>
+
+                        <!-- ═══ SATIR 3 ═══ -->
+                        <Grid Grid.Row="2">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Flas Basari -->
+                            <Border Grid.Column="0" Padding="14,14,14,12">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                        <TextBlock Text="{Binding PerformansMetrikleri[6].DegerText}"
+                                                   FontSize="20" FontWeight="Bold" Foreground="White"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                            <TextBlock Text="{Binding PerformansMetrikleri[6].DegisimOk}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[6].DegisimRenk}"/>
+                                            <TextBlock Text="{Binding PerformansMetrikleri[6].DegisimText}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[6].DegisimRenk}" Margin="2,0,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding PerformansMetrikleri[6].Adi}"
+                                               FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
+                                    <Grid Height="3">
+                                        <Border Background="#252525" CornerRadius="2"/>
+                                        <Border CornerRadius="2" HorizontalAlignment="Left">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{StaticResource PRenkConv}">
+                                                    <Binding Path="PerformansMetrikleri[6].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[6].Maksimum"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Border.Width>
+                                                <MultiBinding Converter="{StaticResource PGenislikConv}" ConverterParameter="999">
+                                                    <Binding Path="PerformansMetrikleri[6].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[6].Maksimum"/>
+                                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}"/>
+                                                </MultiBinding>
+                                            </Border.Width>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="1" Background="#222222"/>
+
+                            <!-- Round Basina Flas -->
+                            <Border Grid.Column="2" Padding="14,14,14,12">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                        <TextBlock Text="{Binding PerformansMetrikleri[7].DegerText}"
+                                                   FontSize="20" FontWeight="Bold" Foreground="White"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                            <TextBlock Text="{Binding PerformansMetrikleri[7].DegisimOk}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[7].DegisimRenk}"/>
+                                            <TextBlock Text="{Binding PerformansMetrikleri[7].DegisimText}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[7].DegisimRenk}" Margin="2,0,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding PerformansMetrikleri[7].Adi}"
+                                               FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
+                                    <Grid Height="3">
+                                        <Border Background="#252525" CornerRadius="2"/>
+                                        <Border CornerRadius="2" HorizontalAlignment="Left">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{StaticResource PRenkConv}">
+                                                    <Binding Path="PerformansMetrikleri[7].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[7].Maksimum"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Border.Width>
+                                                <MultiBinding Converter="{StaticResource PGenislikConv}" ConverterParameter="999">
+                                                    <Binding Path="PerformansMetrikleri[7].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[7].Maksimum"/>
+                                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}"/>
+                                                </MultiBinding>
+                                            </Border.Width>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                            <Border Grid.Column="3" Background="#222222"/>
+
+                            <!-- Yardimci Hasar/Tur -->
+                            <Border Grid.Column="4" Padding="14,14,14,12">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                        <TextBlock Text="{Binding PerformansMetrikleri[8].DegerText}"
+                                                   FontSize="20" FontWeight="Bold" Foreground="White"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                            <TextBlock Text="{Binding PerformansMetrikleri[8].DegisimOk}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[8].DegisimRenk}"/>
+                                            <TextBlock Text="{Binding PerformansMetrikleri[8].DegisimText}"
+                                                       FontSize="10" Foreground="{Binding PerformansMetrikleri[8].DegisimRenk}" Margin="2,0,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="{Binding PerformansMetrikleri[8].Adi}"
+                                               FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
+                                    <Grid Height="3">
+                                        <Border Background="#252525" CornerRadius="2"/>
+                                        <Border CornerRadius="2" HorizontalAlignment="Left">
+                                            <Border.Background>
+                                                <MultiBinding Converter="{StaticResource PRenkConv}">
+                                                    <Binding Path="PerformansMetrikleri[8].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[8].Maksimum"/>
+                                                </MultiBinding>
+                                            </Border.Background>
+                                            <Border.Width>
+                                                <MultiBinding Converter="{StaticResource PGenislikConv}" ConverterParameter="999">
+                                                    <Binding Path="PerformansMetrikleri[8].Deger"/>
+                                                    <Binding Path="PerformansMetrikleri[8].Maksimum"/>
+                                                    <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=Grid}"/>
+                                                </MultiBinding>
+                                            </Border.Width>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                    </Grid>
+                </Border>
+
+                <!-- ═══ ILERLEME BOLUMU ═══ -->
+                <Grid Margin="0,32,0,16">
+                    <TextBlock Text="Ilerleme" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                </Grid>
+
+                <!-- ELO Grafik + Ozet -->
+                <Border Background="#141414" BorderBrush="#222222" BorderThickness="1" CornerRadius="12" Padding="20,18">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="180"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- SOL: ELO Grafik -->
+                        <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                            <Canvas x:Name="EloCanvas" Height="200" Background="Transparent"
+                                    SizeChanged="EloCanvas_SizeChanged"/>
+                            <!-- X ekseni mac numaralari -->
+                            <Canvas x:Name="EloXEksen" Height="18" Background="Transparent"
+                                    SizeChanged="EloXEksen_SizeChanged" Margin="0,4,0,0"/>
+                        </StackPanel>
+
+                        <!-- SAG: Ozet Panel -->
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Ozet" FontSize="11" FontWeight="SemiBold"
+                                       Foreground="#555555" Margin="0,0,0,14"/>
+
+                            <!-- En Yuksek ELO -->
+                            <Grid Margin="0,0,0,10">
+                                <StackPanel>
+                                    <TextBlock Text="En Yuksek" FontSize="10" Foreground="#444444" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding EloOzet.EnYuksekElo}" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- En Dusuk ELO -->
+                            <Grid Margin="0,0,0,10">
+                                <StackPanel>
+                                    <TextBlock Text="En Dusuk" FontSize="10" Foreground="#444444" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding EloOzet.EnDusukElo}" FontSize="18" FontWeight="Bold" Foreground="#888888"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Galibiyet % -->
+                            <Grid Margin="0,0,0,10">
+                                <StackPanel>
+                                    <TextBlock Text="Galibiyet %" FontSize="10" Foreground="#444444" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding EloOzet.GalibiyetYuzdesi, StringFormat={}{0:F0}%}"
+                                               FontSize="18" FontWeight="Bold" Foreground="White"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Oynanan Mac -->
+                            <Grid Margin="0,0,0,10">
+                                <StackPanel>
+                                    <TextBlock Text="Oynanan Mac" FontSize="10" Foreground="#444444" Margin="0,0,0,2"/>
+                                    <TextBlock Text="{Binding EloOzet.ToplamMac}" FontSize="18" FontWeight="Bold" Foreground="#AAAAAA"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- G / K -->
+                            <Grid Margin="0,0,0,14">
+                                <StackPanel>
+                                    <TextBlock Text="Kazanilan / Kaybedilen" FontSize="10" Foreground="#444444" Margin="0,0,0,4"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding EloOzet.Galibiyet}" FontSize="16" FontWeight="Bold" Foreground="White" Margin="0,0,6,0"/>
+                                        <TextBlock Text="/" FontSize="14" Foreground="#444444" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        <TextBlock Text="{Binding EloOzet.Maglubiyet}" FontSize="16" FontWeight="Bold" Foreground="#666666"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- W / K kutucuklar -->
+                            <TextBlock Text="Son maclar" FontSize="10" Foreground="#444444" Margin="0,0,0,6"/>
+                            <ItemsControl ItemsSource="{Binding MmrMacListesi}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Width="20" Height="20" CornerRadius="4" Margin="2,2">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="#3A1A1A"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Kazandi}" Value="True">
+                                                            <Setter Property="Background" Value="#1A3A1A"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       FontSize="9" FontWeight="Bold">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock">
+                                                        <Setter Property="Text" Value="K"/>
+                                                        <Setter Property="Foreground" Value="#FF4655"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding Kazandi}" Value="True">
+                                                                <Setter Property="Text" Value="W"/>
+                                                                <Setter Property="Foreground" Value="#00D26A"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- ═══ AKTIVITE BOLUMU ═══ -->
+                <Grid Margin="0,32,0,16">
+                    <TextBlock Text="Aktivite" FontSize="22" FontWeight="Bold" Foreground="White"/>
+                </Grid>
+
+                <!-- UST: Saatlik + Haftalik yan yana -->
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- SOL: Saatlik -->
+                    <Border Grid.Column="0" Background="#141414" BorderBrush="#222222"
+                            BorderThickness="1" CornerRadius="12" Padding="16,14">
+                        <StackPanel>
+                            <!-- Baslik satiri -->
+                            <Grid Margin="0,0,0,12">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding SaatlikOzet.OrtalamaGunlukMac, StringFormat={}{0:F1}}"
+                                                   FontSize="24" FontWeight="Bold" Foreground="White"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6,3,0,0">
+                                            <TextBlock Text="▼" FontSize="10" Foreground="#FF4655"/>
+                                            <TextBlock Text="{Binding SaatlikOzet.GunlukDegisim, StringFormat={}{0:F1}}"
+                                                       FontSize="10" Foreground="#FF4655" Margin="2,0,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="Ortalama gunluk maclar" FontSize="10" Foreground="#555555" Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                        <Ellipse Width="7" Height="7" Fill="#00D26A" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Galibiyetler" FontSize="9" Foreground="#555555"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="7" Height="7" Fill="White" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Oynanan Maclar" FontSize="9" Foreground="#555555"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                            <!-- Grafik canvas -->
+                            <Canvas x:Name="SaatlikCanvas" Height="90" Background="Transparent"
+                                    SizeChanged="SaatlikCanvas_SizeChanged"/>
+                            <!-- X ekseni: 0, 6, 12, 18, 24 -->
+                            <Grid Margin="0,4,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="0" FontSize="9" Foreground="#444444"/>
+                                <TextBlock Grid.Column="1" Text="6" FontSize="9" Foreground="#444444" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="12" FontSize="9" Foreground="#444444" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="18" FontSize="9" Foreground="#444444" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="4" Text="24" FontSize="9" Foreground="#444444"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- SAG: Haftalik -->
+                    <Border Grid.Column="2" Background="#141414" BorderBrush="#222222"
+                            BorderThickness="1" CornerRadius="12" Padding="16,14">
+                        <StackPanel>
+                            <!-- Baslik satiri -->
+                            <Grid Margin="0,0,0,12">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding HaftalikOzet.OrtalamaHaftalikMac, StringFormat={}{0:F1}}"
+                                                   FontSize="24" FontWeight="Bold" Foreground="White"/>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6,3,0,0">
+                                            <TextBlock Text="▼" FontSize="10" Foreground="#FF4655"/>
+                                            <TextBlock Text="{Binding HaftalikOzet.HaftalikDegisim, StringFormat={}{0:F1}}"
+                                                       FontSize="10" Foreground="#FF4655" Margin="2,0,0,0"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                    <TextBlock Text="Ortalama haftalik maclar" FontSize="10" Foreground="#555555" Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <StackPanel HorizontalAlignment="Right" VerticalAlignment="Top">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                        <Ellipse Width="7" Height="7" Fill="#00D26A" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Galibiyetler" FontSize="9" Foreground="#555555"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="7" Height="7" Fill="White" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                        <TextBlock Text="Oynanan Maclar" FontSize="9" Foreground="#555555"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Grid>
+                            <!-- Grafik canvas -->
+                            <Canvas x:Name="HaftalikCanvas" Height="90" Background="Transparent"
+                                    SizeChanged="HaftalikCanvas_SizeChanged"/>
+                            <!-- X ekseni: gun adlari -->
+                            <Grid Margin="0,4,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Pzt" FontSize="9" Foreground="#444444" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" Text="Sal" FontSize="9" Foreground="#444444" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="2" Text="Car" FontSize="9" Foreground="#444444" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="3" Text="Per" FontSize="9" Foreground="#444444" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="4" Text="Cum" FontSize="9" Foreground="#444444" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="5" Text="Cmt" FontSize="9" Foreground="#444444" HorizontalAlignment="Center"/>
+                                <TextBlock Grid.Column="6" Text="Paz" FontSize="9" Foreground="#444444" HorizontalAlignment="Center"/>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- ALT: Aktivite Takvimi (GitHub tarzı) -->
+                <Border Background="#141414" BorderBrush="#222222" BorderThickness="1"
+                        CornerRadius="12" Padding="16,14" Margin="0,0,0,24">
+                    <StackPanel>
+                        <!-- Ay baslik satiri -->
+                        <Canvas x:Name="TakvimAyCanvas" Height="16" Background="Transparent"
+                                SizeChanged="TakvimAyCanvas_SizeChanged" Margin="32,0,0,2"/>
+
+                        <!-- Gun adlari + Hucre grid -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="28"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Sol: Gun adlari (P S C P C C P) -->
+                            <StackPanel Grid.Column="0" Margin="0,1,0,0">
+                                <TextBlock Text="P"  FontSize="9" Foreground="#444444" Height="12" Margin="0,1"/>
+                                <TextBlock Text="S"  FontSize="9" Foreground="#444444" Height="12" Margin="0,1"/>
+                                <TextBlock Text="C"  FontSize="9" Foreground="#444444" Height="12" Margin="0,1"/>
+                                <TextBlock Text="P"  FontSize="9" Foreground="#444444" Height="12" Margin="0,1"/>
+                                <TextBlock Text="C"  FontSize="9" Foreground="#444444" Height="12" Margin="0,1"/>
+                                <TextBlock Text="C"  FontSize="9" Foreground="#444444" Height="12" Margin="0,1"/>
+                                <TextBlock Text="P"  FontSize="9" Foreground="#444444" Height="12" Margin="0,1"/>
+                            </StackPanel>
+
+                            <!-- Sag: Hucre grid (Canvas ile cizilecek) -->
+                            <Canvas Grid.Column="1" x:Name="TakvimCanvas" Height="112"
+                                    Background="Transparent" SizeChanged="TakvimCanvas_SizeChanged"/>
+                        </Grid>
+
+                        <!-- Aciklama satiri -->
+                        <StackPanel Orientation="Horizontal" Margin="0,10,0,0" HorizontalAlignment="Left">
+                            <TextBlock Text="Oynanan Oyunlar" FontSize="10" Foreground="#444444"
+                                       VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <Border Width="11" Height="11" CornerRadius="2" Background="#3D1A5C" Margin="0,0,4,0"/>
+                            <TextBlock Text="Dusuk" FontSize="9" Foreground="#555555" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <Border Width="11" Height="11" CornerRadius="2" Background="#7B2FBE" Margin="0,0,4,0"/>
+                            <TextBlock Text="Orta" FontSize="9" Foreground="#555555" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <Border Width="11" Height="11" CornerRadius="2" Background="#C840E9" Margin="0,0,4,0"/>
+                            <TextBlock Text="Yuksek" FontSize="9" Foreground="#555555" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <Border Width="11" Height="11" CornerRadius="2" Background="#FF2D9B" Margin="0,0,4,0"/>
+                            <TextBlock Text="Fusya" FontSize="9" Foreground="#555555" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                            <Border Width="11" Height="11" CornerRadius="2" Background="#252525" Margin="0,0,4,0"/>
+                            <TextBlock Text="Oyun Yok" FontSize="9" Foreground="#555555" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>
