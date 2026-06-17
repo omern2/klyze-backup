@@ -99,6 +99,8 @@ namespace ValorantAutoClicker.Views
                 Dispatcher.Invoke(() => PerformansGirisAnimasyonu(), System.Windows.Threading.DispatcherPriority.Background);
             if (e.PropertyName == nameof(AnalizViewModel.DetayPanelVisible))
                 Dispatcher.Invoke(DetayPanelAnimasyonu);
+            if (e.PropertyName == nameof(AnalizViewModel.MacDetayVisible))
+                Dispatcher.Invoke(MacDetayAnimasyonu);
         }
 
         private void SekmeGecisAnimasyonu()
@@ -180,20 +182,30 @@ namespace ValorantAutoClicker.Views
                 };
                 kart.BeginAnimation(UIElement.OpacityProperty, fadeAnim);
 
-                var bar = FindName($"Metrik{idx}Bar") as Border;
-                if (bar != null)
-                {
-                    var metrik = VM.PerformansMetrikleri[idx];
-                    double maxWidth = bar.Parent is Grid pg && pg.ActualWidth > 0 ? pg.ActualWidth : 120;
-                    double ratio = metrik.Maksimum > 0 ? Math.Min(1.0, metrik.Deger / metrik.Maksimum) : 0;
-                    bar.Width = 0;
-                    var widthAnim = new DoubleAnimation(0, ratio * maxWidth, new Duration(TimeSpan.FromMilliseconds(600)))
-                    {
-                        BeginTime = TimeSpan.FromMilliseconds(idx * 80 + 250),
-                        EasingFunction = ease
-                    };
-                    bar.BeginAnimation(FrameworkElement.WidthProperty, widthAnim);
-                }
+                DortSegmentGuncelle(idx);
+            }
+        }
+
+        private static SolidColorBrush SegmentRenk(double ratio)
+        {
+            if (ratio >= 0.66) return new SolidColorBrush(Color.FromRgb(0x00, 0xD2, 0x6A));
+            if (ratio >= 0.33) return new SolidColorBrush(Color.FromRgb(0xFF, 0xC0, 0x30));
+            return new SolidColorBrush(Color.FromRgb(0xFF, 0x46, 0x55));
+        }
+
+        private void DortSegmentGuncelle(int idx)
+        {
+            if (VM == null || idx >= VM.PerformansMetrikleri.Count) return;
+            var m = VM.PerformansMetrikleri[idx];
+            double ratio = m.Maksimum > 0 ? Math.Min(1.0, m.Deger / m.Maksimum) : 0;
+            var renk = SegmentRenk(ratio);
+
+            int dolu = ratio >= 0.75 ? 4 : ratio >= 0.50 ? 3 : ratio >= 0.25 ? 2 : 1;
+            var koyu = new SolidColorBrush(Color.FromRgb(0x25, 0x25, 0x25));
+            for (int s = 0; s < 4; s++)
+            {
+                if (FindName($"Metrik{idx}Seg{s}") is Border seg)
+                    seg.Background = s < dolu ? renk : koyu;
             }
         }
 
@@ -223,8 +235,8 @@ namespace ValorantAutoClicker.Views
                 int selectedIndex = (int)VM.DetayPanelTipi;
 
                 // Show correct inner content panel
-                string[] panelAdlari = { "DetayKazanmaOrani", "DetayAdr", "DetayKr",
-                                         "DetayBitisBasarisi", "DetayGirisBasarisi", "DetayMultiKill" };
+                string[] panelAdlari = { "DetayKazanmaOrani", "DetayAdr", "DetayKD",
+                                         "DetayHeadshot", "DetayGirisBasarisi", "DetayAcs" };
                 for (int i = 0; i < panelAdlari.Length; i++)
                 {
                     if (FindName(panelAdlari[i]) is UIElement p)
@@ -260,14 +272,15 @@ namespace ValorantAutoClicker.Views
 
                         kart.Background = new SolidColorBrush(Color.FromRgb(0x2A, 0x2A, 0x2A));
                         kart.BorderBrush = Brushes.White;
+                        kart.BorderThickness = new Thickness(1);
                     }
                     else
                     {
                         kart.BeginAnimation(UIElement.OpacityProperty,
                             new DoubleAnimation(1, 0.6, new Duration(TimeSpan.FromMilliseconds(200))));
-                    kart.Background = Brushes.Transparent;
+                    kart.Background = new SolidColorBrush(Color.FromRgb(0x1A, 0x1C, 0x1E));
                     kart.BorderBrush = Brushes.Transparent;
-                        kart.BorderBrush = Brushes.Transparent;
+                    kart.BorderThickness = new Thickness(0);
                     }
                 }
             }
@@ -303,7 +316,9 @@ namespace ValorantAutoClicker.Views
                     kart.RenderTransform = new ScaleTransform(1, 1);
                     kart.BeginAnimation(UIElement.OpacityProperty,
                         new DoubleAnimation(1, new Duration(TimeSpan.FromMilliseconds(200))));
-                    kart.Background = Brushes.Transparent;
+                    kart.BorderBrush = Brushes.Transparent;
+                    kart.BorderThickness = new Thickness(0);
+                    kart.Background = new SolidColorBrush(Color.FromRgb(0x1A, 0x1C, 0x1E));
                 }
             }
         }
@@ -369,6 +384,22 @@ namespace ValorantAutoClicker.Views
 
         private void OnHaritaGrafikCizilecek()
             => Dispatcher.Invoke(() => DrawHaritaRadarGrafik());
+
+        private void MacDetayBackdrop_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
+        {
+            var sv = MacDetayScroll;
+            sv.ScrollToVerticalOffset(sv.VerticalOffset - e.Delta);
+            string logPath = System.IO.Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory, "scroll_debug.log");
+            try
+            {
+                System.IO.File.AppendAllText(logPath,
+                    $"PREVIEW: delta={e.Delta} vo={sv.VerticalOffset} " +
+                    $"eh={sv.ExtentHeight} vh={sv.ViewportHeight} sh={sv.ScrollableHeight}\n");
+            }
+            catch { }
+            e.Handled = true;
+        }
 
         private void MacGecmisiScroll_ScrollChanged(object sender, System.Windows.Controls.ScrollChangedEventArgs e)
         {
@@ -2053,6 +2084,231 @@ namespace ValorantAutoClicker.Views
         {
             if (presenter?.ContentTemplate == null) return null;
             return presenter.ContentTemplate.FindName("OyuncuKart", presenter) as Border;
+        }
+
+        // ═══ Maç Detay Tam Sayfa ═══
+
+        private void MacSatir_Tikla(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (sender is not FrameworkElement element) return;
+            if (element.DataContext is not MacGecmisiItem item) return;
+            if (string.IsNullOrEmpty(item.MatchId)) return;
+            if (VM?.MacDetayGosterCommand?.CanExecute(item.MatchId) == true)
+                VM.MacDetayGosterCommand.Execute(item.MatchId);
+        }
+
+        private void MacDetayGeri_Tikla(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (VM?.MacDetayKapatCommand?.CanExecute(null) == true)
+                VM.MacDetayKapatCommand.Execute(null);
+        }
+
+        private void MacDetayAnimasyonu()
+        {
+            if (VM == null) return;
+
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+
+            if (VM.MacDetayVisible)
+            {
+                if (AnaStackPanel != null)
+                    AnaStackPanel.Visibility = Visibility.Collapsed;
+
+                MacDetayBackdrop.Visibility = Visibility.Visible;
+                MacDetayBackdrop.Opacity = 0;
+                MacDetayBackdrop.BeginAnimation(UIElement.OpacityProperty,
+                    new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(150))) { EasingFunction = ease });
+
+                MacDetayBackdrop.ClearValue(FrameworkElement.HeightProperty);
+                MacDetayScroll.ClearValue(FrameworkElement.HeightProperty);
+
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    MacDetayGirisAnimasyonu();
+                    MacDetayScroll.Focus();
+                    try
+                    {
+                        var logPath = System.IO.Path.Combine(
+                            AppDomain.CurrentDomain.BaseDirectory, "scroll_debug.log");
+                        System.IO.File.AppendAllText(logPath,
+                            $"OPENED: eh={MacDetayScroll.ExtentHeight} vh={MacDetayScroll.ViewportHeight} " +
+                            $"sh={MacDetayScroll.ScrollableHeight}\n");
+                    }
+                    catch (Exception ex)
+                    {
+                        try { System.IO.File.AppendAllText("scroll_debug_error.log", $"{ex}\n"); } catch { }
+                    }
+                }), System.Windows.Threading.DispatcherPriority.Background);
+            }
+            else
+            {
+                MacDetayBackdrop.BeginAnimation(UIElement.OpacityProperty,
+                    new DoubleAnimation(1, 0, new Duration(TimeSpan.FromMilliseconds(150))) { EasingFunction = ease });
+
+                var timer = new System.Timers.Timer(160) { AutoReset = false };
+                timer.Elapsed += (_, _) => Dispatcher.Invoke(() =>
+                {
+                    if (!VM.MacDetayVisible)
+                    {
+                        MacDetayBackdrop.Visibility = Visibility.Collapsed;
+                        if (AnaStackPanel != null)
+                            AnaStackPanel.Visibility = Visibility.Visible;
+                    }
+                });
+                timer.Start();
+            }
+        }
+
+        private void MacDetayGirisAnimasyonu()
+        {
+            if (VM?.SeciliMacDetay == null) return;
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+
+            // 1. MVP kartı — soldan sağa, 0ms gecikme, 300ms
+            var mvpSlide = FindName("MvpKartiSlide") as TranslateTransform;
+            if (mvpSlide != null)
+            {
+                mvpSlide.X = -30;
+                mvpSlide.BeginAnimation(TranslateTransform.XProperty,
+                    new DoubleAnimation(-30, 0, new Duration(TimeSpan.FromMilliseconds(300))) { EasingFunction = ease });
+            }
+
+            // 2. Maç liderleri — sağdan sola, 100ms gecikme, 300ms
+            var liderSlide = FindName("MacLiderleriSlide") as TranslateTransform;
+            if (liderSlide != null)
+            {
+                liderSlide.X = 30;
+                liderSlide.BeginAnimation(TranslateTransform.XProperty,
+                    new DoubleAnimation(30, 0, new Duration(TimeSpan.FromMilliseconds(300)))
+                    {
+                        BeginTime = TimeSpan.FromMilliseconds(100),
+                        EasingFunction = ease
+                    });
+            }
+
+            // 3. Takım kartları — stagger (cosmetic, no opacity=0)
+            if (FindName("TakimItems") is ItemsControl takimItems)
+                StaggerTableRows(takimItems, 600, 20);
+            if (FindName("RakipItems") is ItemsControl rakipItems)
+                StaggerTableRows(rakipItems, 600, 20);
+
+            // 4. Scroll to bottom after stagger completes to show all enemies
+            double totalDelay = 600 + 20 * 5 + 200 + 100; // ~820ms
+            var scrollTimer = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromMilliseconds(totalDelay)
+            };
+            scrollTimer.Tick += (_, _) =>
+            {
+                scrollTimer.Stop();
+                MacDetayScroll?.ScrollToBottom();
+                MacDetayScroll?.UpdateLayout();
+            };
+            scrollTimer.Start();
+        }
+
+        private void StaggerTableRows(ItemsControl itemsControl, double baseDelay, double staggerMs)
+        {
+            var gen = itemsControl.ItemContainerGenerator;
+            int count = gen.Items.Count;
+            for (int i = 0; i < count; i++)
+            {
+                if (gen.ContainerFromIndex(i) is ContentPresenter cp)
+                {
+                    var border = cp.FindDescendant<Border>(b => b.Name == "TakimSatir" || b.Name == "RakipSatir");
+                    if (border == null) continue;
+                    var anim = new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(200)))
+                    {
+                        BeginTime = TimeSpan.FromMilliseconds(baseDelay + i * staggerMs),
+                        From = 0,
+                        EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+                    };
+                    border.BeginAnimation(UIElement.OpacityProperty, anim);
+                }
+            }
+        }
+
+        private readonly List<System.Windows.Threading.DispatcherTimer> _detayCountUpTimers = new();
+
+        private void MacDetayCountUpIptal()
+        {
+            foreach (var t in _detayCountUpTimers)
+                t.Stop();
+            _detayCountUpTimers.Clear();
+        }
+
+        private void MacDetayCountUpBaslat(string elementName, double hedef, double ms, bool isFloored)
+        {
+            var tb = FindName(elementName) as System.Windows.Controls.TextBlock;
+            if (tb == null) return;
+
+            double baslangic = 0;
+            var basla = DateTime.Now;
+            var timer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+            timer.Tick += (_, _) =>
+            {
+                var elapsed = (DateTime.Now - basla).TotalMilliseconds;
+                double t = Math.Min(elapsed / ms, 1.0);
+                double eased = 1 - Math.Pow(1 - t, 3);
+                double val = baslangic + (hedef - baslangic) * eased;
+
+                if (isFloored)
+                    tb.Text = val.ToString("F2");
+                else
+                    tb.Text = ((int)Math.Round(val)).ToString();
+
+                if (t >= 1)
+                {
+                    timer.Stop();
+                    _detayCountUpTimers.Remove(timer);
+                }
+            };
+            _detayCountUpTimers.Add(timer);
+            timer.Start();
+        }
+
+        private void MacDetaySatir_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (sender is not Border b) return;
+            var bgAnim = new ColorAnimation
+            {
+                To = Color.FromRgb(0x30, 0x30, 0x30),
+                Duration = new Duration(TimeSpan.FromMilliseconds(150)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            if (b.Background is SolidColorBrush scb && !scb.IsFrozen)
+                scb.BeginAnimation(SolidColorBrush.ColorProperty, bgAnim);
+        }
+
+        private void MacDetaySatir_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            if (sender is not Border b) return;
+            var bgAnim = new ColorAnimation
+            {
+                To = Color.FromRgb(0x1A, 0x1A, 0x1A),
+                Duration = new Duration(TimeSpan.FromMilliseconds(150)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            if (b.Background is SolidColorBrush scb && !scb.IsFrozen)
+                scb.BeginAnimation(SolidColorBrush.ColorProperty, bgAnim);
+        }
+    }
+
+    public static class Extensions
+    {
+        public static T FindDescendant<T>(this DependencyObject root, Func<T, bool> predicate = null) where T : DependencyObject
+        {
+            int count = VisualTreeHelper.GetChildrenCount(root);
+            for (int i = 0; i < count; i++)
+            {
+                var child = VisualTreeHelper.GetChild(root, i);
+                if (child is T t && (predicate == null || predicate(t)))
+                    return t;
+                var found = child.FindDescendant(predicate);
+                if (found != null)
+                    return found;
+            }
+            return null;
         }
     }
 }

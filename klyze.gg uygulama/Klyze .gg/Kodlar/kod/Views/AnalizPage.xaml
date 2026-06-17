@@ -12,10 +12,23 @@
         <h:WinColorConverter x:Key="MacSonucRenkConv"/>
         <h:BoolToRenkConverter x:Key="MacSonucBgConv"/>
         <h:MacKdRenkConverter x:Key="KdRenkConv"/>
+        <h:StarGridLengthConverter x:Key="StarConv"/>
+
+        <Style x:Key="DarkToolTip" TargetType="ToolTip">
+            <Setter Property="Background" Value="#1E1E1E"/>
+            <Setter Property="BorderBrush" Value="#2A2A2A"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="#CCCCCC"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="HasDropShadow" Value="False"/>
+            <Setter Property="Placement" Value="Bottom"/>
+            <Setter Property="HorizontalOffset" Value="0"/>
+            <Setter Property="VerticalOffset" Value="8"/>
+        </Style>
     </UserControl.Resources>
 
     <Grid Background="#0D0D0D">
-        <StackPanel>
+        <StackPanel x:Name="AnaStackPanel">
 
             <!-- YUKLENIYOR -->
             <StackPanel Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"
@@ -183,8 +196,65 @@
                     </Grid>
                 </Border>
 
+                <!-- DETAY PANELI -->
+                <StackPanel x:Name="IcerikIstatistikler" Visibility="{Binding TabIstatistikler, Converter={StaticResource BoolToVis}}">
+
+                <!-- RANK -->
+                <TextBlock Text="RANK" FontSize="22" FontWeight="Bold" Foreground="White"
+                           Margin="0,0,0,12"/>
+                <Border Background="#141414" BorderBrush="#222222" BorderThickness="1" CornerRadius="12"
+                        Padding="18,16" Margin="0,0,0,12">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Rank Iconu -->
+                        <Border Grid.Column="0" Width="72" Height="72" CornerRadius="10" Background="#1E1E1E"
+                                VerticalAlignment="Center">
+                            <Image Source="{Binding RankIkonKaynak}" Width="64" Height="64" Stretch="Uniform"/>
+                        </Border>
+                        <!-- Orta: Sezon + Tier + RR -->
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="14,0,0,0">
+                            <TextBlock Text="{Binding SezonKisaAdi}" FontSize="10" Foreground="#666666" Margin="0,0,0,2"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding RutbeTier}" FontSize="20" FontWeight="Bold" Foreground="White"
+                                           VerticalAlignment="Center"/>
+                                 <TextBlock Text="{Binding ProfilRankAdi, StringFormat={} • {0}}" FontSize="13"
+                                           Foreground="#999999" VerticalAlignment="Center" Margin="6,2,0,0"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                 <TextBlock Text="{Binding RrDeger, StringFormat={}{0} RR}" FontSize="12" FontWeight="SemiBold"
+                                           Foreground="{Binding EloRenk}"/>
+                                <TextBlock Text="{Binding RrKalanText}" FontSize="10" Foreground="#666666" Margin="8,0,0,0"/>
+                            </StackPanel>
+                            <!-- RR Progress Bar -->
+                            <Grid Height="3" Margin="0,8,20,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="{Binding RrDeger, Converter={StaticResource StarConv}}"/>
+                                    <ColumnDefinition Width="{Binding RrKalan, Converter={StaticResource StarConv}}"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.Column="0" CornerRadius="2" Background="#FF8C00"/>
+                                <Border Grid.Column="1" CornerRadius="2" Background="#252525"/>
+                            </Grid>
+                        </StackPanel>
+                        <!-- ELO Puanı (kutulu) -->
+                        <Border Grid.Column="2" Background="#1A1A1A" CornerRadius="8"
+                                BorderBrush="#FF8C00" BorderThickness="1"
+                                VerticalAlignment="Center" HorizontalAlignment="Right" Padding="14,8">
+                            <StackPanel>
+                                <TextBlock Text="ELO" FontSize="8" FontWeight="Bold" Foreground="#FF8C00"
+                                           HorizontalAlignment="Center"/>
+                                <TextBlock Text="{Binding MevcutElo, StringFormat={}{0}}" FontSize="22" FontWeight="Bold"
+                                           Foreground="#FF8C00" HorizontalAlignment="Center" Margin="0,1,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </Border>
+
                 <!-- BASLIK -->
-                <Grid Margin="0,0,0,16">
+                <Grid Margin="0,16,0,8">
                     <TextBlock Text="Performans" FontSize="22" FontWeight="Bold" Foreground="White"/>
                     <Button HorizontalAlignment="Right" VerticalAlignment="Center"
                             Height="30" Padding="14,0" Cursor="Hand" Command="{Binding YenileCommand}">
@@ -206,37 +276,73 @@
                     </Button>
                 </Grid>
 
-                <!-- ISTATISTIKLER TAB -->
-                <StackPanel x:Name="IcerikIstatistikler" Visibility="{Binding TabIstatistikler, Converter={StaticResource BoolToVis}}">
-
-                <!-- 3x2 METRIK KUTUSU -->
-                <Border Background="#141414" BorderBrush="#222222" BorderThickness="1" CornerRadius="12">
+                <!-- 3x2 METRIK KARTLARI (2 SATIR 3 KOLON) -->
+                <Border Background="#141414" BorderBrush="#222222" BorderThickness="1" CornerRadius="12" Padding="6">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="1"/>
+                            <ColumnDefinition Width="4"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="1"/>
+                            <ColumnDefinition Width="4"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="1"/>
+                            <RowDefinition Height="4"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <!-- ═══ SATIR 1 ═══ -->
 
                         <!-- Kazanma Orani [0] -->
-                        <Border x:Name="Metrik0" Grid.Row="0" Grid.Column="0" Padding="14,14,14,12" Cursor="Hand" Background="Transparent" BorderThickness="0,0,0,1">
-                            <Border.InputBindings>
-                                <MouseBinding Gesture="LeftClick" Command="{Binding PerformansSecCommand}" CommandParameter="0"/>
-                            </Border.InputBindings>
+                        <Border Grid.Row="0" Grid.Column="0" x:Name="Metrik0"
+                                Background="#1E1E1E" CornerRadius="8" Padding="14,14,14,10" Cursor="Hand" BorderThickness="0"
+                                ToolTipService.InitialShowDelay="1000"
+                                ToolTipService.ShowDuration="60000">
+                            <Border.ToolTip>
+                                <ToolTip Style="{StaticResource DarkToolTip}">
+                                    <StackPanel Margin="10,8" MinWidth="180">
+                                        <TextBlock Text="Kazanma Orani" FontSize="13" FontWeight="Bold" Foreground="White" Margin="0,0,0,8"/>
+                                        <Grid Margin="0,0,0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding KazanmaOraniDetay.Son10MacOrani, StringFormat={}{0:F1}%}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Son 10" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding KazanmaOraniDetay.Son20MacOrani, StringFormat={}{0:F1}%}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Son 20" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding KazanmaOraniDetay.Son50MacOrani, StringFormat={}{0:F1}%}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Son 50" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <Grid Margin="0,0,0,6" Height="20">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{Binding KazanmaOraniDetay.KazanilanMac, Converter={StaticResource StarConv}}"/>
+                                                <ColumnDefinition Width="{Binding KazanmaOraniDetay.KaybedilenMac, Converter={StaticResource StarConv}}"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" CornerRadius="3" Background="#00D26A" Margin="0,2,1,2"><TextBlock Text="{Binding KazanmaOraniDetay.KazanilanMac}" FontSize="9" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                            <Border Grid.Column="1" CornerRadius="3" Background="#FF4655" Margin="1,2,0,2"><TextBlock Text="{Binding KazanmaOraniDetay.KaybedilenMac}" FontSize="9" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                        </Grid>
+                                        <Separator Background="#2A2A2A" Margin="0,2"/>
+                                        <TextBlock Margin="0,4,0,0" FontSize="10" Foreground="#666666">
+                                            <Run Text="En cok kazanilan: "/><Run Text="{Binding KazanmaOraniDetay.EnCokKazanilanHarita}" Foreground="#00D26A" FontWeight="Bold"/>
+                                        </TextBlock>
+                                        <TextBlock FontSize="10" Foreground="#666666">
+                                            <Run Text="En cok kaybedilen: "/><Run Text="{Binding KazanmaOraniDetay.EnCokKaybedilenHarita}" Foreground="#FF4655" FontWeight="Bold"/>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </ToolTip>
+                            </Border.ToolTip>
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
                                     <TextBlock Text="{Binding PerformansMetrikleri[0].DegerText}"
-                                               FontSize="20" FontWeight="Bold" Foreground="White"/>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                               FontSize="24" FontWeight="Bold" Foreground="White"/>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6,4,0,0">
                                         <TextBlock Text="{Binding PerformansMetrikleri[0].DegisimOk}"
                                                    FontSize="10" Foreground="{Binding PerformansMetrikleri[0].DegisimRenk}"/>
                                         <TextBlock Text="{Binding PerformansMetrikleri[0].DegisimText}"
@@ -244,31 +350,79 @@
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Text="{Binding PerformansMetrikleri[0].Adi}"
-                                           FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
-                                <Grid Height="3">
-                                    <Border Background="#252525" CornerRadius="2"/>
-                                    <Border x:Name="Metrik0Bar" CornerRadius="2" HorizontalAlignment="Left" Width="0">
-                                        <Border.Background>
-                                            <MultiBinding Converter="{StaticResource PRenkConv}">
-                                                <Binding Path="PerformansMetrikleri[0].Deger"/>
-                                                <Binding Path="PerformansMetrikleri[0].Maksimum"/>
-                                            </MultiBinding>
-                                        </Border.Background>
-                                    </Border>
+                                           FontSize="10" Foreground="#777777" Margin="0,0,0,8"/>
+                                <Grid Height="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" x:Name="Metrik0Seg0" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="2" x:Name="Metrik0Seg1" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="4" x:Name="Metrik0Seg2" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="6" x:Name="Metrik0Seg3" Background="#252525" CornerRadius="2"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
 
                         <!-- ADR [1] -->
-                        <Border x:Name="Metrik1" Grid.Row="0" Grid.Column="2" Padding="14,14,14,12" Cursor="Hand" Background="Transparent" BorderThickness="0,0,0,1">
-                            <Border.InputBindings>
-                                <MouseBinding Gesture="LeftClick" Command="{Binding PerformansSecCommand}" CommandParameter="1"/>
-                            </Border.InputBindings>
+                        <Border Grid.Row="0" Grid.Column="2" x:Name="Metrik1"
+                                Background="#1E1E1E" CornerRadius="8" Padding="14,14,14,10" Cursor="Hand" BorderThickness="0"
+                                ToolTipService.InitialShowDelay="1000"
+                                ToolTipService.ShowDuration="60000">
+                            <Border.ToolTip>
+                                <ToolTip Style="{StaticResource DarkToolTip}">
+                                    <StackPanel Margin="10,8" MinWidth="180">
+                                        <TextBlock Text="ADR" FontSize="13" FontWeight="Bold" Foreground="White" Margin="0,0,0,8"/>
+                                        <Grid Margin="0,0,0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding AdrDetay.EnYuksekAdr, StringFormat={}{0:F0}}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="En Yuksek" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding AdrDetay.OrtalamaAdr, StringFormat={}{0:F0}}" FontSize="18" FontWeight="Bold" Foreground="#FF8C00" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Ortalama" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding AdrDetay.EnDusukAdr, StringFormat={}{0:F0}}" FontSize="18" FontWeight="Bold" Foreground="#888888" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="En Dusuk" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <Separator Background="#2A2A2A" Margin="0,2"/>
+                                        <ItemsControl ItemsSource="{Binding AdrDetay.HaritaAdrListe}" Margin="0,4,0,0">
+                                            <ItemsControl.ItemsPanel><ItemsPanelTemplate><StackPanel/></ItemsPanelTemplate></ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Grid Margin="0,0,0,2">
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="60"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="30"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <TextBlock Grid.Column="0" Text="{Binding HaritaAdi}" FontSize="9" Foreground="#888888"/>
+                                                        <Border Grid.Column="1" Height="3" CornerRadius="1" Background="#252525" Margin="4,2">
+                                                            <Border CornerRadius="1" HorizontalAlignment="Left" Background="#FF8C00" Width="{Binding Adr, Converter={StaticResource PBarConv}, ConverterParameter=200}"/>
+                                                        </Border>
+                                                        <TextBlock Grid.Column="2" Text="{Binding Adr, StringFormat={}{0:F0}}" FontSize="9" Foreground="#CCCCCC" HorizontalAlignment="Right"/>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </ToolTip>
+                            </Border.ToolTip>
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
                                     <TextBlock Text="{Binding PerformansMetrikleri[1].DegerText}"
-                                               FontSize="20" FontWeight="Bold" Foreground="White"/>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                               FontSize="24" FontWeight="Bold" Foreground="White"/>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6,4,0,0">
                                         <TextBlock Text="{Binding PerformansMetrikleri[1].DegisimOk}"
                                                    FontSize="10" Foreground="{Binding PerformansMetrikleri[1].DegisimRenk}"/>
                                         <TextBlock Text="{Binding PerformansMetrikleri[1].DegisimText}"
@@ -276,31 +430,71 @@
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Text="{Binding PerformansMetrikleri[1].Adi}"
-                                           FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
-                                <Grid Height="3">
-                                    <Border Background="#252525" CornerRadius="2"/>
-                                    <Border x:Name="Metrik1Bar" CornerRadius="2" HorizontalAlignment="Left" Width="0">
-                                        <Border.Background>
-                                            <MultiBinding Converter="{StaticResource PRenkConv}">
-                                                <Binding Path="PerformansMetrikleri[1].Deger"/>
-                                                <Binding Path="PerformansMetrikleri[1].Maksimum"/>
-                                            </MultiBinding>
-                                        </Border.Background>
-                                    </Border>
+                                           FontSize="10" Foreground="#777777" Margin="0,0,0,8"/>
+                                <Grid Height="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" x:Name="Metrik1Seg0" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="2" x:Name="Metrik1Seg1" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="4" x:Name="Metrik1Seg2" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="6" x:Name="Metrik1Seg3" Background="#252525" CornerRadius="2"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
 
-                        <!-- K/R [2] -->
-                        <Border x:Name="Metrik2" Grid.Row="0" Grid.Column="4" Padding="14,14,14,12" Cursor="Hand" Background="Transparent" BorderThickness="0,0,0,1">
-                            <Border.InputBindings>
-                                <MouseBinding Gesture="LeftClick" Command="{Binding PerformansSecCommand}" CommandParameter="2"/>
-                            </Border.InputBindings>
+                        <!-- K/D [2] -->
+                        <Border Grid.Row="0" Grid.Column="4" x:Name="Metrik2"
+                                Background="#1E1E1E" CornerRadius="8" Padding="14,14,14,10" Cursor="Hand" BorderThickness="0"
+                                ToolTipService.InitialShowDelay="1000"
+                                ToolTipService.ShowDuration="60000">
+                            <Border.ToolTip>
+                                <ToolTip Style="{StaticResource DarkToolTip}">
+                                    <StackPanel Margin="10,8" MinWidth="180">
+                                        <TextBlock Text="K/D" FontSize="13" FontWeight="Bold" Foreground="White" Margin="0,0,0,8"/>
+                                        <Grid Margin="0,0,0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding KrDetay.ToplamKill}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Kill" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding KrDetay.ToplamDeath}" FontSize="18" FontWeight="Bold" Foreground="#FF4655" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Death" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding KrDetay.ToplamAsist}" FontSize="18" FontWeight="Bold" Foreground="#888888" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Asist" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <Grid Margin="0,0,0,4" Height="16">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{Binding KrDetay.ToplamKill, Converter={StaticResource StarConv}}"/>
+                                                <ColumnDefinition Width="{Binding KrDetay.ToplamDeath, Converter={StaticResource StarConv}}"/>
+                                                <ColumnDefinition Width="{Binding KrDetay.ToplamAsist, Converter={StaticResource StarConv}}"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Background="#2ECC71" Margin="0,2,1,2" CornerRadius="2"><TextBlock Text="K" FontSize="8" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                            <Border Grid.Column="1" Background="#FF4655" Margin="1,2,1,2" CornerRadius="2"><TextBlock Text="D" FontSize="8" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                            <Border Grid.Column="2" Background="#555555" Margin="1,2,0,2" CornerRadius="2"><TextBlock Text="A" FontSize="8" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                        </Grid>
+                                        <Separator Background="#2A2A2A" Margin="0,2"/>
+                                        <TextBlock Margin="0,4,0,0" Text="{Binding KrDetay.KarsilastirmaText}" FontSize="10" Foreground="#AAAAAA" TextWrapping="Wrap"/>
+                                    </StackPanel>
+                                </ToolTip>
+                            </Border.ToolTip>
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
                                     <TextBlock Text="{Binding PerformansMetrikleri[2].DegerText}"
-                                               FontSize="20" FontWeight="Bold" Foreground="White"/>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                               FontSize="24" FontWeight="Bold" Foreground="White"/>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6,4,0,0">
                                         <TextBlock Text="{Binding PerformansMetrikleri[2].DegisimOk}"
                                                    FontSize="10" Foreground="{Binding PerformansMetrikleri[2].DegisimRenk}"/>
                                         <TextBlock Text="{Binding PerformansMetrikleri[2].DegisimText}"
@@ -308,39 +502,72 @@
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Text="{Binding PerformansMetrikleri[2].Adi}"
-                                           FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
-                                <Grid Height="3">
-                                    <Border Background="#252525" CornerRadius="2"/>
-                                    <Border x:Name="Metrik2Bar" CornerRadius="2" HorizontalAlignment="Left" Width="0">
-                                        <Border.Background>
-                                            <MultiBinding Converter="{StaticResource PRenkConv}">
-                                                <Binding Path="PerformansMetrikleri[2].Deger"/>
-                                                <Binding Path="PerformansMetrikleri[2].Maksimum"/>
-                                            </MultiBinding>
-                                        </Border.Background>
-                                    </Border>
+                                           FontSize="10" Foreground="#777777" Margin="0,0,0,8"/>
+                                <Grid Height="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" x:Name="Metrik2Seg0" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="2" x:Name="Metrik2Seg1" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="4" x:Name="Metrik2Seg2" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="6" x:Name="Metrik2Seg3" Background="#252525" CornerRadius="2"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
 
-                        <Border Grid.Row="0" Grid.Column="1" Background="#222222"/>
-                        <Border Grid.Row="0" Grid.Column="3" Background="#222222"/>
-
-                        <!-- ═══ AYIRICI ═══ -->
-                        <Border Grid.Row="1" Grid.ColumnSpan="5" Background="#222222" Height="1"/>
-
                         <!-- ═══ SATIR 2 ═══ -->
 
-                        <!-- Bitis Basarisi [3] -->
-                        <Border x:Name="Metrik3" Grid.Row="2" Grid.Column="0" Padding="14,14,14,12" Cursor="Hand" Background="Transparent" BorderThickness="0,0,0,1">
-                            <Border.InputBindings>
-                                <MouseBinding Gesture="LeftClick" Command="{Binding PerformansSecCommand}" CommandParameter="3"/>
-                            </Border.InputBindings>
+                        <!-- HS% [3] -->
+                        <Border Grid.Row="2" Grid.Column="0" x:Name="Metrik3"
+                                Background="#1E1E1E" CornerRadius="8" Padding="14,14,14,10" Cursor="Hand" BorderThickness="0"
+                                ToolTipService.InitialShowDelay="1000"
+                                ToolTipService.ShowDuration="60000">
+                            <Border.ToolTip>
+                                <ToolTip Style="{StaticResource DarkToolTip}">
+                                    <StackPanel Margin="10,8" MinWidth="180">
+                                        <TextBlock Text="Kafa Vurusu" FontSize="13" FontWeight="Bold" Foreground="White" Margin="0,0,0,8"/>
+                                        <Grid Margin="0,0,0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding HeadshotDetay.HeadshotYuzdesi, StringFormat={}{0:F1}%}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="HS %" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding HeadshotDetay.ToplamHeadshot}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Toplam HS" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding HeadshotDetay.ToplamBodyshot}" FontSize="18" FontWeight="Bold" Foreground="#888888" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Body" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <TextBlock Margin="0,0,0,4" Text="{Binding HeadshotDetay.ToplamLegshot, StringFormat={}Legshot: {0}}" FontSize="10" Foreground="#666666"/>
+                                        <Grid Margin="0,0,0,6" Height="14">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{Binding HeadshotDetay.ToplamHeadshot, Converter={StaticResource StarConv}}"/>
+                                                <ColumnDefinition Width="{Binding HeadshotDetay.ToplamBodyshot, Converter={StaticResource StarConv}}"/>
+                                                <ColumnDefinition Width="{Binding HeadshotDetay.ToplamLegshot, Converter={StaticResource StarConv}}"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Background="#FF4655" Margin="0,1,1,1" CornerRadius="2"><TextBlock Text="HS" FontSize="7" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                            <Border Grid.Column="1" Background="#555555" Margin="1,1,1,1" CornerRadius="2"><TextBlock Text="BD" FontSize="7" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                            <Border Grid.Column="2" Background="#333333" Margin="1,1,0,1" CornerRadius="2"><TextBlock Text="LG" FontSize="7" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                        </Grid>
+                                    </StackPanel>
+                                </ToolTip>
+                            </Border.ToolTip>
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
                                     <TextBlock Text="{Binding PerformansMetrikleri[3].DegerText}"
-                                               FontSize="20" FontWeight="Bold" Foreground="White"/>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                               FontSize="24" FontWeight="Bold" Foreground="White"/>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6,4,0,0">
                                         <TextBlock Text="{Binding PerformansMetrikleri[3].DegisimOk}"
                                                    FontSize="10" Foreground="{Binding PerformansMetrikleri[3].DegisimRenk}"/>
                                         <TextBlock Text="{Binding PerformansMetrikleri[3].DegisimText}"
@@ -348,31 +575,69 @@
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Text="{Binding PerformansMetrikleri[3].Adi}"
-                                           FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
-                                <Grid Height="3">
-                                    <Border Background="#252525" CornerRadius="2"/>
-                                    <Border x:Name="Metrik3Bar" CornerRadius="2" HorizontalAlignment="Left" Width="0">
-                                        <Border.Background>
-                                            <MultiBinding Converter="{StaticResource PRenkConv}">
-                                                <Binding Path="PerformansMetrikleri[3].Deger"/>
-                                                <Binding Path="PerformansMetrikleri[3].Maksimum"/>
-                                            </MultiBinding>
-                                        </Border.Background>
-                                    </Border>
+                                           FontSize="10" Foreground="#777777" Margin="0,0,0,8"/>
+                                <Grid Height="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" x:Name="Metrik3Seg0" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="2" x:Name="Metrik3Seg1" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="4" x:Name="Metrik3Seg2" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="6" x:Name="Metrik3Seg3" Background="#252525" CornerRadius="2"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
 
-                        <!-- Giris Basarili [4] -->
-                        <Border x:Name="Metrik4" Grid.Row="2" Grid.Column="2" Padding="14,14,14,12" Cursor="Hand" Background="Transparent" BorderThickness="0,0,0,1">
-                            <Border.InputBindings>
-                                <MouseBinding Gesture="LeftClick" Command="{Binding PerformansSecCommand}" CommandParameter="4"/>
-                            </Border.InputBindings>
+                        <!-- ═══ SATIR 3 ═══ -->
+
+                        <!-- Entry Basarisi [4] -->
+                        <Border Grid.Row="2" Grid.Column="2" x:Name="Metrik4"
+                                Background="#1E1E1E" CornerRadius="8" Padding="14,14,14,10" Cursor="Hand" BorderThickness="0"
+                                ToolTipService.InitialShowDelay="1000"
+                                ToolTipService.ShowDuration="60000">
+                            <Border.ToolTip>
+                                <ToolTip Style="{StaticResource DarkToolTip}">
+                                    <StackPanel Margin="10,8" MinWidth="180">
+                                        <TextBlock Text="Giris Basarisi (First Blood)" FontSize="13" FontWeight="Bold" Foreground="White" Margin="0,0,0,8"/>
+                                        <Grid Margin="0,0,0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding GirisBasarisiDetay.BasariOrani, StringFormat={}{0:F1}%}" FontSize="18" FontWeight="Bold" Foreground="#00D26A" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Basari %" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding GirisBasarisiDetay.IlkKanAlinanMac}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Ilk Kan" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding GirisBasarisiDetay.ToplamMac}" FontSize="18" FontWeight="Bold" Foreground="#888888" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Toplam Mac" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <Grid Height="14" Margin="0,0,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{Binding GirisBasarisiDetay.IlkKanAlinanMac, Converter={StaticResource StarConv}}"/>
+                                                <ColumnDefinition Width="{Binding GirisBasarisiDetay.ToplamMac, Converter={StaticResource StarConv}}"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Background="#00D26A" Margin="0,1,1,1" CornerRadius="2"><TextBlock Text="FB" FontSize="7" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                                            <Border Grid.Column="1" Background="#333333" Margin="1,1,0,1" CornerRadius="2"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </ToolTip>
+                            </Border.ToolTip>
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
                                     <TextBlock Text="{Binding PerformansMetrikleri[4].DegerText}"
-                                               FontSize="20" FontWeight="Bold" Foreground="White"/>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                               FontSize="24" FontWeight="Bold" Foreground="White"/>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6,4,0,0">
                                         <TextBlock Text="{Binding PerformansMetrikleri[4].DegisimOk}"
                                                    FontSize="10" Foreground="{Binding PerformansMetrikleri[4].DegisimRenk}"/>
                                         <TextBlock Text="{Binding PerformansMetrikleri[4].DegisimText}"
@@ -380,31 +645,81 @@
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Text="{Binding PerformansMetrikleri[4].Adi}"
-                                           FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
-                                <Grid Height="3">
-                                    <Border Background="#252525" CornerRadius="2"/>
-                                    <Border x:Name="Metrik4Bar" CornerRadius="2" HorizontalAlignment="Left" Width="0">
-                                        <Border.Background>
-                                            <MultiBinding Converter="{StaticResource PRenkConv}">
-                                                <Binding Path="PerformansMetrikleri[4].Deger"/>
-                                                <Binding Path="PerformansMetrikleri[4].Maksimum"/>
-                                            </MultiBinding>
-                                        </Border.Background>
-                                    </Border>
+                                           FontSize="10" Foreground="#777777" Margin="0,0,0,8"/>
+                                <Grid Height="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" x:Name="Metrik4Seg0" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="2" x:Name="Metrik4Seg1" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="4" x:Name="Metrik4Seg2" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="6" x:Name="Metrik4Seg3" Background="#252525" CornerRadius="2"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
 
-                        <!-- Ace/4K/3K [5] -->
-                        <Border x:Name="Metrik5" Grid.Row="2" Grid.Column="4" Padding="14,14,14,12" Cursor="Hand" Background="Transparent" BorderThickness="0,0,0,1">
-                            <Border.InputBindings>
-                                <MouseBinding Gesture="LeftClick" Command="{Binding PerformansSecCommand}" CommandParameter="5"/>
-                            </Border.InputBindings>
+                        <!-- ACS/MultiKill [5] -->
+                        <Border Grid.Row="2" Grid.Column="4" x:Name="Metrik5"
+                                Background="#1E1E1E" CornerRadius="8" Padding="14,14,14,10" Cursor="Hand" BorderThickness="0"
+                                ToolTipService.InitialShowDelay="1000"
+                                ToolTipService.ShowDuration="60000">
+                            <Border.ToolTip>
+                                <ToolTip Style="{StaticResource DarkToolTip}">
+                                    <StackPanel Margin="10,8" MinWidth="180">
+                                        <TextBlock Text="Multi Kill" FontSize="13" FontWeight="Bold" Foreground="White" Margin="0,0,0,8"/>
+                                        <Grid Margin="0,0,0,6">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding MultiKillDetay.Ace}" FontSize="18" FontWeight="Bold" Foreground="#FFD700" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="ACE" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding MultiKillDetay.FourK}" FontSize="18" FontWeight="Bold" Foreground="#FF8C00" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="4K" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding MultiKillDetay.ThreeK}" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="3K" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding MultiKillDetay.TwoK}" FontSize="18" FontWeight="Bold" Foreground="#888888" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="2K" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="4" HorizontalAlignment="Center">
+                                                <TextBlock Text="{Binding MultiKillDetay.OneK}" FontSize="18" FontWeight="Bold" Foreground="#555555" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="1K" FontSize="9" Foreground="#777777" HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Grid>
+                                        <Grid Height="14" Margin="0,0,0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="{Binding MultiKillDetay.Ace, Converter={StaticResource StarConv}}"/>
+                                                <ColumnDefinition Width="{Binding MultiKillDetay.FourK, Converter={StaticResource StarConv}}"/>
+                                                <ColumnDefinition Width="{Binding MultiKillDetay.ThreeK, Converter={StaticResource StarConv}}"/>
+                                                <ColumnDefinition Width="{Binding MultiKillDetay.TwoK, Converter={StaticResource StarConv}}"/>
+                                                <ColumnDefinition Width="{Binding MultiKillDetay.OneK, Converter={StaticResource StarConv}}"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Border Grid.Column="0" Background="#FFD700" Margin="0,1,1,1" CornerRadius="2"/>
+                                            <Border Grid.Column="1" Background="#FF8C00" Margin="1,1,1,1" CornerRadius="2"/>
+                                            <Border Grid.Column="2" Background="#555555" Margin="1,1,1,1" CornerRadius="2"/>
+                                            <Border Grid.Column="3" Background="#333333" Margin="1,1,1,1" CornerRadius="2"/>
+                                            <Border Grid.Column="4" Background="#1A1A1A" Margin="1,1,0,1" CornerRadius="2"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </ToolTip>
+                            </Border.ToolTip>
                             <StackPanel>
-                                <StackPanel Orientation="Horizontal" Margin="0,0,0,3">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,2">
                                     <TextBlock Text="{Binding PerformansMetrikleri[5].DegerText}"
-                                               FontSize="20" FontWeight="Bold" Foreground="White"/>
-                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="5,2,0,0">
+                                               FontSize="24" FontWeight="Bold" Foreground="White"/>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="6,4,0,0">
                                         <TextBlock Text="{Binding PerformansMetrikleri[5].DegisimOk}"
                                                    FontSize="10" Foreground="{Binding PerformansMetrikleri[5].DegisimRenk}"/>
                                         <TextBlock Text="{Binding PerformansMetrikleri[5].DegisimText}"
@@ -412,24 +727,24 @@
                                     </StackPanel>
                                 </StackPanel>
                                 <TextBlock Text="{Binding PerformansMetrikleri[5].Adi}"
-                                           FontSize="10" Foreground="#555555" Margin="0,0,0,8"/>
-                                <Grid Height="3">
-                                    <Border Background="#252525" CornerRadius="2"/>
-                                    <Border x:Name="Metrik5Bar" CornerRadius="2" HorizontalAlignment="Left" Width="0">
-                                        <Border.Background>
-                                            <MultiBinding Converter="{StaticResource PRenkConv}">
-                                                <Binding Path="PerformansMetrikleri[5].Deger"/>
-                                                <Binding Path="PerformansMetrikleri[5].Maksimum"/>
-                                            </MultiBinding>
-                                        </Border.Background>
-                                    </Border>
+                                           FontSize="10" Foreground="#777777" Margin="0,0,0,8"/>
+                                <Grid Height="5">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="2"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Border Grid.Column="0" x:Name="Metrik5Seg0" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="2" x:Name="Metrik5Seg1" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="4" x:Name="Metrik5Seg2" Background="#252525" CornerRadius="2"/>
+                                    <Border Grid.Column="6" x:Name="Metrik5Seg3" Background="#252525" CornerRadius="2"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
-
-                        <Border Grid.Row="2" Grid.Column="1" Background="#222222"/>
-                        <Border Grid.Row="2" Grid.Column="3" Background="#222222"/>
-
                     </Grid>
                 </Border>
 
@@ -562,7 +877,7 @@
                         </StackPanel>
 
                         <!-- K/R Detay -->
-                        <StackPanel x:Name="DetayKr" Visibility="Collapsed" Margin="0,0,36,0">
+                        <StackPanel x:Name="DetayKD" Visibility="Collapsed" Margin="0,0,36,0">
                             <TextBlock Text="K/R" FontSize="15" FontWeight="Bold" Foreground="White" Margin="0,0,0,14"/>
                             <Grid Margin="0,0,0,14">
                                 <Grid.ColumnDefinitions>
@@ -590,49 +905,34 @@
                             </Border>
                         </StackPanel>
 
-                        <!-- Bitis Basarisi Detay -->
-                        <StackPanel x:Name="DetayBitisBasarisi" Visibility="Collapsed" Margin="0,0,36,0">
-                            <TextBlock Text="Bitis Basarisi (Clutch)" FontSize="15" FontWeight="Bold" Foreground="White" Margin="0,0,0,14"/>
-                            <TextBlock Text="{Binding BitisBasarisiDetay.ToplamBasariOrani, StringFormat={}{0:F1}%}" FontSize="24" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,4"/>
-                            <TextBlock Text="Genel basari orani" FontSize="10" Foreground="#555555" HorizontalAlignment="Center" Margin="0,0,0,14"/>
-                            <Grid>
+                        <!-- Headshot Detay -->
+                        <StackPanel x:Name="DetayHeadshot" Visibility="Collapsed" Margin="0,0,36,0">
+                            <TextBlock Text="Kafa Vurusu" FontSize="15" FontWeight="Bold" Foreground="White" Margin="0,0,0,14"/>
+                            <Grid Margin="0,0,0,14">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" HorizontalAlignment="Center" Margin="0,0,0,6">
-                                    <TextBlock Text="{Binding BitisBasarisiDetay.Clutch1v1Basarili, StringFormat={}{0}}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="/" FontSize="10" Foreground="#444444" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BitisBasarisiDetay.Clutch1v1, StringFormat={}1v1 {0}}" FontSize="9" Foreground="#666666" HorizontalAlignment="Center"/>
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding HeadshotDetay.HeadshotYuzdesi, StringFormat={}{0:F1}%}" FontSize="24" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="HS %" FontSize="10" Foreground="#555555" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                                 </StackPanel>
-                                <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,6">
-                                    <TextBlock Text="{Binding BitisBasarisiDetay.Clutch1v2Basarili, StringFormat={}{0}}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="/" FontSize="10" Foreground="#444444" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BitisBasarisiDetay.Clutch1v2, StringFormat={}1v2 {0}}" FontSize="9" Foreground="#666666" HorizontalAlignment="Center"/>
+                                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding HeadshotDetay.ToplamHeadshot}" FontSize="24" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Toplam HS" FontSize="10" Foreground="#555555" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                                 </StackPanel>
-                                <StackPanel Grid.Column="2" HorizontalAlignment="Center" Margin="0,0,0,6">
-                                    <TextBlock Text="{Binding BitisBasarisiDetay.Clutch1v3Basarili, StringFormat={}{0}}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="/" FontSize="10" Foreground="#444444" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BitisBasarisiDetay.Clutch1v3, StringFormat={}1v3 {0}}" FontSize="9" Foreground="#666666" HorizontalAlignment="Center"/>
+                                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                    <TextBlock Text="{Binding HeadshotDetay.ToplamBodyshot}" FontSize="24" FontWeight="Bold" Foreground="#888888" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Body" FontSize="10" Foreground="#555555" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                                 </StackPanel>
                             </Grid>
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" HorizontalAlignment="Center" Margin="0,0,0,6">
-                                    <TextBlock Text="{Binding BitisBasarisiDetay.Clutch1v4Basarili, StringFormat={}{0}}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="/" FontSize="10" Foreground="#444444" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BitisBasarisiDetay.Clutch1v4, StringFormat={}1v4 {0}}" FontSize="9" Foreground="#666666" HorizontalAlignment="Center"/>
+                            <TextBlock Text="{Binding HeadshotDetay.ToplamLegshot, StringFormat={}Legshot: {0}}" FontSize="11" Foreground="#666666" Margin="0,0,0,14"/>
+                            <Border Background="#141414" CornerRadius="8" Padding="12,10" BorderBrush="#252525" BorderThickness="1">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding HeadshotDetay.ToplamHeadshot, StringFormat={}Kafa vurusu: {0}}" FontSize="11" Foreground="#AAAAAA" TextWrapping="Wrap"/>
                                 </StackPanel>
-                                <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,6">
-                                    <TextBlock Text="{Binding BitisBasarisiDetay.Clutch1v5Basarili, StringFormat={}{0}}" FontSize="16" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="/" FontSize="10" Foreground="#444444" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BitisBasarisiDetay.Clutch1v5, StringFormat={}1v5 {0}}" FontSize="9" Foreground="#666666" HorizontalAlignment="Center"/>
-                                </StackPanel>
-                            </Grid>
+                            </Border>
                         </StackPanel>
 
                         <!-- Giris Basarisi Detay -->
@@ -678,54 +978,32 @@
                         </StackPanel>
 
                         <!-- MultiKill Detay -->
-                        <StackPanel x:Name="DetayMultiKill" Visibility="Collapsed" Margin="0,0,36,0">
-                            <TextBlock Text="Ace / 4K / 3K" FontSize="15" FontWeight="Bold" Foreground="White" Margin="0,0,0,14"/>
-                            <Grid Margin="0,0,0,12">
+                        <StackPanel x:Name="DetayAcs" Visibility="Collapsed" Margin="0,0,36,0">
+                            <TextBlock Text="ACS (Average Combat Score)" FontSize="15" FontWeight="Bold" Foreground="White" Margin="0,0,0,14"/>
+                            <Grid Margin="0,0,0,14">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                                    <TextBlock Text="Ace" FontSize="10" Foreground="#444444" HorizontalAlignment="Center" Margin="0,0,0,2"/>
-                                    <TextBlock Text="{Binding MultiKillDetay.Ace}" FontSize="20" FontWeight="Bold" Foreground="#FF2D55" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding MultiKillDetay.Ace}" FontSize="24" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="ACS" FontSize="10" Foreground="#555555" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                                    <TextBlock Text="4K" FontSize="10" Foreground="#444444" HorizontalAlignment="Center" Margin="0,0,0,2"/>
-                                    <TextBlock Text="{Binding MultiKillDetay.FourK}" FontSize="20" FontWeight="Bold" Foreground="#FF9500" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding MultiKillDetay.FourK}" FontSize="12" FontWeight="Bold" Foreground="#00D26A" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Kill Puanı" FontSize="10" Foreground="#555555" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                                    <TextBlock Text="3K" FontSize="10" Foreground="#444444" HorizontalAlignment="Center" Margin="0,0,0,2"/>
-                                    <TextBlock Text="{Binding MultiKillDetay.ThreeK}" FontSize="20" FontWeight="Bold" Foreground="#FFCC00" HorizontalAlignment="Center"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="3" HorizontalAlignment="Center">
-                                    <TextBlock Text="2K" FontSize="10" Foreground="#444444" HorizontalAlignment="Center" Margin="0,0,0,2"/>
-                                    <TextBlock Text="{Binding MultiKillDetay.TwoK}" FontSize="20" FontWeight="Bold" Foreground="#888888" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="{Binding MultiKillDetay.ThreeK}" FontSize="12" FontWeight="Bold" Foreground="#FFC030" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="Asist Puanı" FontSize="10" Foreground="#555555" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                                 </StackPanel>
                             </Grid>
-                            <TextBlock Text="Son multi-kill'ler" FontSize="10" Foreground="#444444" Margin="0,0,0,6"/>
-                            <ItemsControl ItemsSource="{Binding MultiKillDetay.MultiKillListe}" MaxHeight="100">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate><StackPanel/></ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <Grid Margin="0,0,0,3">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="50"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="60"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Border Grid.Column="0" CornerRadius="3" Padding="4,1" Background="#252525">
-                                                <TextBlock Text="{Binding Tur}" FontSize="9" Foreground="#AAAAAA" HorizontalAlignment="Center"/>
-                                            </Border>
-                                            <TextBlock Grid.Column="1" Text="{Binding HaritaAdi}" FontSize="10" Foreground="#666666" Margin="6,0"/>
-                                            <TextBlock Grid.Column="2" Text="{Binding MacText}" FontSize="9" Foreground="#444444" HorizontalAlignment="Right"/>
-                                        </Grid>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
+                            <Border Background="#141414" CornerRadius="8" Padding="12,10" BorderBrush="#252525" BorderThickness="1">
+                                <StackPanel>
+                                    <TextBlock Text="{Binding MultiKillDetay.Ace, StringFormat={}Tur Basina ACS: {0}}" FontSize="11" Foreground="#AAAAAA" TextWrapping="Wrap"/>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -1088,17 +1366,18 @@
                     <Rectangle Height="1" Fill="#1A1A1A" Margin="0,0,0,6"/>
 
                     <!-- Scrollable liste -->
-                    <ScrollViewer x:Name="MacGecmisiScroll" MaxHeight="520"
-                                  ScrollChanged="MacGecmisiScroll_ScrollChanged"
-                                  VerticalScrollBarVisibility="Hidden"
-                                  Background="Transparent" BorderThickness="0">
+<ScrollViewer x:Name="MacGecmisiScroll" MaxHeight="520"
+                              ScrollChanged="MacGecmisiScroll_ScrollChanged"
+                              VerticalScrollBarVisibility="Hidden"
+                              Background="Transparent" BorderThickness="0">
                         <ItemsControl ItemsSource="{Binding MacGecmisiListesi}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <Border Background="#141414" BorderBrush="#222222" BorderThickness="1"
                                             CornerRadius="6" Margin="0,0,0,6" Height="52"
                                             Loaded="MacGecmisiRow_Loaded" Padding="0"
-                                            MouseEnter="MacSatir_MouseEnter" MouseLeave="MacSatir_MouseLeave">
+                                             MouseEnter="MacSatir_MouseEnter" MouseLeave="MacSatir_MouseLeave"
+                                             MouseDown="MacSatir_Tikla">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="8"/>
@@ -1229,5 +1508,902 @@
 
             </StackPanel>
         </StackPanel>
+
+        <!-- ═══ MAÇ DETAY TAM SAYFA ═══ -->
+        <Border x:Name="MacDetayBackdrop" Visibility="Collapsed"
+                Background="#0D0D0D"
+                HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                IsHitTestVisible="True"
+                PreviewMouseWheel="MacDetayBackdrop_PreviewMouseWheel">
+            <ScrollViewer x:Name="MacDetayScroll" VerticalScrollBarVisibility="Hidden"
+                          CanContentScroll="False" Background="Transparent"
+                          Padding="28,0,28,4"
+                          Focusable="True">
+                <StackPanel>
+
+                    <!-- Yukleniyor -->
+                    <StackPanel Visibility="{Binding MacDetayYukleniyor, Converter={StaticResource BoolToVis}}"
+                                HorizontalAlignment="Center" Margin="0,120,0,0">
+                        <TextBlock Text="Maç detayı yükleniyor..." FontSize="12" Foreground="#555555"
+                                   HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                        <ProgressBar IsIndeterminate="True" Height="2" Width="120"
+                                     Background="#252525" Foreground="#555555"/>
+                    </StackPanel>
+
+                    <!-- Icerik -->
+                    <StackPanel Visibility="{Binding MacDetayVisible, Converter={StaticResource BoolToVis}}">
+
+                        <!-- GERI -->
+                        <StackPanel Orientation="Horizontal" Margin="0,16,0,0" Cursor="Hand"
+                                    PreviewMouseLeftButtonDown="MacDetayGeri_Tikla">
+                            <Border Width="32" Height="32" CornerRadius="8" Background="#1A1A1A"
+                                    BorderBrush="#252525" BorderThickness="1">
+                                <TextBlock Text="←" FontSize="16" Foreground="#888888"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Geri" FontSize="13" Foreground="#888888"
+                                       VerticalAlignment="Center" Margin="10,0,0,0"/>
+                        </StackPanel>
+
+                        <!-- ══════════════════════════════════════════════════════ -->
+                        <!-- ÜST PANEL — MVP KARTI + MAÇ LİDERLERİ               -->
+                        <!-- ══════════════════════════════════════════════════════ -->
+                        <Grid Margin="0,16,0,0" x:Name="UstPanelGrid">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- ═══════ SOL: MVP KARTI ═══════ -->
+                            <Border Grid.Column="0" Background="#11141a" CornerRadius="8" Padding="16"
+                                    x:Name="MvpKarti" RenderTransformOrigin="0.5,0.5">
+                                <Border.RenderTransform>
+                                    <TranslateTransform x:Name="MvpKartiSlide" X="-30"/>
+                                </Border.RenderTransform>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Profil Alt Kartı -->
+                                    <Border Grid.Column="0" Background="#08090c" CornerRadius="6" Padding="14,18"
+                                            Width="150" VerticalAlignment="Stretch">
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <Border Width="60" Height="60" CornerRadius="30"
+                                                    BorderBrush="#19FFFFFF" BorderThickness="2">
+                                                <Image Source="{Binding SeciliMacDetay.Ben.AjanUrl}" Stretch="UniformToFill"/>
+                                            </Border>
+                                            <TextBlock Text="{Binding SeciliMacDetay.Ben.Ad}" FontSize="16"
+                                                       FontWeight="Bold" Foreground="White"
+                                                       HorizontalAlignment="Center" Margin="0,10,0,2"/>
+                                            <TextBlock Text="{Binding SeciliMacDetay.Ben.Tag, StringFormat='{}#{0}'}"
+                                                       FontSize="11" Foreground="#666666"
+                                                       HorizontalAlignment="Center"/>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
+                                                <Image Source="{Binding SeciliMacDetay.Ben.RankIkonKaynak}" Width="18" Height="18"
+                                                       VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding SeciliMacDetay.Ben.TierAdi}" FontSize="10"
+                                                           Foreground="#AAAAAA" FontWeight="SemiBold"
+                                                           VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- İstatistik Alanı -->
+                                    <Grid Grid.Column="1" Margin="16,0,0,0">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+
+                                        <!-- Row 0: Değerlendirme + MVP Rozeti -->
+                                        <Grid Grid.Row="0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Border Width="54" Height="28" CornerRadius="4"
+                                                        Background="#14d966" VerticalAlignment="Center">
+                                                    <TextBlock x:Name="MvpKdDeger" Text="{Binding SeciliMacDetay.Ben.KdText}"
+                                                               FontSize="12" FontWeight="Bold" Foreground="White"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <StackPanel Margin="8,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="KLYZE" FontSize="11" FontWeight="Bold" Foreground="White"/>
+                                                    <TextBlock Text="Rating" FontSize="10" Foreground="#888888"/>
+                                                </StackPanel>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <TextBlock Text="★" FontSize="20" Foreground="#FFD700" VerticalAlignment="Center"/>
+                                                <TextBlock Text="MVP" FontSize="16" FontWeight="Black" Foreground="White"
+                                                           Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <!-- Row 1: 2x2 İstatistik Matrisi -->
+                                        <Grid Grid.Row="1" Margin="0,16,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="*"/>
+                                            </Grid.RowDefinitions>
+
+                                            <StackPanel Grid.Column="0" Grid.Row="0" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding SeciliMacDetay.Ben.SwingText}" FontSize="20"
+                                                           FontWeight="Bold" Foreground="{Binding SeciliMacDetay.Ben.SwingRenk}"/>
+                                                <TextBlock Text="Swing (RR Puanı)" FontSize="10" Foreground="#777777" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Grid.Row="0" VerticalAlignment="Center" Margin="0,0,0,0">
+                                                <TextBlock x:Name="MvpAdrDeger" Text="{Binding SeciliMacDetay.Ben.AdrText}"
+                                                           FontSize="20" FontWeight="Bold" Foreground="White"/>
+                                                <TextBlock Text="ADR (Tur Başına Hasar)" FontSize="10" Foreground="#777777" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Margin="0,12,0,0">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding SeciliMacDetay.Ben.Kills}" FontSize="20"
+                                                               FontWeight="Bold" Foreground="White"/>
+                                                    <TextBlock Text="/" FontSize="18" Foreground="#666666" Margin="2,0"/>
+                                                    <TextBlock Text="{Binding SeciliMacDetay.Ben.Deaths}" FontSize="20"
+                                                               FontWeight="Bold" Foreground="White"/>
+                                                    <TextBlock Text="/" FontSize="18" Foreground="#666666" Margin="2,0"/>
+                                                    <TextBlock Text="{Binding SeciliMacDetay.Ben.Assists}" FontSize="20"
+                                                               FontWeight="Bold" Foreground="White"/>
+                                                </StackPanel>
+                                                <TextBlock Text="K/D/A" FontSize="10" Foreground="#777777" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" Grid.Row="1" VerticalAlignment="Center" Margin="0,12,0,0">
+                                                <TextBlock Text="{Binding SeciliMacDetay.Ben.HsYuzdeText}" FontSize="20"
+                                                           FontWeight="Bold" Foreground="White"/>
+                                                <TextBlock Text="Kafadan Vurma Yüzdesi" FontSize="10" Foreground="#777777" Margin="0,2,0,0"/>
+                                            </StackPanel>
+                                        </Grid>
+
+                                        <!-- Row 2: Kilit alanı -->
+                                        <StackPanel Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,12,0,0">
+                                            <TextBlock Text="🔒" FontSize="14" Foreground="#555555" HorizontalAlignment="Right"/>
+                                            <TextBlock Text="Öne çıkan anlar" FontSize="9" Foreground="#555555" HorizontalAlignment="Right"/>
+                                            <TextBlock Text="kilitli" FontSize="9" Foreground="#555555" HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+
+                            <!-- ═══════ SAĞ: MAÇ LİDERLERİ ═══════ -->
+                            <StackPanel Grid.Column="2" x:Name="MacLiderleriPanel"
+                                        RenderTransformOrigin="1,0.5">
+                                <StackPanel.RenderTransform>
+                                    <TranslateTransform x:Name="MacLiderleriSlide" X="30"/>
+                                </StackPanel.RenderTransform>
+
+                                <Border Background="#11141a" CornerRadius="6" Height="54" Margin="0,0,0,6"
+                                        Padding="0,0,12,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="3"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Background="#555555" Width="3"/>
+                                        <Ellipse Grid.Column="1" Width="34" Height="34" Stroke="#19FFFFFF" StrokeThickness="1"
+                                                 VerticalAlignment="Center" Margin="10,0">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding SeciliMacDetay.HighlightKillsPlayer.AjanUrl}" Stretch="UniformToFill"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding SeciliMacDetay.HighlightKillsPlayer.Ad}" FontSize="12"
+                                                       Foreground="White" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="En yüksek skor" FontSize="9" Foreground="#666666"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding SeciliMacDetay.HighlightKills}" FontSize="18"
+                                                       FontWeight="Black" Foreground="White" HorizontalAlignment="Right"/>
+                                            <TextBlock Text="Skor" FontSize="9" Foreground="#666666" HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <Border Background="#11141a" CornerRadius="6" Height="54" Margin="0,0,0,6"
+                                        Padding="0,0,12,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="3"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Background="#555555" Width="3"/>
+                                        <Ellipse Grid.Column="1" Width="34" Height="34" Stroke="#19FFFFFF" StrokeThickness="1"
+                                                 VerticalAlignment="Center" Margin="10,0">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding SeciliMacDetay.HighlightAdrPlayer.AjanUrl}" Stretch="UniformToFill"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding SeciliMacDetay.HighlightAdrPlayer.Ad}" FontSize="12"
+                                                       Foreground="White" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="En fazla hasar" FontSize="9" Foreground="#666666"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding SeciliMacDetay.HighlightAdr}" FontSize="18"
+                                                       FontWeight="Black" Foreground="White" HorizontalAlignment="Right"/>
+                                            <TextBlock Text="Hasar" FontSize="9" Foreground="#666666" HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <Border Background="#11141a" CornerRadius="6" Height="54" Margin="0,0,0,6"
+                                        Padding="0,0,12,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="3"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Background="#555555" Width="3"/>
+                                        <Ellipse Grid.Column="1" Width="34" Height="34" Stroke="#19FFFFFF" StrokeThickness="1"
+                                                 VerticalAlignment="Center" Margin="10,0">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding SeciliMacDetay.HighlightKastPlayer.AjanUrl}" Stretch="UniformToFill"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding SeciliMacDetay.HighlightKastPlayer.Ad}" FontSize="12"
+                                                       Foreground="White" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="KAST" FontSize="9" Foreground="#666666"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding SeciliMacDetay.HighlightKast}" FontSize="18"
+                                                       FontWeight="Black" Foreground="White" HorizontalAlignment="Right"/>
+                                            <TextBlock Text="% KAST" FontSize="9" Foreground="#666666" HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <Border Background="#11141a" CornerRadius="6" Height="54"
+                                        Padding="0,0,12,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="3"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Background="#555555" Width="3"/>
+                                        <Ellipse Grid.Column="1" Width="34" Height="34" Stroke="#19FFFFFF" StrokeThickness="1"
+                                                 VerticalAlignment="Center" Margin="10,0">
+                                            <Ellipse.Fill>
+                                                <ImageBrush ImageSource="{Binding SeciliMacDetay.HighlightIlkOldurmePlayer.AjanUrl}" Stretch="UniformToFill"/>
+                                            </Ellipse.Fill>
+                                        </Ellipse>
+                                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding SeciliMacDetay.HighlightIlkOldurmePlayer.Ad}" FontSize="12"
+                                                       Foreground="White" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="İlk öldürmeler" FontSize="9" Foreground="#666666"/>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding SeciliMacDetay.HighlightIlkOldurme}" FontSize="18"
+                                                       FontWeight="Black" Foreground="White" HorizontalAlignment="Right"/>
+                                            <TextBlock Text="İlk Kan" FontSize="9" Foreground="#666666" HorizontalAlignment="Right"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- ══════════════════════════════════════════════════════ -->
+                        <!-- BÖLÜM 3 — FACEIT-STYLE TAKIM TABLOSU               -->
+                        <!-- ══════════════════════════════════════════════════════ -->
+
+                        <StackPanel Margin="0,16,0,0">
+
+                            <!-- Score at top -->
+                            <Border Background="#11141a" CornerRadius="8" Padding="20,10"
+                                    Margin="0,0,0,16" BorderBrush="#1FFFFFFF" BorderThickness="1">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding SeciliMacDetay.SkorBizim}" FontSize="36"
+                                                   FontWeight="Black" Foreground="White"/>
+                                        <TextBlock Text=":" FontSize="28" Foreground="#555555" Margin="6,0"/>
+                                        <TextBlock Text="{Binding SeciliMacDetay.SkorOnlar}" FontSize="36"
+                                                   FontWeight="Black" Foreground="#888888"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding SeciliMacDetay.IlkYariText}" FontSize="10"
+                                                   Foreground="#666666"/>
+                                        <TextBlock Text=" | " FontSize="10" Foreground="#444444"/>
+                                        <TextBlock Text="{Binding SeciliMacDetay.IkinciYariText}" FontSize="10"
+                                                   Foreground="#666666"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Section header: title + team avg -->
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Takımın" FontSize="16"
+                                           FontWeight="SemiBold" Foreground="White"
+                                           VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Takım Ort." FontSize="10" Foreground="#666666"
+                                               VerticalAlignment="Center"/>
+                                    <Image Source="{Binding SeciliMacDetay.TakimOrtRankIkon}" Width="16" Height="16"
+                                           Margin="4,0,2,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding SeciliMacDetay.TakimOrtElo}" FontSize="10"
+                                               Foreground="#AAAAAA" FontWeight="SemiBold"
+                                               VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Column headers -->
+                            <Grid Height="18" Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="24"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="56"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="54"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="46"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="34"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="34"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="34"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="34"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="16"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="4" Text="OYUNCU" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="6" Text="SIRA" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="8" Text="SKOR" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="10" Text="SWING" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="12" Text="K" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="14" Text="D" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="16" Text="A" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="18" Text="ADR" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="20" Text="K/D" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="22" Text="K/R" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="24" Text="HS" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="26" Text="HS%" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="28" Text="5" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="30" Text="4" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="32" Text="3" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="34" Text="2" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="36" Text="EDO" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <!-- Data rows -->
+                            <ItemsControl x:Name="TakimItems" ItemsSource="{Binding SeciliMacDetay.TakimOyuncular}" VirtualizingPanel.IsVirtualizing="False">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border x:Name="TakimSatir" Height="40" Background="#11141a"
+                                                BorderBrush="#08FFFFFF" BorderThickness="0,0,0,1" Margin="0,0,0,3" CornerRadius="4">
+                                            <Grid Height="40">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="3"/>
+                                                    <ColumnDefinition Width="8"/>
+                                                    <ColumnDefinition Width="24"/>
+                                                    <ColumnDefinition Width="8"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="8"/>
+                                                    <ColumnDefinition Width="56"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="54"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="46"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="26"/>
+                                                    <ColumnDefinition Width="4"/>
+                                                    <ColumnDefinition Width="26"/>
+                                                    <ColumnDefinition Width="4"/>
+                                                    <ColumnDefinition Width="26"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="34"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="34"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="34"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="26"/>
+                                                    <ColumnDefinition Width="4"/>
+                                                    <ColumnDefinition Width="34"/>
+                                                    <ColumnDefinition Width="4"/>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition Width="2"/>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition Width="2"/>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition Width="2"/>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="30"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="16"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Team indicator: cyan -->
+                                                <Border Grid.Column="0" Background="#555555"/>
+
+                                                <!-- Avatar -->
+                                                <Ellipse Grid.Column="2" Width="22" Height="22"
+                                                         Stroke="#19FFFFFF" StrokeThickness="1"
+                                                         VerticalAlignment="Center">
+                                                    <Ellipse.Fill>
+                                                        <ImageBrush ImageSource="{Binding KartUrl}" Stretch="UniformToFill"/>
+                                                    </Ellipse.Fill>
+                                                </Ellipse>
+
+                                                <!-- Player name + tag + agent -->
+                                                <StackPanel Grid.Column="4" VerticalAlignment="Center">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding Ad}" FontSize="11"
+                                                                   FontWeight="SemiBold" Foreground="White"/>
+                                                        <TextBlock Text="{Binding Tag, StringFormat='{}#{0}'}"
+                                                                   FontSize="9" Foreground="#555555"
+                                                                   Margin="3,0,0,0" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding AjanAdi}" FontSize="9"
+                                                               Foreground="#555555" FontStyle="Italic"/>
+                                                </StackPanel>
+
+                                                <!-- Rank emblem + MMR -->
+                                                <StackPanel Grid.Column="6" Orientation="Horizontal"
+                                                            VerticalAlignment="Center">
+                                                    <Image Source="{Binding RankIkonKaynak}" Width="20" Height="20"
+                                                           VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding KdText, StringFormat='{}{0}'}"
+                                                               FontSize="9" Foreground="#888888" FontWeight="Medium"
+                                                               Margin="3,0,0,0" VerticalAlignment="Center"/>
+                                                </StackPanel>
+
+                                                <!-- Evaluation box (54x28px) -->
+                                                <Grid Grid.Column="8" Width="54" Height="28"
+                                                       VerticalAlignment="Center">
+                                                    <Border Background="#1A1A1A" CornerRadius="4"/>
+                                                    <Border Width="{Binding DegerlendirmeBarGenislik}"
+                                                            CornerRadius="4" HorizontalAlignment="Left"
+                                                            Background="{Binding DegerlendirmeRenk}"/>
+                                                    <Border Background="#00000000" CornerRadius="4"
+                                                            BorderBrush="#0FFFFFFF" BorderThickness="1"/>
+                                                    <TextBlock Text="{Binding DegerlendirmeText}" FontSize="10"
+                                                               FontWeight="Bold"
+                                                               Foreground="{Binding DegerlendirmeTextRenk}"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Grid>
+
+                                                <!-- MVP star next to eval -->
+                                                <TextBlock Grid.Column="8" Text="★" FontSize="12"
+                                                           Foreground="#FFD700"
+                                                           HorizontalAlignment="Right"
+                                                           VerticalAlignment="Top"
+                                                           Margin="0,-2,-2,0"
+                                                           Visibility="{Binding IsMvp, Converter={StaticResource BoolToVis}}"/>
+
+                                                <!-- Swing % -->
+                                                <TextBlock Grid.Column="10" Text="{Binding SwingText}" FontSize="10"
+                                                           Foreground="{Binding SwingRenk}" FontWeight="Medium"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                <!-- K -->
+                                                <TextBlock Grid.Column="12" Text="{Binding Kills}" FontSize="11"
+                                                           FontWeight="SemiBold" Foreground="#EEEEEE"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- D -->
+                                                <TextBlock Grid.Column="14" Text="{Binding Deaths}" FontSize="11"
+                                                           Foreground="#999999"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- A -->
+                                                <TextBlock Grid.Column="16" Text="{Binding Assists}" FontSize="11"
+                                                           Foreground="#777777"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                <!-- ADR -->
+                                                <TextBlock Grid.Column="18" Text="{Binding AdrText}" FontSize="10"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- K/D -->
+                                                <TextBlock Grid.Column="20" Text="{Binding KdText}" FontSize="10"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- K/R -->
+                                                <TextBlock Grid.Column="22" Text="{Binding KrText}" FontSize="10"
+                                                           Foreground="#CCCCCC"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                <!-- HS -->
+                                                <TextBlock Grid.Column="24" Text="{Binding HsText}" FontSize="10"
+                                                           Foreground="#BBBBBB"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- HS% -->
+                                                <TextBlock Grid.Column="26" Text="{Binding HsYuzdeText}" FontSize="10"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                <!-- 5k -->
+                                                <TextBlock Grid.Column="28" Text="{Binding Kill5kText}" FontSize="9"
+                                                           Foreground="#FFD700"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- 4k -->
+                                                <TextBlock Grid.Column="30" Text="{Binding Kill4kText}" FontSize="9"
+                                                           Foreground="#88DD88"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- 3k -->
+                                                <TextBlock Grid.Column="32" Text="{Binding Kill3kText}" FontSize="9"
+                                                           Foreground="#AAAAAA"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- 2k -->
+                                                <TextBlock Grid.Column="34" Text="{Binding Kill2kText}" FontSize="9"
+                                                           Foreground="#666666"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                <!-- EDO'lar -->
+                                                <TextBlock Grid.Column="36" Text="{Binding MvpSayisiText}" FontSize="10"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                <!-- Edge indicator -->
+                                                <Border Grid.Column="38" Width="12" Height="24"
+                                                        CornerRadius="3" Background="{Binding EdgeRenk}"
+                                                        VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                        <!-- ══════════════════════════════════════════════════════ -->
+                        <!-- RAKIPLER                                             -->
+                        <!-- ══════════════════════════════════════════════════════ -->
+                        <StackPanel Margin="0,0,0,0">
+                            <!-- Section header -->
+                            <Grid Margin="0,0,0,8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Rakipler" FontSize="16"
+                                           FontWeight="SemiBold" Foreground="White"
+                                           VerticalAlignment="Center"/>
+                                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="Takım Ort." FontSize="10" Foreground="#666666"
+                                               VerticalAlignment="Center"/>
+                                    <Image Source="{Binding SeciliMacDetay.RakipOrtRankIkon}" Width="16" Height="16"
+                                           Margin="4,0,2,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding SeciliMacDetay.RakipOrtElo}" FontSize="10"
+                                               Foreground="#AAAAAA" FontWeight="SemiBold"
+                                               VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Column headers -->
+
+                            <!-- Column headers -->
+                            <Grid Height="18" Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="3"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="24"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="8"/>
+                                    <ColumnDefinition Width="56"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="54"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="46"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="34"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="34"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="34"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="26"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="34"/>
+                                    <ColumnDefinition Width="4"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="2"/>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="30"/>
+                                    <ColumnDefinition Width="6"/>
+                                    <ColumnDefinition Width="16"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="4" Text="OYUNCU" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="6" Text="SIRA" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="8" Text="SKOR" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="10" Text="SWING" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="12" Text="K" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="14" Text="D" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="16" Text="A" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="18" Text="ADR" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="20" Text="K/D" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="22" Text="K/R" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="24" Text="HS" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="26" Text="HS%" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="28" Text="5" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="30" Text="4" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="32" Text="3" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="34" Text="2" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="36" Text="EDO" FontSize="9" FontWeight="Bold"
+                                           Foreground="#999999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Grid>
+
+                            <!-- Data rows -->
+                            <ItemsControl x:Name="RakipItems" ItemsSource="{Binding SeciliMacDetay.Rakipler}" VirtualizingPanel.IsVirtualizing="False">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border x:Name="RakipSatir" Height="40" Background="#11141a"
+                                                BorderBrush="#08FFFFFF" BorderThickness="0,0,0,1" Margin="0,0,0,3" CornerRadius="4">
+                                            <Grid Height="40">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="3"/>
+                                                    <ColumnDefinition Width="8"/>
+                                                    <ColumnDefinition Width="24"/>
+                                                    <ColumnDefinition Width="8"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="8"/>
+                                                    <ColumnDefinition Width="56"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="54"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="46"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="26"/>
+                                                    <ColumnDefinition Width="4"/>
+                                                    <ColumnDefinition Width="26"/>
+                                                    <ColumnDefinition Width="4"/>
+                                                    <ColumnDefinition Width="26"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="34"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="34"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="34"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="26"/>
+                                                    <ColumnDefinition Width="4"/>
+                                                    <ColumnDefinition Width="34"/>
+                                                    <ColumnDefinition Width="4"/>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition Width="2"/>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition Width="2"/>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition Width="2"/>
+                                                    <ColumnDefinition Width="20"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="30"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="16"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <!-- Team indicator: red -->
+                                                <Border Grid.Column="0" Background="#FF4655"/>
+
+                                                <!-- Avatar -->
+                                                <Ellipse Grid.Column="2" Width="22" Height="22"
+                                                         Stroke="#19FFFFFF" StrokeThickness="1"
+                                                         VerticalAlignment="Center">
+                                                    <Ellipse.Fill>
+                                                        <ImageBrush ImageSource="{Binding KartUrl}" Stretch="UniformToFill"/>
+                                                    </Ellipse.Fill>
+                                                </Ellipse>
+
+                                                <!-- Player name + tag + agent -->
+                                                <StackPanel Grid.Column="4" VerticalAlignment="Center">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="{Binding Ad}" FontSize="11"
+                                                                   FontWeight="SemiBold" Foreground="White"/>
+                                                        <TextBlock Text="{Binding Tag, StringFormat='{}#{0}'}"
+                                                                   FontSize="9" Foreground="#555555"
+                                                                   Margin="3,0,0,0" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding AjanAdi}" FontSize="9"
+                                                               Foreground="#555555" FontStyle="Italic"/>
+                                                </StackPanel>
+
+                                                <!-- Rank emblem + MMR -->
+                                                <StackPanel Grid.Column="6" Orientation="Horizontal"
+                                                            VerticalAlignment="Center">
+                                                    <Image Source="{Binding RankIkonKaynak}" Width="20" Height="20"
+                                                           VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{Binding KdText, StringFormat='{}{0}'}"
+                                                               FontSize="9" Foreground="#888888" FontWeight="Medium"
+                                                               Margin="3,0,0,0" VerticalAlignment="Center"/>
+                                                </StackPanel>
+
+                                                <!-- Evaluation box (54x28px) -->
+                                                <Grid Grid.Column="8" Width="54" Height="28"
+                                                       VerticalAlignment="Center">
+                                                    <Border Background="#1A1A1A" CornerRadius="4"/>
+                                                    <Border Width="{Binding DegerlendirmeBarGenislik}"
+                                                            CornerRadius="4" HorizontalAlignment="Left"
+                                                            Background="{Binding DegerlendirmeRenk}"/>
+                                                    <Border Background="#00000000" CornerRadius="4"
+                                                            BorderBrush="#0FFFFFFF" BorderThickness="1"/>
+                                                    <TextBlock Text="{Binding DegerlendirmeText}" FontSize="10"
+                                                               FontWeight="Bold"
+                                                               Foreground="{Binding DegerlendirmeTextRenk}"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Grid>
+
+                                                <!-- MVP star -->
+                                                <TextBlock Grid.Column="8" Text="★" FontSize="12"
+                                                           Foreground="#FFD700"
+                                                           HorizontalAlignment="Right"
+                                                           VerticalAlignment="Top"
+                                                           Margin="0,-2,-2,0"
+                                                           Visibility="{Binding IsMvp, Converter={StaticResource BoolToVis}}"/>
+
+                                                <!-- Swing % -->
+                                                <TextBlock Grid.Column="10" Text="{Binding SwingText}" FontSize="10"
+                                                           Foreground="{Binding SwingRenk}" FontWeight="Medium"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                <!-- K -->
+                                                <TextBlock Grid.Column="12" Text="{Binding Kills}" FontSize="11"
+                                                           FontWeight="SemiBold" Foreground="#EEEEEE"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- D -->
+                                                <TextBlock Grid.Column="14" Text="{Binding Deaths}" FontSize="11"
+                                                           Foreground="#999999"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- A -->
+                                                <TextBlock Grid.Column="16" Text="{Binding Assists}" FontSize="11"
+                                                           Foreground="#777777"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                <!-- ADR -->
+                                                <TextBlock Grid.Column="18" Text="{Binding AdrText}" FontSize="10"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- K/D -->
+                                                <TextBlock Grid.Column="20" Text="{Binding KdText}" FontSize="10"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- K/R -->
+                                                <TextBlock Grid.Column="22" Text="{Binding KrText}" FontSize="10"
+                                                           Foreground="#CCCCCC"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                <!-- HS -->
+                                                <TextBlock Grid.Column="24" Text="{Binding HsText}" FontSize="10"
+                                                           Foreground="#BBBBBB"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- HS% -->
+                                                <TextBlock Grid.Column="26" Text="{Binding HsYuzdeText}" FontSize="10"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                <!-- 5k -->
+                                                <TextBlock Grid.Column="28" Text="{Binding Kill5kText}" FontSize="9"
+                                                           Foreground="#FFD700"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- 4k -->
+                                                <TextBlock Grid.Column="30" Text="{Binding Kill4kText}" FontSize="9"
+                                                           Foreground="#88DD88"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- 3k -->
+                                                <TextBlock Grid.Column="32" Text="{Binding Kill3kText}" FontSize="9"
+                                                           Foreground="#AAAAAA"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <!-- 2k -->
+                                                <TextBlock Grid.Column="34" Text="{Binding Kill2kText}" FontSize="9"
+                                                           Foreground="#666666"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                <!-- EDO'lar -->
+                                                <TextBlock Grid.Column="36" Text="{Binding MvpSayisiText}" FontSize="10"
+                                                           Foreground="White"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                                                <!-- Edge indicator -->
+                                                <Border Grid.Column="38" Width="12" Height="24"
+                                                        CornerRadius="3" Background="{Binding EdgeRenk}"
+                                                        VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
     </Grid>
 </UserControl>

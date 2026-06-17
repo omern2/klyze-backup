@@ -1,4 +1,6 @@
 using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -17,8 +19,6 @@ namespace ValorantAutoClicker.ViewModels
         private readonly AfkService _afkService;
         private readonly SpamService _spamService;
         private readonly UserService _userService;
-        private readonly TrackerApiService _trackerApi;
-
         // Giriş ekranı gösterilsin mi?
         private bool _girisEkraniGoster;
         public bool GirisEkraniGoster
@@ -64,6 +64,101 @@ namespace ValorantAutoClicker.ViewModels
             }
         }
 
+        public ObservableCollection<AppBildirim> Bildirimler { get; } = new();
+
+        [ObservableProperty]
+        private string _sonGuncellemeSurumu = "";
+
+        [ObservableProperty]
+        private string _sonGuncellemeBasligi = "";
+
+        [ObservableProperty]
+        private string _sonGuncellemeNotlari = "";
+
+        [ObservableProperty]
+        private string _sonGuncellemeDosyaUrl = "";
+
+        public bool GuncellemeVar => !string.IsNullOrEmpty(SonGuncellemeDosyaUrl);
+
+        private int _okunmamisBildirimSayisi;
+        public int OkunmamisBildirimSayisi
+        {
+            get => _okunmamisBildirimSayisi;
+            set
+            {
+                if (SetProperty(ref _okunmamisBildirimSayisi, value))
+                    OnPropertyChanged(nameof(HasUnreadNotifications));
+            }
+        }
+        public bool HasUnreadNotifications => OkunmamisBildirimSayisi > 0;
+
+        public void AddGuncellemeBildirimi(AppGuncelleme guncelleme)
+        {
+            SonGuncellemeSurumu = guncelleme.Version ?? "";
+            SonGuncellemeBasligi = guncelleme.Title ?? "";
+            SonGuncellemeNotlari = guncelleme.Notes ?? "";
+            SonGuncellemeDosyaUrl = guncelleme.DosyaUrl ?? "";
+
+            var bildirim = new AppBildirim
+            {
+                Baslik = guncelleme.Title ?? "Güncelleme",
+                Mesaj = guncelleme.Notes ?? "Yeni güncelleme mevcut.",
+                Tip = BildirimTipi.Guncelleme,
+                Tarih = DateTime.Now,
+                Guncelleme = guncelleme
+            };
+            Bildirimler.Insert(0, bildirim);
+            OkunmamisBildirimSayisi = Bildirimler.Count(b => !b.Okundu);
+        }
+
+        [RelayCommand]
+        public async Task GuncellemeIndirAsync(AppBildirim bildirim = null)
+        {
+            var guncelleme = bildirim?.Guncelleme;
+            if (guncelleme == null)
+            {
+                if (Bildirimler.Count > 0)
+                    guncelleme = Bildirimler[0].Guncelleme;
+                if (guncelleme == null || string.IsNullOrEmpty(guncelleme.DosyaUrl))
+                    return;
+            }
+
+            var firebase = App.Firebase;
+            if (firebase == null) return;
+
+            var indi = await firebase.GuncellemeDosyayiIndirAsync(guncelleme);
+            if (!indi) return;
+
+            var exePath = Environment.ProcessPath;
+            var exeDir = System.IO.Path.GetDirectoryName(exePath);
+            var logFile = System.IO.Path.Combine(exeDir ?? ".", "guncelleme.log");
+            var currentPid = Environment.ProcessId;
+            var cmd = $"Start-Sleep -Seconds 5; " +
+                      $"Stop-Process -Id {currentPid} -Force; " +
+                      $"Move-Item -LiteralPath '{exeDir}\\Klyze.exe.new' -Destination '{exePath}' -Force *> '{logFile}'; " +
+                      $"if ($?) {{ Start-Process -FilePath '{exePath}' -WorkingDirectory '{exeDir}' }} " +
+                      $"else {{ 'MOVE FAILED' | Out-File -LiteralPath '{logFile}' -Append }}";
+
+            MessageBox.Show($"Yeni sürüm (v{guncelleme.Version}) indirildi. Uygulama yeniden başlatılıyor...",
+                "Güncelleme", MessageBoxButton.OK, MessageBoxImage.Information);
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+            {
+                FileName = "powershell",
+                Arguments = $"-WindowStyle Hidden -ExecutionPolicy Bypass -Command \"{cmd}\"",
+                UseShellExecute = false,
+                CreateNoWindow = true,
+            });
+            await Task.Delay(1500);
+            Application.Current.Shutdown();
+        }
+
+        public void TumBildirimleriOkunduYap()
+        {
+            foreach (var b in Bildirimler)
+                b.Okundu = true;
+            OkunmamisBildirimSayisi = 0;
+        }
+
         private string _currentGame = "VALORANT";
         public string CurrentGame
         {
@@ -102,7 +197,6 @@ namespace ValorantAutoClicker.ViewModels
             _afkService = afkService;
             _spamService = spamService;
             _userService = new UserService();
-            _trackerApi = new TrackerApiService(configService.Config?.TrackerApiKey ?? "cf01159e-1c36-4e15-802a-edc75a20af35");
             var _henrikApi = new HenrikApiService();
 
             NavigateCommand = new RelayCommand<PageType>(NavigateTo);
@@ -120,10 +214,10 @@ namespace ValorantAutoClicker.ViewModels
             AfkVM = new AfkViewModel(_configService, _afkService);
             SpamVM = new SpamViewModel(_configService, _spamService);
             CrosshairVM = new CrosshairViewModel(_configService, _crosshairService);
+            FakeMicVM = new FakeMicViewModel();
             SettingsVM = new SettingsViewModel(_configService);
             ValorantVM = new ValorantViewModel(_configService, status => StatusMessage?.Invoke(status));
-            PlayerAnalysisVM = new PlayerAnalysisViewModel(_configService, status => StatusMessage?.Invoke(status));
-            HomeVM = new HomeViewModel();
+            HomeVM = new HomeViewModel(_userService);
             PlayVM = new PlayViewModel(_userService);
             AnalizVM = new AnalizViewModel(_userService);
 
@@ -139,9 +233,9 @@ namespace ValorantAutoClicker.ViewModels
         public AfkViewModel AfkVM { get; }
         public SpamViewModel SpamVM { get; }
         public CrosshairViewModel CrosshairVM { get; }
+        public FakeMicViewModel FakeMicVM { get; }
         public SettingsViewModel SettingsVM { get; }
         public ValorantViewModel ValorantVM { get; }
-        public PlayerAnalysisViewModel PlayerAnalysisVM { get; }
         public HomeViewModel HomeVM { get; }
         public PlayViewModel PlayVM { get; }
         public AnalizViewModel AnalizVM { get; }
@@ -152,8 +246,9 @@ namespace ValorantAutoClicker.ViewModels
         private void OnGirisBasarili()
         {
             GirisEkraniGoster = false;
-            // PlayVM'i kullanıcı bilgileriyle güncelle
             PlayVM?.YenidenYukle();
+            HomeVM?.VeriYukle();
+            _ = AnalizVM?.YukleAsync();
             GirisYapildi?.Invoke();
         }
 
@@ -162,6 +257,7 @@ namespace ValorantAutoClicker.ViewModels
             _userService.CikisYap();
             GirisEkraniGoster = true;
             PlayVM?.Sifirla();
+            HomeVM?.VeriYukle();
         }
 
         private void NavigateTo(PageType page)
@@ -205,6 +301,7 @@ namespace ValorantAutoClicker.ViewModels
             AgentVM.LoadFromConfig();
             AfkVM.LoadFromConfig();
             SpamVM.LoadFromConfig();
+            HomeVM?.VeriYukle();
         }
     }
 }

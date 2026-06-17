@@ -12,6 +12,8 @@ namespace ValorantAutoClicker.Services
 {
     public class FirebaseService : IDisposable
     {
+        // Firebase Web API key — public by design (identifies the project to Firebase).
+        // Security is enforced via Firebase Security Rules + App Check.
         private const string ApiKey    = "AIzaSyDIVzy4-HXXseudNlzQttP7wlZlTyrZCdE";
         private const string RtdbUrl   = "https://klyzegg-default-rtdb.firebaseio.com";
         private const string AuthUrl   = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + ApiKey;
@@ -40,13 +42,40 @@ namespace ValorantAutoClicker.Services
                 var body = JsonConvert.SerializeObject(new { returnSecureToken = true });
                 var resp = await _http.PostAsync(AuthUrl,
                     new StringContent(body, Encoding.UTF8, "application/json"));
-                if (!resp.IsSuccessStatusCode) return false;
+                if (!resp.IsSuccessStatusCode)
+                {
+                    return false;
+                }
                 var json = JObject.Parse(await resp.Content.ReadAsStringAsync());
                 _idToken = json["idToken"]?.ToString();
                 _localId = json["localId"]?.ToString();
                 return !string.IsNullOrEmpty(_idToken);
             }
-            catch { return false; }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // ─── Config (API keys stored here) ──────────────────────────────────────
+
+        public async Task<FirebaseConfig> GetConfigAsync()
+        {
+            try
+            {
+                // Try primary path first
+                var url = $"{RtdbUrl}/config/apiKeys.json{Auth()}";
+                var resp = await _http.GetAsync(url);
+                if (resp.IsSuccessStatusCode)
+                {
+                    var json = await resp.Content.ReadAsStringAsync();
+                    if (json != "null")
+                        return JsonConvert.DeserializeObject<FirebaseConfig>(json);
+                }
+            }
+            catch { }
+
+            return null;
         }
 
         // ─── Lobi ────────────────────────────────────────────────────────────────
@@ -271,11 +300,92 @@ namespace ValorantAutoClicker.Services
             catch { return null; }
         }
 
+        // ─── Keepalive / Update Check ─────────────────────────────────────────────
+
+        public async Task<bool> PingAsync()
+        {
+            try
+            {
+                var idToken = _idToken ?? "";
+                var url = $"{RtdbUrl}/updates/latest.json?auth={idToken}";
+                var resp = await _http.GetAsync(url);
+                return resp.IsSuccessStatusCode;
+            }
+            catch { return false; }
+        }
+
+        public async Task<bool> GuncellemeDosyayiIndirAsync(AppGuncelleme guncelleme)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(guncelleme?.DosyaUrl)) return false;
+                var url = guncelleme.DosyaUrl + (string.IsNullOrEmpty(_idToken) ? "" : $"?auth={_idToken}");
+                var resp = await _http.GetAsync(url);
+                if (!resp.IsSuccessStatusCode) return false;
+                var json = await resp.Content.ReadAsStringAsync();
+                if (json == "null" || json.Length < 100) return false;
+
+                var obj = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                var base64 = obj?.Values.FirstOrDefault();
+                if (string.IsNullOrEmpty(base64)) return false;
+                var bytes = Convert.FromBase64String(base64);
+                var exeDir = System.IO.Path.GetDirectoryName(Environment.ProcessPath);
+                var yeniExe = System.IO.Path.Combine(exeDir ?? ".", "Klyze.exe.new");
+                await System.IO.File.WriteAllBytesAsync(yeniExe, bytes);
+                return true;
+            }
+            catch { return false; }
+        }
+
+        public async Task<AppGuncelleme> GuncellemeKontrolAsync()
+        {
+            try
+            {
+                var url = $"{RtdbUrl}/updates/latest.json{Auth()}";
+                var resp = await _http.GetAsync(url);
+                if (!resp.IsSuccessStatusCode) return null;
+                var json = await resp.Content.ReadAsStringAsync();
+                if (json == "null") return null;
+                return JsonConvert.DeserializeObject<AppGuncelleme>(json);
+            }
+            catch { return null; }
+        }
+
         public void Dispose()
         {
             StopListening();
             _http?.Dispose();
         }
+    }
+
+    // ─── Güncelleme Modeli ────────────────────────────────────────────────────────
+    public class AppGuncelleme
+    {
+        public string Version { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Notes { get; set; } = "";
+        public long Date { get; set; }
+        public string DosyaUrl { get; set; } = "";
+    }
+
+    // ─── Bildirim Modeli ─────────────────────────────────────────────────────────
+    public class AppBildirim : CommunityToolkit.Mvvm.ComponentModel.ObservableObject
+    {
+        public string Id { get; set; } = Guid.NewGuid().ToString("N")[..8];
+        public string Baslik { get; set; } = "";
+        public string Mesaj { get; set; } = "";
+        public DateTime Tarih { get; set; } = DateTime.Now;
+        public bool Okundu { get; set; }
+        public BildirimTipi Tip { get; set; } = BildirimTipi.Bilgi;
+        public AppGuncelleme Guncelleme { get; set; }
+    }
+
+    public enum BildirimTipi
+    {
+        Guncelleme,
+        Uyari,
+        Bilgi,
+        Hata
     }
 
     // ─── Lobi Modeli ────────────────────────────────────────────────────────────
