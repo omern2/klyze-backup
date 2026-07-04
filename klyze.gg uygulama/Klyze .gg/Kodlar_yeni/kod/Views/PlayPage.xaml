@@ -65,182 +65,412 @@
     </UserControl.Resources>
 
     <Grid Background="#0D0D0D">
-        <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel Margin="0,8,0,32">
-
-                <!-- ═══════════════ OYUNCU KARTI ═══════════════ -->
-                <Border x:Name="OyuncuKarti"
-                        Background="#CC141414"
-                        BorderBrush="#333333"
-                        BorderThickness="1"
-                        CornerRadius="16"
-                        Padding="24,22"
-                        Margin="0,0,0,20"
-                        RenderTransformOrigin="0.5,0.5"
-                        Opacity="0">
-                    <Border.RenderTransform>
+        <StackPanel Margin="0,8,0,32">
+                            <!-- ═══════════════ OYUNCU KARTI + MOD SEÇİM TOGGLE ═══════════════ -->
+                <Grid HorizontalAlignment="Center" Margin="0,0,0,20" Opacity="1"
+                      RenderTransformOrigin="0.5,0.5" x:Name="OyuncuKutu">
+                    <Grid.RenderTransform>
                         <ScaleTransform x:Name="KartScale" ScaleX="0.8" ScaleY="0.8"/>
-                    </Border.RenderTransform>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
+                    </Grid.RenderTransform>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                        <!-- Avatar -->
-                        <Border Grid.Column="0"
-                                Width="80" Height="80"
-                                CornerRadius="40"
-                                Background="#1E1E1E"
-                                BorderBrush="#2A2A2A"
-                                BorderThickness="2"
-                                Margin="0,0,20,0"
-                                ClipToBounds="True">
-                            <Grid>
-                                <Image Source="{Binding CardImageSource}"
-                                       Stretch="UniformToFill"
-                                       RenderOptions.BitmapScalingMode="HighQuality"/>
-                                <TextBlock x:Name="AvatarHarf"
-                                           FontSize="28"
-                                           FontWeight="Bold"
-                                           Foreground="#444444"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center"
-                                           Visibility="Collapsed"/>
-                            </Grid>
-                        </Border>
+                    <!-- ─── OYUNCU KARTI ─── -->
+                    <Border Grid.Column="0"
+                            Background="#CC141414"
+                            BorderBrush="#333333"
+                            BorderThickness="1"
+                            CornerRadius="16"
+                            Padding="28,24"
+                            MaxWidth="320"
+                            HorizontalAlignment="Center">
+                        <StackPanel HorizontalAlignment="Center">
 
-                        <!-- Bilgi -->
-                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <!-- Avatar -->
+                            <Border Width="88" Height="88"
+                                    CornerRadius="44"
+                                    Background="#1E1E1E"
+                                    BorderBrush="#2A2A2A"
+                                    BorderThickness="2"
+                                    Margin="0,0,0,14"
+                                    ClipToBounds="True"
+                                    HorizontalAlignment="Center">
+                                <Grid>
+                                    <Image Source="{Binding CardImageSource}"
+                                           Stretch="UniformToFill"
+                                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock x:Name="AvatarHarf"
+                                               FontSize="30"
+                                               FontWeight="Bold"
+                                               Foreground="#444444"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               Visibility="Collapsed"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- İsim & Tag -->
                             <TextBlock Text="{Binding OyuncuAdi}"
                                        FontSize="20"
                                        FontWeight="Bold"
                                        Foreground="White"
-                                       Margin="0,0,0,4"/>
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,2"/>
                             <TextBlock Text="{Binding OyuncuTag, StringFormat='#{0}'}"
                                        FontSize="12"
                                        Foreground="#555555"
-                                       Margin="0,0,0,10"/>
-                            <StackPanel Orientation="Horizontal">
+                                       HorizontalAlignment="Center"
+                                       Margin="0,0,0,16"/>
+
+                            <!-- Rank Icon + ELO -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
                                 <Image Source="{Binding RankIkonKaynak}"
-                                       Width="22" Height="22"
-                                       Margin="0,0,8,0"
+                                       Width="28" Height="28"
+                                       Margin="0,0,10,0"
                                        VerticalAlignment="Center"
                                        RenderOptions.BitmapScalingMode="HighQuality"/>
                                 <TextBlock Text="{Binding RutbeAdi}"
-                                           FontSize="13"
+                                           FontSize="14"
                                            FontWeight="SemiBold"
                                            Foreground="#CCCCCC"
                                            VerticalAlignment="Center"
-                                           Margin="0,0,10,0"/>
-                                <Border Background="#1E1E1E" CornerRadius="6" Padding="8,3">
+                                           Margin="0,0,12,0"/>
+                                <Border Background="#1E1E1E" CornerRadius="8" Padding="10,4">
                                     <TextBlock Text="{Binding EloText, StringFormat='{}{0} ELO'}"
-                                               FontSize="11"
-                                               Foreground="#888888"
-                                               FontFamily="Consolas"/>
+                                               FontSize="12"
+                                               Foreground="#AAAAAA"
+                                               FontFamily="Consolas"
+                                               FontWeight="SemiBold"/>
                                 </Border>
                             </StackPanel>
+
+                            <!-- Lobi Oluştur Link -->
+                            <Button Height="36"
+                                    Cursor="Hand"
+                                    Command="{Binding LobiOlusturAcCommand}"
+                                    Template="{StaticResource DarkBtnTemplate}"
+                                    Background="Transparent"
+                                    BorderBrush="Transparent"
+                                    BorderThickness="0">
+                                <TextBlock Text="+ Grup Kodu ile Lobi Oluştur"
+                                           FontSize="12"
+                                           Foreground="#555555"/>
+                            </Button>
                         </StackPanel>
-                    </Grid>
-                </Border>
+                    </Border>
 
-                <!-- ═══════════════ MAÇ BUL BUTONU ═══════════════ -->
-                <Grid x:Name="MacBulGrid" Margin="0,0,0,16" Opacity="0">
-                    <Grid.RenderTransform>
-                        <TranslateTransform x:Name="MacBulTranslate" Y="24"/>
-                    </Grid.RenderTransform>
+                    <!-- ─── MOD SEÇİM KUTUSU (yan tarafta, aşağı doğru) ─── -->
+                    <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="12,0,0,0">
 
-                    <Button x:Name="MacBulBtn"
-                            Height="54"
-                            Cursor="Hand"
-                            Background="#1E1E1E"
-                            BorderBrush="#333333"
-                            BorderThickness="1"
-                            Command="{Binding MacBulCommand}"
-                            Template="{StaticResource DarkBtnTemplate}">
-                        <TextBlock Text="MAÇ BUL"
-                                   FontSize="16"
-                                   FontWeight="Bold"
-                                   Foreground="White"/>
-                    </Button>
+                        <!-- Toggle Başlık -->
+                        <Border x:Name="ModToggle"
+                                Height="32"
+                                CornerRadius="8"
+                                Background="#2A2A2A"
+                                BorderBrush="#555555"
+                                BorderThickness="1"
+                                Padding="12,0"
+                                Cursor="Hand"
+                                MouseDown="ModToggle_Click">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Mod Seç" FontSize="11"
+                                           Foreground="#AAAAAA" FontWeight="SemiBold"
+                                           VerticalAlignment="Center"/>
+                                <TextBlock Grid.Column="1" x:Name="ToggleIkon"
+                                           Text="▶" FontSize="10" Foreground="#888888"
+                                           VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
 
-                    <!-- + Badge (sağ üst) -->
-                    <Button x:Name="PlusBtn"
-                            Width="28"
-                            Height="28"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Top"
-                            Margin="0,-8,-8,0"
-                            Cursor="Hand"
-                            Background="#252525"
-                            BorderBrush="#444444"
-                            BorderThickness="1"
-                            Command="{Binding LobiOlusturAcCommand}"
-                            ToolTip="Lobi Oluştur">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border x:Name="bd"
-                                        Background="{TemplateBinding Background}"
-                                        BorderBrush="{TemplateBinding BorderBrush}"
-                                        BorderThickness="{TemplateBinding BorderThickness}"
-                                        CornerRadius="14"
-                                        Width="28"
-                                        Height="28">
-                                    <TextBlock Text="+"
-                                               FontSize="16"
-                                               FontWeight="Light"
-                                               Foreground="#AAAAAA"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"/>
+                        <!-- ─── MOD SEÇİM DROPDOWN ─── -->
+                        <Border x:Name="ModDropdown"
+                                Background="#1A1A1A"
+                                BorderBrush="#333333"
+                                BorderThickness="1"
+                                CornerRadius="0,0,12,12"
+                                Padding="12,8"
+                                Margin="0,0,0,0"
+                                Visibility="Collapsed"
+                                Opacity="0"
+                                MinWidth="200">
+                            <StackPanel>
+                                <TextBlock Text="OYUN MODU SEÇ" FontSize="9" Foreground="#666666"
+                                           Margin="0,0,0,8" HorizontalAlignment="Center"/>
+
+                                <!-- 1v1 -->
+                                <Border x:Name="Mod1v1" Background="#141414" CornerRadius="8"
+                                        Padding="12,10" Margin="0,0,0,4" Cursor="Hand"
+                                        BorderBrush="#444444" BorderThickness="1"
+                                        MouseDown="ModSec">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="⚔" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="1v1 Düello" FontSize="12" FontWeight="SemiBold" Foreground="White"/>
+                                            <TextBlock Text="1 kişi bul" FontSize="9" Foreground="#666666"/>
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Background="#1A2A1A" CornerRadius="4" Padding="6,2">
+                                            <TextBlock Text="1" FontSize="10" Foreground="#4ADE80" FontWeight="Bold"/>
+                                        </Border>
+                                    </Grid>
                                 </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="bd" Property="Background" Value="#333333"/>
-                                        <Setter TargetName="bd" Property="BorderBrush" Value="#666666"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
+
+                                <!-- 2v2 -->
+                                <Border x:Name="Mod2v2" Background="#141414" CornerRadius="8"
+                                        Padding="12,10" Margin="0,0,0,4" Cursor="Hand"
+                                        BorderBrush="#222222" BorderThickness="1"
+                                        MouseDown="ModSec">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="👥" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="2v2 Çift" FontSize="12" FontWeight="SemiBold" Foreground="White"/>
+                                            <TextBlock Text="2 kişi bul" FontSize="9" Foreground="#666666"/>
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Background="#1A2A1A" CornerRadius="4" Padding="6,2">
+                                            <TextBlock Text="2" FontSize="10" Foreground="#4ADE80" FontWeight="Bold"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+
+                                <!-- 3v3 -->
+                                <Border x:Name="Mod3v3" Background="#141414" CornerRadius="8"
+                                        Padding="12,10" Margin="0,0,0,4" Cursor="Hand"
+                                        BorderBrush="#222222" BorderThickness="1"
+                                        MouseDown="ModSec">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="👤" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="3v3 Takım" FontSize="12" FontWeight="SemiBold" Foreground="White"/>
+                                            <TextBlock Text="3 kişi bul" FontSize="9" Foreground="#666666"/>
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Background="#1A2A1A" CornerRadius="4" Padding="6,2">
+                                            <TextBlock Text="3" FontSize="10" Foreground="#4ADE80" FontWeight="Bold"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+
+                                <!-- 5v5 Normal -->
+                                <Border x:Name="Mod5v5Normal" Background="#141414" CornerRadius="8"
+                                        Padding="12,10" Margin="0,0,0,4" Cursor="Hand"
+                                        BorderBrush="#222222" BorderThickness="1"
+                                        MouseDown="ModSec">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="🎯" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="5v5 Normal" FontSize="12" FontWeight="SemiBold" Foreground="White"/>
+                                            <TextBlock Text="5 kişi bul" FontSize="9" Foreground="#666666"/>
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Background="#1A2A1A" CornerRadius="4" Padding="6,2">
+                                            <TextBlock Text="5" FontSize="10" Foreground="#4ADE80" FontWeight="Bold"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+
+                                <!-- 5v5 Dereceli -->
+                                <Border x:Name="ModDereceli" Background="#141414" CornerRadius="8"
+                                        Padding="12,10" Cursor="Hand"
+                                        BorderBrush="#222222" BorderThickness="1"
+                                        MouseDown="ModSec">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="🏆" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="5v5 Dereceli" FontSize="12" FontWeight="SemiBold" Foreground="White"/>
+                                            <TextBlock Text="5 kişi bul" FontSize="9" Foreground="#666666"/>
+                                        </StackPanel>
+                                        <Border Grid.Column="2" Background="#1A2A1A" CornerRadius="4" Padding="6,2">
+                                            <TextBlock Text="5" FontSize="10" Foreground="#4ADE80" FontWeight="Bold"/>
+                                        </Border>
+                                    </Grid>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
                 </Grid>
 
-                <!-- ═══════════════ MAÇ SEÇENEKLERİ ═══════════════ -->
-                <Border x:Name="SecenekGrid"
-                        Opacity="0"
-                        Background="#141414"
-                        BorderBrush="White"
+                <!-- ═══════════════ MAÇ TÜRÜ SEÇİM KONTEYNERİ ═══════════════ -->
+                <Border Background="#CC141414"
+                        BorderBrush="#333333"
                         BorderThickness="1"
-                        CornerRadius="12"
-                        Padding="16,14"
-                        Margin="0,0,0,20">
-                    <Border.RenderTransform>
-                        <TranslateTransform x:Name="SecenekTranslate" X="-20"/>
-                    </Border.RenderTransform>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <TextBlock Text="Standart Maç"
-                                       FontSize="14"
-                                       FontWeight="SemiBold"
-                                       Foreground="White"
-                                       Margin="0,0,0,2"/>
-                            <TextBlock Text="Dereceli · 5v5"
-                                       FontSize="11"
-                                       Foreground="#555555"/>
-                        </StackPanel>
-                        <Border Grid.Column="1"
-                                Background="#252525"
-                                CornerRadius="6"
-                                Padding="8,4"
-                                VerticalAlignment="Center">
-                            <TextBlock Text="Seçili"
-                                       FontSize="10"
-                                       Foreground="#888888"/>
+                        CornerRadius="16"
+                        Padding="0"
+                        Margin="0,0,0,16"
+                        HorizontalAlignment="Stretch"
+                        Opacity="1"
+                        x:Name="MacTuruBox">
+                    <StackPanel>
+
+                        <!-- ─── FİLTRE ÇUBUĞU ─── -->
+                        <Border Background="#1A1A1A" CornerRadius="16,16,0,0" Padding="16,12">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="✕" FontSize="11" Foreground="#888888" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="MAÇ TÜRÜ" FontSize="11" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                            </StackPanel>
                         </Border>
-                    </Grid>
+
+                        <!-- ─── MAÇ BUL BUTONU ─── -->
+                        <Button Height="48"
+                                Margin="16,14,16,14"
+                                Cursor="Hand"
+                                Background="#1E1E1E"
+                                BorderBrush="#333333"
+                                BorderThickness="1"
+                                Command="{Binding MacBulCommand}"
+                                Template="{StaticResource DarkBtnTemplate}">
+                            <TextBlock Text="MAÇ BUL"
+                                       FontSize="14"
+                                       FontWeight="Bold"
+                                       Foreground="White"
+                                       HorizontalAlignment="Center"/>
+                        </Button>
+
+                        <!-- ─── 3 MAÇ TÜRÜ KARTI ─── -->
+                        <Grid Margin="16,0,16,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Kart 1: Standart Maç (selected) -->
+                            <Border Grid.Column="0"
+                                    x:Name="MacTuruStandart"
+                                    Background="#141414"
+                                    BorderBrush="#FFFFFF"
+                                    BorderThickness="1"
+                                    CornerRadius="12"
+                                    Padding="14,16"
+                                    MinHeight="210"
+                                    Cursor="Hand"
+                                    MouseDown="MacTuruSec">
+                                <StackPanel>
+                                    <Grid Margin="0,0,0,10">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Text="✕" FontSize="11" Foreground="#888888" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                            <TextBlock Text="Standart Maç" FontSize="12" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center"/>
+                                            <TextBlock Text=" • 5v5" FontSize="10" Foreground="#666666" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                        </StackPanel>
+                                        <TextBlock Text="ⓘ" FontSize="12" Foreground="#555555" HorizontalAlignment="Right" VerticalAlignment="Center" Cursor="Hand"/>
+                                    </Grid>
+                                    <!-- 2x2 grid özellikler -->
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="6"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="6"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Row="0" Grid.Column="0" Background="#1A1A1A" BorderBrush="#222222" BorderThickness="1" CornerRadius="6" Padding="8,6">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="👥" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                                <TextBlock Text="Tüm grup boyutları" FontSize="10" Foreground="#AAAAAA"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Row="0" Grid.Column="2" Background="#1A1A1A" BorderBrush="#222222" BorderThickness="1" CornerRadius="6" Padding="8,6">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="✓" FontSize="10" Foreground="#4ADE80" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                                <TextBlock Text="Doğrulanmış Eşleştirme" FontSize="10" Foreground="#AAAAAA"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Row="2" Grid.Column="0" Background="#1A1A1A" BorderBrush="#222222" BorderThickness="1" CornerRadius="6" Padding="8,6">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="🚫" FontSize="10" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                                <TextBlock Text="Elo kısıtlaması yok" FontSize="10" Foreground="#AAAAAA"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <Border Grid.Row="2" Grid.Column="2" Background="#1A1A1A" BorderBrush="#222222" BorderThickness="1" CornerRadius="6" Padding="8,6">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="✓" FontSize="10" Foreground="#4ADE80" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                                <TextBlock Text="Kıdemli Eşleştirme" FontSize="10" Foreground="#AAAAAA"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Kart 2: Süper Maç (pasif) -->
+                            <Border Grid.Column="2"
+                                    x:Name="MacTuruSuper"
+                                    Background="#0D0D0D"
+                                    BorderBrush="#1A1A1A"
+                                    BorderThickness="1"
+                                    CornerRadius="12"
+                                    Padding="14,16"
+                                    MinHeight="210"
+                                    Opacity="0.4"
+                                    IsHitTestVisible="False">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                        <TextBlock Text="⚡" FontSize="13" Foreground="#555555" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        <TextBlock Text="Süper Maç" FontSize="12" FontWeight="SemiBold" Foreground="#555555" VerticalAlignment="Center"/>
+                                        <TextBlock Text=" • 5v5" FontSize="10" Foreground="#444444" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                    </StackPanel>
+                                    <Border Background="#1A1A1A" CornerRadius="6" Padding="10,8" Margin="0,20,0,0">
+                                        <TextBlock Text="🔒 Çok Yakında" FontSize="11" Foreground="#555555" HorizontalAlignment="Center"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Kart 3: Premium (pasif) -->
+                            <Border Grid.Column="4"
+                                    x:Name="MacTuruPremium"
+                                    Background="#0D0D0D"
+                                    BorderBrush="#1A1A1A"
+                                    BorderThickness="1"
+                                    CornerRadius="12"
+                                    Padding="14,16"
+                                    MinHeight="210"
+                                    Opacity="0.4"
+                                    IsHitTestVisible="False">
+                                <StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                        <TextBlock Text="⭐" FontSize="13" Foreground="#555555" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                        <TextBlock Text="Premium Match" FontSize="12" FontWeight="SemiBold" Foreground="#555555" VerticalAlignment="Center"/>
+                                        <TextBlock Text=" • 5v5" FontSize="10" Foreground="#444444" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                    </StackPanel>
+                                    <Border Background="#1A1A1A" CornerRadius="6" Padding="10,8" Margin="0,20,0,0">
+                                        <TextBlock Text="🔒 Çok Yakında" FontSize="11" Foreground="#555555" HorizontalAlignment="Center"/>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+
+                    </StackPanel>
                 </Border>
 
                 <!-- ═══════════════ HATA MESAJI ═══════════════ -->
@@ -293,7 +523,19 @@
                                    FontSize="14"
                                    FontWeight="SemiBold"
                                    Foreground="White"
-                                   HorizontalAlignment="Center"/>
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,16"/>
+                        <Button Height="36"
+                                Padding="20,0"
+                                Cursor="Hand"
+                                Command="{Binding EslesmeyiIptalCommand}"
+                                Template="{StaticResource DarkBtnTemplate}"
+                                Background="Transparent"
+                                BorderBrush="#333333"
+                                BorderThickness="1"
+                                HorizontalAlignment="Center">
+                            <TextBlock Text="İptal" FontSize="12" Foreground="#888888"/>
+                        </Button>
                     </StackPanel>
                 </Border>
 
@@ -464,7 +706,9 @@
                                    Foreground="White"
                                    FontFamily="Consolas"
                                    HorizontalAlignment="Center"
-                                   Margin="0,0,0,4"/>
+                                   Margin="0,0,0,4"
+                                   Cursor="Hand"
+                                   MouseDown="GrupKoduKopyala_MouseDown"/>
                         <TextBlock Text="Grup Kodun"
                                    FontSize="11"
                                    Foreground="#444444"
@@ -541,6 +785,433 @@
                                 BorderThickness="1">
                             <TextBlock Text="İptal" FontSize="12" Foreground="#888888"/>
                         </Button>
+                    </StackPanel>
+                </Border>
+
+                <!-- ═══════════════ LOBI EKRANI (5 kişilik) ═══════════════ -->
+                <Border x:Name="LobbyPaneli"
+                        Background="#141414"
+                        BorderBrush="#222222"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        Padding="22,18"
+                        Margin="0,0,0,12"
+                        Visibility="Collapsed"
+                        Opacity="0">
+                    <StackPanel>
+                        <!-- Başlık: Çıkış -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,14">
+                            <TextBlock Text="Lobi" FontSize="10" Foreground="#555555" FontWeight="Bold" VerticalAlignment="Center"/>
+                            <Button Height="28" Padding="12,0" Margin="6,0,0,0"
+                                    HorizontalAlignment="Right"
+                                    Cursor="Hand"
+                                    Command="{Binding LobidenCikCommand}"
+                                    Template="{StaticResource DarkBtnTemplate}"
+                                    Background="#1E1E1E"
+                                    BorderBrush="#333333"
+                                    BorderThickness="1">
+                                <TextBlock Text="Lobiden Çık" FontSize="10" Foreground="#FF6666"/>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- 5 Kart Yatay Sıra -->
+                        <Grid Margin="0,0,0,16" HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="8"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- ═══ Slot 1 (sol) ═══ -->
+                            <Border Grid.Column="0" x:Name="LobbySlot1"
+                                    Width="150" Height="190"
+                                    Background="#1A1A1A"
+                                    CornerRadius="12"
+                                    BorderBrush="#1AFFFFFF"
+                                    BorderThickness="1">
+                                <!-- Empty state -->
+                                <Grid>
+                                    <StackPanel x:Name="Slot1Empty" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible">
+                                        <TextBlock Text="+" FontSize="32" Foreground="#555555" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <!-- Filled state -->
+                                    <StackPanel x:Name="Slot1Filled" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+                                        <Border Width="52" Height="52" CornerRadius="26"
+                                                Background="#252525" BorderBrush="#3A3A3A" BorderThickness="1"
+                                                Margin="0,0,0,8" ClipToBounds="True">
+                                            <Grid>
+                                                <Image x:Name="Slot1Image" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                <TextBlock x:Name="Slot1Avatar" Text="" FontSize="18"
+                                                           Foreground="#444444" FontWeight="Bold"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           Visibility="Collapsed"/>
+                                            </Grid>
+                                        </Border>
+                                        <TextBlock x:Name="Slot1Ad" Text="" FontSize="12"
+                                                   Foreground="White" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center" MaxWidth="120"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock x:Name="Slot1Tag" Text="" FontSize="9"
+                                                   Foreground="#666666" HorizontalAlignment="Center"
+                                                   Margin="0,2,0,6"/>
+                                        <Border x:Name="Slot1RankBadge"
+                                                Background="#1A1A1A" CornerRadius="6"
+                                                Padding="6,3" BorderBrush="#2A2A2A" BorderThickness="1"
+                                                HorizontalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock x:Name="Slot1RankIcon" Text="?" FontSize="10"
+                                                           Foreground="#888888" Margin="0,0,4,0"/>
+                                                <TextBlock x:Name="Slot1RankText" Text="Rütbesiz" FontSize="10"
+                                                           Foreground="#888888"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- ═══ Slot 2 (soldan ikinci) ═══ -->
+                            <Border Grid.Column="2" x:Name="LobbySlot2"
+                                    Width="150" Height="190"
+                                    Background="#1A1A1A"
+                                    CornerRadius="12"
+                                    BorderBrush="#1AFFFFFF"
+                                    BorderThickness="1">
+                                <Grid>
+                                    <StackPanel x:Name="Slot2Empty" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible">
+                                        <TextBlock Text="+" FontSize="32" Foreground="#555555" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel x:Name="Slot2Filled" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+                                        <Border Width="52" Height="52" CornerRadius="26"
+                                                Background="#252525" BorderBrush="#3A3A3A" BorderThickness="1"
+                                                Margin="0,0,0,8" ClipToBounds="True">
+                                            <Grid>
+                                                <Image x:Name="Slot2Image" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                <TextBlock x:Name="Slot2Avatar" Text="" FontSize="18"
+                                                           Foreground="#444444" FontWeight="Bold"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           Visibility="Collapsed"/>
+                                            </Grid>
+                                        </Border>
+                                        <TextBlock x:Name="Slot2Ad" Text="" FontSize="12"
+                                                   Foreground="White" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center" MaxWidth="120"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock x:Name="Slot2Tag" Text="" FontSize="9"
+                                                   Foreground="#666666" HorizontalAlignment="Center"
+                                                   Margin="0,2,0,6"/>
+                                        <Border x:Name="Slot2RankBadge"
+                                                Background="#1A1A1A" CornerRadius="6"
+                                                Padding="6,3" BorderBrush="#2A2A2A" BorderThickness="1"
+                                                HorizontalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock x:Name="Slot2RankIcon" Text="?" FontSize="10"
+                                                           Foreground="#888888" Margin="0,0,4,0"/>
+                                                <TextBlock x:Name="Slot2RankText" Text="Rütbesiz" FontSize="10"
+                                                           Foreground="#888888"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- ═══ Slot 3 (MERKEZ — host/lider) ═══ -->
+                            <Grid Grid.Column="4" Width="180" Height="Auto">
+                                <!-- Taç ikonu (sadece ortada) -->
+                                <TextBlock x:Name="Slot3Crown" Text="👑" FontSize="14"
+                                           Foreground="#FFB800"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Top"
+                                           Margin="0,-2,0,0"
+                                           Visibility="Visible"/>
+                                <Border x:Name="LobbySlot3"
+                                        Width="180" Height="210"
+                                        Background="#1A1A1A"
+                                        CornerRadius="12"
+                                        BorderBrush="#26FFFFFF"
+                                        BorderThickness="1"
+                                        Margin="0,8,0,0">
+                                    <Grid>
+                                        <!-- Empty state (fallback) -->
+                                        <StackPanel x:Name="Slot3Empty" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+                                            <TextBlock Text="+" FontSize="32" Foreground="#555555" FontWeight="Bold"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <!-- Filled state -->
+                                        <StackPanel x:Name="Slot3Filled" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible">
+                                            <!-- Avatar: 72px gradient + infinity symbol -->
+                                            <Border Width="72" Height="72" CornerRadius="36"
+                                                    Margin="0,0,0,10" ClipToBounds="True"
+                                                    Background="#1E1E1E">
+                                                <Grid>
+                                                    <TextBlock x:Name="Slot3Infinity" Text="∞" FontSize="32"
+                                                               Foreground="White" FontWeight="Bold" Opacity="0.85"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    <Image x:Name="Slot3Image" Stretch="UniformToFill"
+                                                           RenderOptions.BitmapScalingMode="HighQuality"
+                                                           Visibility="Collapsed"/>
+                                                    <TextBlock x:Name="Slot3Avatar" Text="" FontSize="20"
+                                                               Foreground="White" FontWeight="Bold"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                               Visibility="Collapsed"/>
+                                                </Grid>
+                                            </Border>
+                                            <!-- İsim + Tag -->
+                                            <StackPanel HorizontalAlignment="Center" Margin="0,0,0,4">
+                                                <TextBlock x:Name="Slot3Ad" Text="" FontSize="14" Foreground="White"
+                                                           FontWeight="SemiBold" HorizontalAlignment="Center"
+                                                           MaxWidth="140" TextTrimming="CharacterEllipsis"/>
+                                                <TextBlock x:Name="Slot3Tag" Text="" FontSize="10" Foreground="#666666"
+                                                           HorizontalAlignment="Center"/>
+                                            </StackPanel>
+                                            <!-- ELO + Rank -->
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,0">
+                                                <TextBlock x:Name="Slot3Elo" Text="" FontSize="11" Foreground="#AAAAAA"
+                                                           Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                                <Border x:Name="Slot3RankBadge"
+                                                        Background="#1A1A1A" CornerRadius="6"
+                                                        Padding="8,4" BorderBrush="#2A2A2A" BorderThickness="1"
+                                                        HorizontalAlignment="Center">
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock x:Name="Slot3RankIcon" Text="?" FontSize="11"
+                                                                   Foreground="#888888" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                        <TextBlock x:Name="Slot3RankText" Text="Rütbesiz" FontSize="11"
+                                                                   Foreground="#888888"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+
+                            <!-- ═══ Slot 4 (sağdan ikinci) ═══ -->
+                            <Border Grid.Column="6" x:Name="LobbySlot4"
+                                    Width="150" Height="190"
+                                    Background="#1A1A1A"
+                                    CornerRadius="12"
+                                    BorderBrush="#1AFFFFFF"
+                                    BorderThickness="1">
+                                <Grid>
+                                    <StackPanel x:Name="Slot4Empty" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible">
+                                        <TextBlock Text="+" FontSize="32" Foreground="#555555" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel x:Name="Slot4Filled" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+                                        <Border Width="52" Height="52" CornerRadius="26"
+                                                Background="#252525" BorderBrush="#3A3A3A" BorderThickness="1"
+                                                Margin="0,0,0,8" ClipToBounds="True">
+                                            <Grid>
+                                                <Image x:Name="Slot4Image" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                <TextBlock x:Name="Slot4Avatar" Text="" FontSize="18"
+                                                           Foreground="#444444" FontWeight="Bold"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           Visibility="Collapsed"/>
+                                            </Grid>
+                                        </Border>
+                                        <TextBlock x:Name="Slot4Ad" Text="" FontSize="12"
+                                                   Foreground="White" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center" MaxWidth="120"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock x:Name="Slot4Tag" Text="" FontSize="9"
+                                                   Foreground="#666666" HorizontalAlignment="Center"
+                                                   Margin="0,2,0,6"/>
+                                        <Border x:Name="Slot4RankBadge"
+                                                Background="#1A1A1A" CornerRadius="6"
+                                                Padding="6,3" BorderBrush="#2A2A2A" BorderThickness="1"
+                                                HorizontalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock x:Name="Slot4RankIcon" Text="?" FontSize="10"
+                                                           Foreground="#888888" Margin="0,0,4,0"/>
+                                                <TextBlock x:Name="Slot4RankText" Text="Rütbesiz" FontSize="10"
+                                                           Foreground="#888888"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- ═══ Slot 5 (sağ) ═══ -->
+                            <Border Grid.Column="8" x:Name="LobbySlot5"
+                                    Width="150" Height="190"
+                                    Background="#1A1A1A"
+                                    CornerRadius="12"
+                                    BorderBrush="#1AFFFFFF"
+                                    BorderThickness="1">
+                                <Grid>
+                                    <StackPanel x:Name="Slot5Empty" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Visible">
+                                        <TextBlock Text="+" FontSize="32" Foreground="#555555" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel x:Name="Slot5Filled" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed">
+                                        <Border Width="52" Height="52" CornerRadius="26"
+                                                Background="#252525" BorderBrush="#3A3A3A" BorderThickness="1"
+                                                Margin="0,0,0,8" ClipToBounds="True">
+                                            <Grid>
+                                                <Image x:Name="Slot5Image" Stretch="UniformToFill" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                <TextBlock x:Name="Slot5Avatar" Text="" FontSize="18"
+                                                           Foreground="#444444" FontWeight="Bold"
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                           Visibility="Collapsed"/>
+                                            </Grid>
+                                        </Border>
+                                        <TextBlock x:Name="Slot5Ad" Text="" FontSize="12"
+                                                   Foreground="White" FontWeight="SemiBold"
+                                                   HorizontalAlignment="Center" MaxWidth="120"
+                                                   TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock x:Name="Slot5Tag" Text="" FontSize="9"
+                                                   Foreground="#666666" HorizontalAlignment="Center"
+                                                   Margin="0,2,0,6"/>
+                                        <Border x:Name="Slot5RankBadge"
+                                                Background="#1A1A1A" CornerRadius="6"
+                                                Padding="6,3" BorderBrush="#2A2A2A" BorderThickness="1"
+                                                HorizontalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock x:Name="Slot5RankIcon" Text="?" FontSize="10"
+                                                           Foreground="#888888" Margin="0,0,4,0"/>
+                                                <TextBlock x:Name="Slot5RankText" Text="Rütbesiz" FontSize="10"
+                                                           Foreground="#888888"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <!-- Alt Kısım: Grup Kodu Kutusu -->
+                        <Border x:Name="LobbyAltBolum"
+                                Background="#1A1A1A"
+                                CornerRadius="10"
+                                Padding="18,14"
+                                BorderBrush="#2A2A2A"
+                                BorderThickness="1">
+                            <StackPanel HorizontalAlignment="Center">
+                                <!-- Doluluk (bekleniyor) -->
+                                <StackPanel x:Name="LobbyDoluluk" Visibility="Visible">
+                                    <TextBlock Text="Oyuncular bekleniyor..."
+                                               FontSize="11" Foreground="#555555"
+                                               HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                                    <TextBlock HorizontalAlignment="Center" FontSize="24" FontWeight="Bold" Foreground="White">
+                                        <Run Text="{Binding LobiOyuncuSayisi, Mode=OneWay}"/>
+                                        <Run Text="/"/>
+                                        <Run Text="{Binding LobiMaxOyuncu, Mode=OneWay}"/>
+                                    </TextBlock>
+                                </StackPanel>
+
+                                <!-- Grup Kodu Gir (host, kod yokken) -->
+                                <StackPanel x:Name="LobbyGrupKoduGir" Visibility="Collapsed">
+                                    <TextBlock Text="Valorant grup kodunu gir"
+                                               FontSize="11" Foreground="#555555"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,0,0,10"/>
+                                    <TextBox x:Name="LobbyGrupKoduBox"
+                                             Style="{StaticResource DarkInput}"
+                                             Text="{Binding GrupKoduInput, UpdateSourceTrigger=PropertyChanged}"
+                                             MaxLength="10"
+                                             CharacterCasing="Upper"
+                                             KeyDown="LobbyGrupKoduBox_KeyDown"/>
+                                    <TextBlock Text="{Binding ModalHata}"
+                                               FontSize="11"
+                                               Foreground="#FF4655"
+                                               Margin="0,6,0,0"
+                                               TextWrapping="Wrap"
+                                               Visibility="{Binding ModalHata, Converter={StaticResource StrToVis}}"/>
+                                    <Button Height="38"
+                                            Margin="0,10,0,0"
+                                            MinWidth="160"
+                                            HorizontalAlignment="Center"
+                                            Cursor="Hand"
+                                            Command="{Binding LobbyGrupKoduKaydetCommand}"
+                                            Template="{StaticResource DarkBtnTemplate}"
+                                            Background="#FFFFFF"
+                                            BorderBrush="Transparent"
+                                            BorderThickness="0">
+                                        <Button.IsEnabled>
+                                            <Binding Path="ModalLoading">
+                                                <Binding.Converter>
+                                                    <h:InverseBoolConverter/>
+                                                </Binding.Converter>
+                                            </Binding>
+                                        </Button.IsEnabled>
+                                        <TextBlock Text="Kodu Kaydet"
+                                                   FontSize="13" FontWeight="Bold"
+                                                   Foreground="#0D0D0D"/>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- Grup Kodu (girildi) -->
+                                <StackPanel x:Name="LobbyGrupKodu" Visibility="Collapsed">
+                                    <TextBlock Text="{Binding AktifGrupKodu}"
+                                               FontSize="32" FontWeight="Bold"
+                                               Foreground="White"
+                                               FontFamily="Consolas"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,0,0,2"
+                                               Cursor="Hand"
+                                               MouseDown="GrupKoduKopyala_MouseDown"/>
+                                    <TextBlock Text="Grup Kodu"
+                                               FontSize="10" Foreground="#444444"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,0,0,12"/>
+                                    <Button Height="40"
+                                            MinWidth="200"
+                                            HorizontalAlignment="Center"
+                                            Cursor="Hand"
+                                            Command="{Binding KoduKopyalaCommand}"
+                                            Template="{StaticResource DarkBtnTemplate}">
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Background" Value="White"/>
+                                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                                <Setter Property="BorderThickness" Value="0"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Kopyalandi}" Value="True">
+                                                        <Setter Property="Background" Value="#1A2A1A"/>
+                                                        <Setter Property="BorderBrush" Value="#00D26A"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                        <TextBlock Text="{Binding KopyalaButonText}"
+                                                   FontSize="13" FontWeight="Bold"
+                                                   VerticalAlignment="Center">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Foreground" Value="#0D0D0D"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Kopyalandi}" Value="True">
+                                                            <Setter Property="Foreground" Value="#00D26A"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Button>
+                                    <TextBlock Text="Bu kodu Valorant'ta grup davetine girin"
+                                               FontSize="10" Foreground="#555555"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,10,0,0"/>
+                                </StackPanel>
+
+                                <!-- Grup Kodu Bekleniyor (oyuncu, kod yok) -->
+                                <StackPanel x:Name="LobbyKodBekleniyor" Visibility="Collapsed" HorizontalAlignment="Center">
+                                    <TextBlock Text="⏳ Grup kodu bekleniyor..."
+                                               FontSize="13" Foreground="#888888"
+                                               HorizontalAlignment="Center"
+                                               Margin="0,0,0,4"/>
+                                    <TextBlock Text="Host kodu girdiğinde burada görünecek"
+                                               FontSize="10" Foreground="#555555"
+                                               HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
                     </StackPanel>
                 </Border>
 
@@ -762,7 +1433,6 @@
                 </Border>
 
             </StackPanel>
-        </ScrollViewer>
 
         <!-- ═══════════════ MODAL OVERLAY ═══════════════ -->
         <Grid x:Name="ModalOverlay" Visibility="Collapsed" Background="#88000000">

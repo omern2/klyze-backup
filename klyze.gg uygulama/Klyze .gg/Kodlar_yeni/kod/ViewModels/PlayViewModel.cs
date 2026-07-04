@@ -19,7 +19,9 @@ namespace ValorantAutoClicker.ViewModels
         private readonly LobbyService _lobbyService;
         private readonly UserService _userService;
         private CancellationTokenSource _eslesmeCts;
+        private CancellationTokenSource _aramaCts;
         private string _localId;
+        private bool _lobbyDinleniyor;
 
         [ObservableProperty] private string _oyuncuAdi = "";
         [ObservableProperty] private string _oyuncuTag = "";
@@ -28,6 +30,8 @@ namespace ValorantAutoClicker.ViewModels
         [ObservableProperty] private int _hostElo;
         [ObservableProperty] private string _cardUrl = "";
         [ObservableProperty] private string _bolge = "eu";
+        [ObservableProperty] private string _seciliOyunModu = "1v1";
+        [ObservableProperty] private int _aranacakOyuncuSayisi = 2;
 
         public ImageSource RankIkonKaynak => RankIkonHelper.RankIkonFromTier(CurrentTier);
         public string EloText => HostElo > 0 ? HostElo.ToString() : "—";
@@ -43,25 +47,26 @@ namespace ValorantAutoClicker.ViewModels
 
         [ObservableProperty] private string _state = "idle";
 
-        // Lobi bulma (mevcut)
+        // Lobi bulma
+        [ObservableProperty] private string _aktifLobiId = "";
+        [ObservableProperty] private string _aktifGrupKodu = "";
+        [ObservableProperty] private int _lobiOyuncuSayisi;
+        [ObservableProperty] private int _lobiMaxOyuncu;
+        [ObservableProperty] private List<LobbyPlayer> _lobiOyuncular = new();
+        [ObservableProperty] private bool _lobiSahibi;
+
+        // Modal
         [ObservableProperty] private bool _modalAcik;
         [ObservableProperty] private string _grupKoduInput = "";
         [ObservableProperty] private bool _modalLoading;
         [ObservableProperty] private string _modalHata = "";
 
-        [ObservableProperty] private FirestoreLobi _bulunanLobi;
+        // Kopyalama
         [ObservableProperty] private string _kopyalaButonText = "Kodu Kopyala";
         [ObservableProperty] private bool _kopyalandi;
 
-        public ImageSource BulunanLobiRankIkon =>
-            BulunanLobi != null ? RankIkonHelper.RankIkonFromTier(BulunanLobi.HostTier) : null;
-
-        partial void OnBulunanLobiChanged(FirestoreLobi value) => OnPropertyChanged(nameof(BulunanLobiRankIkon));
-
-        [ObservableProperty] private string _aktifLobiId = "";
-        [ObservableProperty] private string _aktifGrupKodu = "";
-
-        // Eşleşme (matchmaking)
+        // Legacy (geçici uyum)
+        [ObservableProperty] private FirestoreLobi _bulunanLobi;
         [ObservableProperty] private Oda _aktifOda;
         [ObservableProperty] private string _odaGrupKoduInput = "";
         [ObservableProperty] private bool _odaGrupKoduGirildi;
@@ -70,6 +75,10 @@ namespace ValorantAutoClicker.ViewModels
         [ObservableProperty] private int _rakipElo;
         [ObservableProperty] private int _rakipTier;
         [ObservableProperty] private string _rakipKartUrl = "";
+
+        public ImageSource BulunanLobiRankIkon =>
+            BulunanLobi != null ? RankIkonHelper.RankIkonFromTier(BulunanLobi.HostTier) : null;
+        partial void OnBulunanLobiChanged(FirestoreLobi value) => OnPropertyChanged(nameof(BulunanLobiRankIkon));
 
         public ImageSource RakipRankIkon => RankIkonHelper.RankIkonFromTier(RakipTier);
         public string RakipEloText => RakipElo > 0 ? RakipElo.ToString() : "—";
@@ -95,12 +104,15 @@ namespace ValorantAutoClicker.ViewModels
         public IRelayCommand EslesmeyiIptalCommand { get; }
         public IRelayCommand OdaGrupKoduKaydetCommand { get; }
         public IRelayCommand OdaKoduKopyalaCommand { get; }
+        public IRelayCommand LobidenCikCommand { get; }
+        public IRelayCommand LobbyGrupKoduKaydetCommand { get; }
 
         public PlayViewModel(UserService userService = null)
         {
             _userService = userService;
             _lobbyService = new LobbyService();
             _lobbyService.LobilerGuncellendi += OnLobilerGuncellendi;
+            _lobbyService.LobbyGuncellendi += OnLobbySnapshot;
 
             MacBulCommand = new AsyncRelayCommand(MacBulAsync);
             LobiOlusturAcCommand = new RelayCommand(() =>
@@ -116,6 +128,8 @@ namespace ValorantAutoClicker.ViewModels
             EslesmeyiIptalCommand = new AsyncRelayCommand(EslesmeyiIptalAsync);
             OdaGrupKoduKaydetCommand = new AsyncRelayCommand(OdaGrupKoduKaydetAsync);
             OdaKoduKopyalaCommand = new AsyncRelayCommand(OdaKoduKopyalaAsync);
+            LobidenCikCommand = new AsyncRelayCommand(LobidenCikAsync);
+            LobbyGrupKoduKaydetCommand = new AsyncRelayCommand(LobbyGrupKoduKaydetAsync);
 
             YenidenYukle();
             _ = BaslatAsync();
@@ -127,7 +141,10 @@ namespace ValorantAutoClicker.ViewModels
             _localId = _lobbyService.GetLocalId();
             _lobbyService.StartListening();
 
-            // Uygulama açıldığında aktif oda var mı kontrol et
+            // Süresi dolan lobileri temizle
+            await _lobbyService.CleanExpiredLobbiesAsync();
+
+            // Mevcut aktif oda var mı kontrol et (legacy)
             if (!string.IsNullOrEmpty(_localId))
             {
                 var oda = await _lobbyService.OyuncuAktifOdaGetirAsync(_localId);
@@ -145,7 +162,7 @@ namespace ValorantAutoClicker.ViewModels
             OyuncuTag = profil.Tag;
             CurrentTier = profil.CurrentTier;
             RutbeAdi = profil.Rutbe;
-            HostElo = HesaplaElo(profil.CurrentTier, profil.RutbePuani);
+            HostElo = profil.Elo > 0 ? profil.Elo : HesaplaElo(profil.CurrentTier, profil.RutbePuani);
             CardUrl = profil.CardSmallUrl ?? "";
             Bolge = string.IsNullOrEmpty(profil.Bolge) ? "eu" : profil.Bolge;
 
@@ -202,52 +219,54 @@ namespace ValorantAutoClicker.ViewModels
             return Math.Max(0, (tier - 1) * 100 + rr);
         }
 
-        // ─── MAÇ BUL ──────────────────────────────────────────────────────────────
+        // ─── MAÇ BUL (Yeni: 5 kişilik lobby sistemi) ────────────────────────────
 
         private async Task MacBulAsync()
         {
+            if (State is "lobby_created" or "lobby_full")
+            {
+                ErrorMessage = "Zaten bir lobidesin.";
+                return;
+            }
+
             ErrorMessage = "";
             StatusMessage = "";
             State = "searching";
             IsLoading = true;
-            BulunanLobi = null;
+
+            if (string.IsNullOrEmpty(_localId))
+            {
+                ErrorMessage = "Kimlik alınamadı.";
+                State = "idle";
+                IsLoading = false;
+                return;
+            }
+
+            _aramaCts?.Cancel();
+            _aramaCts = new CancellationTokenSource();
+            var ct = _aramaCts.Token;
 
             try
             {
-                await Task.Delay(600);
-
-                // 1. Önce mevcut lobileri kontrol et
-                var lobiler = await _lobbyService.GetUygunLobilerAsync(HostElo);
-
-                if (lobiler.Count > 0)
+                while (!ct.IsCancellationRequested)
                 {
-                    BulunanLobi = lobiler.First();
-                    KopyalaButonText = "Kodu Kopyala";
-                    Kopyalandi = false;
-                    State = "found";
-                    StatusMessage = $"{lobiler.Count} lobi bulundu";
-                    return;
+                    StatusMessage = "Lobi aranıyor...";
+
+                    var lobi = await _lobbyService.FindAndJoinLobbyAsync(
+                        HostElo, SeciliOyunModu,
+                        OyuncuAdi, OyuncuTag, CurrentTier, RutbeAdi, CardUrl, Bolge, AranacakOyuncuSayisi);
+
+                    if (lobi != null)
+                    {
+                        StatusMessage = "";
+                        LobiBulundu(lobi);
+                        return;
+                    }
+
+                    await Task.Delay(3000, ct);
                 }
-
-                // 2. Lobi yok → matchmaking kuyruğuna gir
-                if (string.IsNullOrEmpty(_localId))
-                {
-                    ErrorMessage = "Kimlik alınamadı.";
-                    State = "idle";
-                    return;
-                }
-
-                await _lobbyService.QueueEkleAsync(_localId, OyuncuAdi, OyuncuTag,
-                    HostElo, CurrentTier, Bolge);
-
-                StatusMessage = "Rakip aranıyor...";
-                State = "matching";
-
-                // 3. Eşleşme için polling başlat
-                _eslesmeCts?.Cancel();
-                _eslesmeCts = new CancellationTokenSource();
-                _ = EslesmePollingAsync(_eslesmeCts.Token);
             }
+            catch (OperationCanceledException) { }
             catch (Exception ex)
             {
                 ErrorMessage = ex.Message;
@@ -259,75 +278,175 @@ namespace ValorantAutoClicker.ViewModels
             }
         }
 
-        private async Task EslesmePollingAsync(CancellationToken ct)
+        private void LobiBulundu(FirestoreLobi lobi)
         {
-            while (!ct.IsCancellationRequested && State == "matching")
+            AktifLobiId = lobi.Id;
+            LobiOyuncular = lobi.Players ?? new List<LobbyPlayer>();
+            LobiOyuncuSayisi = LobiOyuncular.Count;
+            LobiMaxOyuncu = lobi.MaxPlayers;
+            LobiSahibi = lobi.HostName == OyuncuAdi && lobi.HostTag == OyuncuTag;
+            AktifGrupKodu = lobi.GroupCode ?? "";
+
+            // Lobby listener'ı başlat
+            if (!_lobbyDinleniyor)
             {
-                try
+                _lobbyService.StartLobbyListener(lobi.Id);
+                _lobbyDinleniyor = true;
+            }
+
+            State = lobi.Status == "full" && !string.IsNullOrEmpty(lobi.GroupCode)
+                ? "lobby_full"
+                : "lobby_created";
+        }
+
+        // ─── Gerçek Zamanlı Lobby Güncellemeleri ──────────────────────────────
+
+        private void OnLobbySnapshot(FirestoreLobi lobi)
+        {
+            Application.Current?.Dispatcher?.InvokeAsync(() =>
+            {
+                if (lobi == null)
                 {
-                    await Task.Delay(3000, ct);
-                    if (ct.IsCancellationRequested || State != "matching") break;
-
-                    var eslesme = await _lobbyService.EnYakinEslesmeBulAsync(HostElo, _localId);
-                    if (eslesme != null)
-                    {
-                        // Eşleşme bulundu → ikimizi de kuyruktan çıkar → oda oluştur
-                        await _lobbyService.QueueKaldirAsync(_localId);
-                        await _lobbyService.QueueKaldirAsync(eslesme.LocalId);
-
-                        var roomId = await _lobbyService.OdaOlusturAsync(
-                            _localId, eslesme.LocalId,
-                            OyuncuAdi, OyuncuTag, HostElo, CurrentTier,
-                            eslesme.PlayerName, eslesme.PlayerTag, eslesme.Elo, eslesme.Tier);
-
-                        var oda = await _lobbyService.OdaGetirAsync(roomId);
-                        if (oda != null)
-                        {
-                            await Application.Current.Dispatcher.InvokeAsync(() => OdaBulundu(oda));
-                        }
-                    }
+                    if (State == "lobby_created" && !string.IsNullOrEmpty(AktifGrupKodu))
+                        State = "lobby_full";
+                    return;
                 }
-                catch (OperationCanceledException) { break; }
-                catch { }
-            }
+
+                var oncekiKod = AktifGrupKodu;
+                LobiOyuncular = lobi.Players ?? new List<LobbyPlayer>();
+                LobiOyuncuSayisi = LobiOyuncular.Count;
+                AktifGrupKodu = lobi.GroupCode ?? "";
+
+                if (lobi.Status == "full" && !string.IsNullOrEmpty(lobi.GroupCode))
+                    State = "lobby_full";
+                else if (State == "lobby_full" && lobi.Status != "full")
+                    State = "lobby_created";
+
+                // Grup kodu değiştiyse lobby panelini yenile
+                if (oncekiKod != AktifGrupKodu)
+                    OnPropertyChanged(nameof(AktifGrupKodu));
+            });
         }
 
-        private void OdaBulundu(Oda oda)
+        // ─── LOBİDEN ÇIK ───────────────────────────────────────────────────────
+
+        private async Task LobidenCikAsync()
         {
-            AktifOda = oda;
-            OdaGrupKoduInput = "";
-            OdaGrupKoduGirildi = !string.IsNullOrEmpty(oda.GroupCode);
+            if (string.IsNullOrEmpty(AktifLobiId)) return;
 
-            // Rakip bilgilerini ayarla
-            if (oda.Player1LocalId == _localId)
+            var eskiLobiId = AktifLobiId;
+
+            await _lobbyService.LeaveLobbyAsync(eskiLobiId, OyuncuAdi, OyuncuTag);
+
+            if (_lobbyDinleniyor)
             {
-                RakipAdi = oda.Player2Name;
-                RakipTag = oda.Player2Tag;
-                RakipElo = oda.Player2Elo;
-                RakipTier = oda.Player2Tier;
-            }
-            else
-            {
-                RakipAdi = oda.Player1Name;
-                RakipTag = oda.Player1Tag;
-                RakipElo = oda.Player1Elo;
-                RakipTier = oda.Player1Tier;
+                _lobbyService.StopLobbyListener();
+                _lobbyDinleniyor = false;
             }
 
-            // Rakip rank kartını yükle
-            var rakipCardUrl = _userService?.GetProfile()?.CardSmallUrl ?? "";
-            if (!string.IsNullOrEmpty(rakipCardUrl))
-                _ = RakipKartGorselYukleAsync(rakipCardUrl);
-
-            State = "matched";
-            StatusMessage = "Rakip bulundu!";
+            Sifirla();
         }
 
-        // ─── Eşleşmeyi İptal Et ──────────────────────────────────────────────────
+        // ─── LOBİ GRUP KODUNU KAYDET (sadece lobby panel) ─────────────────────
+
+        private async Task LobbyGrupKoduKaydetAsync()
+        {
+            if (string.IsNullOrWhiteSpace(GrupKoduInput) || string.IsNullOrEmpty(AktifLobiId))
+            {
+                ModalHata = "Grup kodunu gir.";
+                return;
+            }
+
+            ModalHata = "";
+            ModalLoading = true;
+
+            try
+            {
+                await _lobbyService.UpdateGroupCodeAsync(AktifLobiId, GrupKoduInput.Trim().ToUpper());
+                AktifGrupKodu = GrupKoduInput.Trim().ToUpper();
+            }
+            catch (Exception ex)
+            {
+                ModalHata = ex.Message;
+            }
+            finally
+            {
+                ModalLoading = false;
+            }
+        }
+
+        // ─── GRUP KODU GİR (eski modal, yeni lobby oluştur) ───────────────────
+
+        private async Task LobiOlusturAsync()
+        {
+            if (State is "lobby_created" or "lobby_full")
+            {
+                ModalHata = "Zaten bir lobidesin.";
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(GrupKoduInput))
+            {
+                ModalHata = "Grup kodunu gir.";
+                return;
+            }
+
+            ModalLoading = true;
+            ModalHata = "";
+
+            try
+            {
+                // Eğer zorla lobby oluştur butonu ise (eski akış)
+                var id = await _lobbyService.LobiOlusturAsync(
+                    GrupKoduInput.Trim().ToUpper(),
+                    OyuncuAdi, OyuncuTag,
+                    HostElo, CurrentTier, RutbeAdi, CardUrl, Bolge,
+                    SeciliOyunModu, AranacakOyuncuSayisi);
+
+                AktifLobiId = id;
+                AktifGrupKodu = GrupKoduInput.Trim().ToUpper();
+                ModalAcik = false;
+
+                // Lobby'yi çek ve göster
+                var lobi = await _lobbyService.GetLobbyAsync(id);
+                if (lobi != null)
+                    LobiBulundu(lobi);
+                else
+                    State = "lobby_created";
+            }
+            catch (Exception ex)
+            {
+                ModalHata = ex.Message;
+            }
+            finally
+            {
+                ModalLoading = false;
+            }
+        }
+
+        // ─── Kodu Kopyala ──────────────────────────────────────────────────────
+
+        private async Task KoduKopyalaAsync()
+        {
+            if (string.IsNullOrEmpty(AktifGrupKodu)) return;
+            try
+            {
+                Clipboard.SetText(AktifGrupKodu);
+                KopyalaButonText = "Kopyalandı ✓";
+                Kopyalandi = true;
+                await Task.Delay(2000);
+                KopyalaButonText = "Kodu Kopyala";
+                Kopyalandi = false;
+            }
+            catch { }
+        }
+
+        // ─── Legacy: Eşleşme İptal ──────────────────────────────────────────────
 
         private async Task EslesmeyiIptalAsync()
         {
             _eslesmeCts?.Cancel();
+            _aramaCts?.Cancel();
 
             if (!string.IsNullOrEmpty(_localId))
                 await _lobbyService.QueueKaldirAsync(_localId);
@@ -341,12 +460,11 @@ namespace ValorantAutoClicker.ViewModels
             Sifirla();
         }
 
-        // ─── Oda Grup Kodu ──────────────────────────────────────────────────────
+        // ─── Legacy: Oda Grup Kodu ─────────────────────────────────────────────
 
         private async Task OdaGrupKoduKaydetAsync()
         {
             if (AktifOda == null || string.IsNullOrWhiteSpace(OdaGrupKoduInput)) return;
-
             try
             {
                 await _lobbyService.OdaGrupKoduGuncelleAsync(AktifOda.Id, OdaGrupKoduInput.Trim().ToUpper());
@@ -374,78 +492,74 @@ namespace ValorantAutoClicker.ViewModels
             catch { }
         }
 
-        // ─── Lobi Oluştur (mevcut) ──────────────────────────────────────────────
+        // ─── Legacy: Lobi Oluştur (eski) ───────────────────────────────────────
 
-        private async Task LobiOlusturAsync()
+        public async Task<string> LegacyLobiOlusturAsync(string grupKodu,
+            string gameMode = "5v5 Normal", int maxPlayers = 5)
         {
-            if (string.IsNullOrWhiteSpace(GrupKoduInput))
-            {
-                ModalHata = "Grup kodunu gir.";
-                return;
-            }
-
-            ModalLoading = true;
-            ModalHata = "";
-
-            try
-            {
-                var id = await _lobbyService.LobiOlusturAsync(
-                    GrupKoduInput.Trim().ToUpper(),
-                    OyuncuAdi, OyuncuTag,
-                    HostElo, CurrentTier, Bolge);
-
-                AktifLobiId = id;
-                AktifGrupKodu = GrupKoduInput.Trim().ToUpper();
-                ModalAcik = false;
-                State = "lobby_created";
-                StatusMessage = "Lobi oluşturuldu, maç bekleniyor...";
-            }
-            catch (Exception ex)
-            {
-                ModalHata = ex.Message;
-            }
-            finally
-            {
-                ModalLoading = false;
-            }
+            return await _lobbyService.LobiOlusturAsync(
+                grupKodu, OyuncuAdi, OyuncuTag, HostElo, CurrentTier, RutbeAdi, CardUrl, Bolge,
+                gameMode, maxPlayers);
         }
 
-        private async Task KoduKopyalaAsync()
+        // ─── Legacy: Oda Bulundu ───────────────────────────────────────────────
+
+        private void OdaBulundu(Oda oda)
         {
-            if (BulunanLobi == null) return;
-            try
+            AktifOda = oda;
+            OdaGrupKoduInput = "";
+            OdaGrupKoduGirildi = !string.IsNullOrEmpty(oda.GroupCode);
+
+            if (oda.Player1LocalId == _localId)
             {
-                Clipboard.SetText(BulunanLobi.GroupCode);
-                KopyalaButonText = "Kopyalandı ✓";
-                Kopyalandi = true;
-                await Task.Delay(2000);
-                KopyalaButonText = "Kodu Kopyala";
-                Kopyalandi = false;
+                RakipAdi = oda.Player2Name;
+                RakipTag = oda.Player2Tag;
+                RakipElo = oda.Player2Elo;
+                RakipTier = oda.Player2Tier;
+                RakipKartUrl = oda.Player2CardUrl ?? "";
             }
-            catch { }
+            else
+            {
+                RakipAdi = oda.Player1Name;
+                RakipTag = oda.Player1Tag;
+                RakipElo = oda.Player1Elo;
+                RakipTier = oda.Player1Tier;
+                RakipKartUrl = oda.Player1CardUrl ?? "";
+            }
+
+            if (!string.IsNullOrEmpty(RakipKartUrl))
+                _ = RakipKartGorselYukleAsync(RakipKartUrl);
+
+            State = "matched";
+            StatusMessage = "Rakip bulundu!";
         }
 
-        // ─── Sıfırla ──────────────────────────────────────────────────────────────
+        // ─── Sıfırla (sadece yerel state, Firebase'e dokunma) ────────────────
 
         public void Sifirla()
         {
             _eslesmeCts?.Cancel();
+            _aramaCts?.Cancel();
+
+            if (_lobbyDinleniyor)
+            {
+                _lobbyService.StopLobbyListener();
+                _lobbyDinleniyor = false;
+            }
+
             State = "idle";
             BulunanLobi = null;
             AktifOda = null;
+            AktifLobiId = "";
+            AktifGrupKodu = "";
             ErrorMessage = "";
             StatusMessage = "";
             Kopyalandi = false;
             KopyalaButonText = "Kodu Kopyala";
             OdaGrupKoduGirildi = false;
             OdaGrupKoduInput = "";
-
-            if (!string.IsNullOrEmpty(AktifLobiId))
-            {
-                _ = _lobbyService.LobiSilAsync(AktifLobiId);
-                AktifLobiId = "";
-                AktifGrupKodu = "";
-            }
+            LobiOyuncular = new List<LobbyPlayer>();
+            LobiOyuncuSayisi = 0;
         }
 
         private void OnLobilerGuncellendi(List<FirestoreLobi> lobiler)
@@ -476,6 +590,13 @@ namespace ValorantAutoClicker.ViewModels
                 _ = _lobbyService.OdaSilAsync(AktifOda.Id);
 
             _lobbyService.StopListening();
+
+            if (_lobbyDinleniyor)
+            {
+                _lobbyService.StopLobbyListener();
+                _lobbyDinleniyor = false;
+            }
+
             if (!string.IsNullOrEmpty(AktifLobiId))
                 _ = _lobbyService.LobiSilAsync(AktifLobiId);
         }
