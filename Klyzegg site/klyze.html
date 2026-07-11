@@ -13,13 +13,14 @@
 <!-- Referrer Policy -->
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <!-- Content Security Policy - Firebase için güncellenmiş -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://fonts.googleapis.com https://*.firebaseio.com https://apis.google.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: http:; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com wss://*.firebaseio.com https://accounts.google.com; frame-src 'self' https://*.firebaseio.com https://accounts.google.com https://*.firebaseapp.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self';"
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://fonts.googleapis.com https://*.firebaseio.com https://apis.google.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: http:; connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://www.gstatic.com wss://*.firebaseio.com https://accounts.google.com; frame-src 'self' https://*.firebaseio.com https://accounts.google.com https://*.firebaseapp.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self';"
 <!-- Permissions Policy -->
 <meta http-equiv="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), payment=()">
 
-<title>Klyze.gg — Oyuncular İçin En İyi Uygulama</title>
-<meta name="description" content="Valorant, CS:GO, Fortnite ve tüm oyunlar için premium oyun araçları. Ücretsiz indir.">
-<link rel="icon" type="image/png" href="klyzeee.png">
+<title>Klyze.gg — Profesyonel Valorant Analiz & Otomasyon Platformu</title>
+<meta name="description" content="Valorant için gelişmiş maç analizi, otomasyon modülleri, lobby sistemi ve Riot API entegrasyonu. Profesyonel oyuncuların tercihi.">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="shortcut icon" href="favicon.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -501,15 +502,21 @@ nav {
   align-self: flex-start;
   margin-top: 8px;
 }
-.hero-slogan {
-  font-family: var(--font-heading);
-  font-size: clamp(1.1rem, 3vw, 1.6rem);
-  color: var(--text-secondary);
-  font-weight: 400;
-  margin-bottom: 48px;
-  letter-spacing: 2px;
-  overflow: hidden;
-}
+    .hero-slogan {
+      font-family: var(--font-heading);
+      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      color: var(--text-secondary);
+      font-weight: 400;
+      margin-bottom: 24px;
+      letter-spacing: 2px;
+      overflow: hidden;
+    }
+    .hero-sub {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-bottom: 48px;
+      letter-spacing: 1px;
+    }
 .slogan-char {
   display: inline-block;
   opacity: 0;
@@ -1401,16 +1408,16 @@ footer {
   <div class="container">
     <div class="nav-inner">
       <a href="#" class="nav-logo">
-        <img src="klyzeee.png" alt="Klyze Logo" class="nav-logo-img">
+        <img src="klyzeee.png?v=2" alt="Klyze Logo" class="nav-logo-img">
       </a>
       <ul class="nav-links">
         <li><a href="#features">Özellikler</a></li>
-        <li><a href="#why">Neden Klyze?</a></li>
-        <li><a href="#howto">Nasıl Çalışır?</a></li>
+        <li><a href="#why">İstatistikler</a></li>
+        <li><a href="#howto">Kullanım</a></li>
         <li><a href="#reviews">Yorumlar</a></li>
         <li><a href="#community">Topluluk</a></li>
       </ul>
-      <a href="klyzesetup-3.2.1 (1).exe" class="nav-cta">İndir</a>
+      <a href="KlyzeSetup v3.11.0.exe" class="nav-cta" download>İndir v3.11.0</a>
       <div class="nav-profile" id="nav-profile">
         <div class="profile-link" id="profile-link">
           <div class="profile-avatar-small" id="profile-avatar">
@@ -1445,11 +1452,12 @@ footer {
   <div class="hero-content">
     <div class="hero-logo-wrap">
       <div class="hero-logo">KLYZE.GG</div>
-      <span class="hero-badge">v3.2.1</span>
+      <span class="hero-badge">v3.11.0</span>
     </div>
     <div class="hero-slogan" id="hero-slogan"></div>
+    <p class="hero-sub reveal" style="animation:fadeInDown 0.8s ease 1.4s both;">Maç analizi · Otomasyon · Lobby sistemi · Riot API</p>
     <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-      <a href="klyzesetup-3.2.1 (1).exe" class="btn-download" id="download-btn">
+      <a href="KlyzeSetup v3.11.0.exe" class="btn-download" id="download-btn" download>
         <svg class="btn-icon" viewBox="0 0 88 88" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="40" height="40" rx="4" fill="#00adef"/>
           <rect x="48" width="40" height="40" rx="4" fill="#00adef"/>
@@ -1465,7 +1473,7 @@ footer {
         <span class="download-count">🔥 <span id="download-counter">0</span> kişi indirdi</span>
         <span class="download-live">● <span id="live-counter">12</span> kişi şu anda indiriyor</span>
       </div>
-      <span class="btn-meta">Ücretsiz <span>•</span> <strong>100 MB</strong> <span>•</span> v3.2.1</span>
+      <span class="btn-meta">Ücretsiz <span>•</span> <strong>140 MB</strong> <span>•</span> v3.11.0</span>
     </div>
   </div>
 </section>
@@ -1474,69 +1482,99 @@ footer {
 <section id="features">
   <div class="container">
     <div class="features-header reveal">
-      <span class="section-tag">Özellikler</span>
-      <h2 class="section-title">Tüm Araçlar <span class="accent">Tek Yerde</span></h2>
-      <p class="section-sub">Premium oyun deneyimi için ihtiyaç duyduğunuz her şey, sıfır karmaşıklık.</p>
+      <span class="section-tag">Modüller</span>
+      <h2 class="section-title">Her Şey <span class="accent">Tek Platformda</span></h2>
+      <p class="section-sub">Analiz, otomasyon, lobby ve daha fazlası — Valorant için ihtiyacın olan her araç.</p>
     </div>
     <div class="features-grid">
       <div class="feature-card reveal-left" style="transition-delay:0.05s">
-        <span class="feature-icon">🎮</span>
-        <div class="feature-title">Valorant İçin Özel Özellikler</div>
-        <p class="feature-desc">Valorant için özel geliştirilmiş ajan kilitleme, crosshair editör, recoil kontrol ve otomatik tıklama sistemi.</p>
+        <span class="feature-icon">🏠</span>
+        <div class="feature-title">Ana Sayfa & Dashboard</div>
+        <p class="feature-desc">Valorant profilin — isim, rank ikonu, rütbe, RR, win rate, K/D, ACS, seviye. Modüllere büyük tıklanabilir kartlar ve canlı maç haritası, modu, takım rosterları, ajan ikonları ile önizleme.</p>
         <div class="feature-tags">
-          <span class="feature-tag">Ajan Kilitleme</span>
-          <span class="feature-tag">Crosshair Pro</span>
-          <span class="feature-tag">Recoil Control</span>
+          <span class="feature-tag">Profil Kartı</span>
+          <span class="feature-tag">Hızlı Başlangıç</span>
+          <span class="feature-tag">Canlı Maç</span>
         </div>
       </div>
       <div class="feature-card reveal" style="transition-delay:0.1s">
-        <span class="feature-icon">🌍</span>
-        <div class="feature-title">Tüm Oyunları Destekler</div>
-        <p class="feature-desc">Valorant, CS:GO, Fortnite, Apex Legends, League of Legends ve daha fazlası. Universal profil sistemi ile her oyunda kullanın.</p>
+        <span class="feature-icon">🔒</span>
+        <div class="feature-title">Oda Kilidi</div>
+        <p class="feature-desc">Otomatik ajan seçimi ile istediğin ajanı anında kilitle. Kısayol tuşu desteği ile tek tıkla aktifleştir, maça odaklan.</p>
         <div class="feature-tags">
-          <span class="feature-tag">15+ Oyun</span>
-          <span class="feature-tag">Universal</span>
-          <span class="feature-tag">Otomatik Algılama</span>
+          <span class="feature-tag">Ajan Seçimi</span>
+          <span class="feature-tag">Kısayol Tuşu</span>
+          <span class="feature-tag">Anında Aktif</span>
         </div>
       </div>
       <div class="feature-card reveal-right" style="transition-delay:0.15s">
         <span class="feature-icon">💤</span>
         <div class="feature-title">AFK Modu</div>
-        <p class="feature-desc">WASD kombinasyonları, zıplama ve koşma desteği ile oyunda AFK kalın, hesabınız aktif görünsün.</p>
+        <p class="feature-desc">Otomatik hareket, rastgele noktalarda gezinme, hız ve süre ayarı. Oyunda aktif görünmek için ideal.</p>
         <div class="feature-tags">
-          <span class="feature-tag">WASD Loop</span>
-          <span class="feature-tag">Jump</span>
-          <span class="feature-tag">Anti-AFK</span>
+          <span class="feature-tag">Otomatik Hareket</span>
+          <span class="feature-tag">Rastgele Nokta</span>
+          <span class="feature-tag">Hız/Süre Ayarı</span>
         </div>
       </div>
       <div class="feature-card reveal-left" style="transition-delay:0.2s">
         <span class="feature-icon">💬</span>
-        <div class="feature-title">Spam Sistemi</div>
-        <p class="feature-desc">Hotkey kontrollü yazı ve tıklama spam sistemi. Anında aktifleştir, anında durdur.</p>
+        <div class="feature-title">Spam & Fake Mikrofon</div>
+        <p class="feature-desc">Otomatik sohbet mesajı, özel metin spam, kısayol desteği. Fake mikrofon LED göstergesi ile sesli iletişim simülasyonu.</p>
         <div class="feature-tags">
-          <span class="feature-tag">Text Spam</span>
-          <span class="feature-tag">Click Spam</span>
-          <span class="feature-tag">Hotkey</span>
+          <span class="feature-tag">Sohbet Spam</span>
+          <span class="feature-tag">Özel Metin</span>
+          <span class="feature-tag">Fake Mikrofon</span>
         </div>
       </div>
       <div class="feature-card reveal" style="transition-delay:0.25s">
-        <span class="feature-icon">⌨️</span>
-        <div class="feature-title">Klavye Sesleri</div>
-        <p class="feature-desc">6 farklı mekanik switch tipi arasından seçim yapın. Her tuşa basışta gerçekçi ses simülasyonu.</p>
+        <span class="feature-icon">🎯</span>
+        <div class="feature-title">Crosshair & Zamanlayıcı</div>
+        <p class="feature-desc">Renk/çizgi/nokta/ölçek/opaklık ayarları, gerçek zamanlı önizleme, preset yönetimi. Geri sayım sayacı ile oyun içi zaman kontrolü.</p>
         <div class="feature-tags">
-          <span class="feature-tag">Cherry MX</span>
-          <span class="feature-tag">Gateron</span>
-          <span class="feature-tag">+4 Daha</span>
+          <span class="feature-tag">Crosshair Editör</span>
+          <span class="feature-tag">Preset Yönetimi</span>
+          <span class="feature-tag">Geri Sayım</span>
         </div>
       </div>
       <div class="feature-card reveal-right" style="transition-delay:0.3s">
-        <span class="feature-icon">⚙️</span>
-        <div class="feature-title">Sistem Entegrasyonu</div>
-        <p class="feature-desc">System tray'den yönet, global hotkey ile kontrol et, Windows başlangıcında otomatik çalıştır.</p>
+        <span class="feature-icon">🎮</span>
+        <div class="feature-title">Lobby Sistemi (Oyna)</div>
+        <p class="feature-desc">Genel lobileri listele, katıl, oluştur. Rank filtresi, max 5 oyuncu ve grup kodu sistemi ile takım arkadaşlarını bul.</p>
         <div class="feature-tags">
-          <span class="feature-tag">System Tray</span>
-          <span class="feature-tag">Autostart</span>
-          <span class="feature-tag">Global Keys</span>
+          <span class="feature-tag">Lobi Listeleme</span>
+          <span class="feature-tag">Rank Filtresi</span>
+          <span class="feature-tag">Grup Kodu</span>
+        </div>
+      </div>
+      <div class="feature-card reveal-left" style="transition-delay:0.35s">
+        <span class="feature-icon">📊</span>
+        <div class="feature-title">Maç Analizi & Geçmiş</div>
+        <p class="feature-desc">Riot ID ile oyuncu sorgulama, arama geçmişi. Maç sayısı, win rate, KDA, ADR, rank, RR özeti. Kaydırmalı liste, renk kodlu galibiyet/mağlubiyet. 10 oyuncu istatistiği, takım karşılaştırma, yarı skorları, highlight'lar. Mod/zaman/harita/sıralama filtreleri.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">Oyuncu Sorgulama</span>
+          <span class="feature-tag">Maç Geçmişi</span>
+          <span class="feature-tag">Filtreleme</span>
+        </div>
+      </div>
+      <div class="feature-card reveal" style="transition-delay:0.4s">
+        <span class="feature-icon">📈</span>
+        <div class="feature-title">Gelişmiş İstatistikler</div>
+        <p class="feature-desc">6 detay paneli: Win rate, ADR trend, KD ratio, HS%, First blood, ACS. RR/ELO değişim çizgi grafiği, rank atlama işaretçileri. Harita başına performans, aktivite ısı haritası, clutch başarısı (1v1-1v5) ve multi-kill (ace/4k/3k/2k) sayıları.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">RR/ELO Grafiği</span>
+          <span class="feature-tag">Aktivite Takvimi</span>
+          <span class="feature-tag">Clutch & Multi-kill</span>
+        </div>
+      </div>
+      <div class="feature-card reveal-right" style="transition-delay:0.45s">
+        <span class="feature-icon">🔌</span>
+        <div class="feature-title">Riot API & Ayarlar</div>
+        <p class="feature-desc">Riot ID ile hesap sorgulama, maç geçmişi ve detayı (10 oyuncu, round istatistikleri, ability cast), toplu istatistik hesaplama. API key DPAPI ile şifreli saklama. Açık/Koyu tema, Türkçe/İngilizce dil, cihaz seçimi. GitHub Releases ile otomatik güncelleme, Firebase RTDB bildirimleri.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">Riot ID</span>
+          <span class="feature-tag">Tema/Dil</span>
+          <span class="feature-tag">Otomatik Güncelleme</span>
         </div>
       </div>
     </div>
@@ -1549,29 +1587,30 @@ footer {
     <div class="why-inner">
       <div class="reveal">
         <span class="section-tag">Neden Klyze?</span>
-        <h2 class="section-title">Rakiplerden <span class="accent">Farkımız</span></h2>
+        <h2 class="section-title">Valorant İçin <span class="accent">Tek Adres</span></h2>
       </div>
       <div class="stats-row">
-        <div class="stat-item reveal" style="transition-delay:0.05s" data-target="10" data-suffix="+">
-          <div class="stat-number count-up" data-val="10" data-suffix="+">0+</div>
-          <div class="stat-label">⚡ Hızlı Performans</div>
+        <div class="stat-item reveal" style="transition-delay:0.05s">
+          <div class="stat-number count-up" data-val="15" data-suffix="+">0+</div>
+          <div class="stat-label">🎮 Oyun Desteği</div>
         </div>
         <div class="stat-item reveal" style="transition-delay:0.1s">
-          <div class="stat-number count-up" data-val="50" data-suffix="MB">0MB</div>
-          <div class="stat-label">💾 Çok Az Yer Kaplar</div>
+          <div class="stat-number count-up" data-val="12" data-suffix="">0</div>
+          <div class="stat-label">📊 Analiz Paneli</div>
         </div>
         <div class="stat-item reveal" style="transition-delay:0.15s">
-          <div class="stat-number count-up" data-val="2" data-suffix="%">0%</div>
-          <div class="stat-label">🔋 Çok Az CPU Kullanımı</div>
+          <div class="stat-number count-up" data-val="6" data-suffix="">0</div>
+          <div class="stat-label">⚙️ Otomasyon Modülü</div>
         </div>
         <div class="stat-item reveal" style="transition-delay:0.2s">
-          <div class="stat-number count-up" data-val="0" data-suffix="">0</div>
-          <div class="stat-label">🏆 Rakibimiz Yok</div>
+          <div class="stat-number count-up" data-val="100" data-suffix="%">0%</div>
+          <div class="stat-label">🔒 DPAPI Güvenlik</div>
         </div>
       </div>
       <p class="why-desc reveal">
-        Klyze.gg, optimize edilmiş kod yapısı ile minimum kaynak kullanır. Sadece 50MB disk alanı, %2 CPU kullanımı ile 
-        oyun performansınızı etkilemeden arka planda çalışır. Hızlı, hafif ve güçlü - rakipsiz bir deneyim.
+        Klyze.gg, Valorant oyuncuları için geliştirilmiş kapsamlı bir analiz ve otomasyon platformudur. 
+        Riot API entegrasyonu ile gerçek zamanlı maç verileri, gelişmiş istatistik panelleri, 
+        lobby sistemi ve otomasyon modülleri — tamamen ücretsiz.
       </p>
     </div>
   </div>
@@ -1581,33 +1620,33 @@ footer {
 <section id="howto">
   <div class="container">
     <div class="howto-header reveal">
-      <span class="section-tag">Kullanım</span>
-      <h2 class="section-title">3 Adımda <span class="accent">Hazır</span></h2>
-      <p class="section-sub">Karmaşık kurulum yok. Dakikalar içinde tam performansla çalışmaya başla.</p>
+      <span class="section-tag">Başlangıç</span>
+      <h2 class="section-title">Başlamak <span class="accent">Çok Kolay</span></h2>
+      <p class="section-sub">Dakikalar içinde kurulum, saniyeler içinde tam kontrol.</p>
     </div>
     <div class="timeline">
       <div class="timeline-step reveal" style="transition-delay:0.1s">
         <div class="step-circle">1</div>
         <div class="step-content">
           <div class="step-title">İndir & Kur</div>
-          <p class="step-desc">klyze-setup.exe dosyasını indirin ve çalıştırın. Kurulum sihirbazı sizi adım adım yönlendirir. Yönetici yetkisi gerekmez, antivirüs dostu.</p>
+          <p class="step-desc">Kurulum dosyasını indirip çalıştırın. Otomatik kurulum ile saniyeler içinde hazır. Yönetici yetkisi gerekmez.</p>
           <span class="step-badge">~30 saniye</span>
         </div>
       </div>
       <div class="timeline-step reveal" style="transition-delay:0.25s">
         <div class="step-circle">2</div>
         <div class="step-content">
-          <div class="step-title">Oyununu Seç</div>
-          <p class="step-desc">Arayüzden Valorant, CS:GO, Fortnite veya başka bir oyunu seçin. Her oyun için özel optimize edilmiş profiller otomatik yüklenir.</p>
-          <span class="step-badge">15+ Oyun Desteği</span>
+          <div class="step-title">Valorant Hesabını Bağla</div>
+          <p class="step-desc">Riot ID ile giriş yap, maç geçmişin ve istatistiklerin anında yüklensin. Tüm analiz panelleri ve lobby sistemi kullanıma hazır.</p>
+          <span class="step-badge">Riot API Entegrasyonu</span>
         </div>
       </div>
       <div class="timeline-step reveal" style="transition-delay:0.4s">
         <div class="step-circle">3</div>
         <div class="step-content">
-          <div class="step-title">Özelliği Aktifleştir</div>
-          <p class="step-desc">İstediğiniz özelliği bir hotkey ile anında aktifleştirin. System tray üzerinden her şeyi yönetin, oyununuza odaklanın.</p>
-          <span class="step-badge">Hotkey ile anında kontrol</span>
+          <div class="step-title">Keşfet & Kontrol Et</div>
+          <p class="step-desc">Ana sayfadan modüllere eriş, canlı maçını takip et, lobi oluştur, geçmiş maçlarını analiz et. Tüm özellikler tek tıkla erişilebilir.</p>
+          <span class="step-badge">Anında erişim</span>
         </div>
       </div>
     </div>
@@ -1662,9 +1701,9 @@ footer {
 <section id="community">
   <div class="container">
     <div class="community-header reveal">
-      <span class="section-tag">Bağlantı</span>
-      <h2 class="section-title">Topluluğa <span class="accent">Katıl</span></h2>
-      <p class="section-sub">En son güncellemeler, ipuçları ve topluluk için bizi takip edin.</p>
+      <span class="section-tag">Sosyal</span>
+      <h2 class="section-title">Bizi <span class="accent">Takip Et</span></h2>
+      <p class="section-sub">Güncellemeler, duyurular ve topluluk paylaşımları için bizi takipte kal.</p>
     </div>
     <div class="community-grid">
       <div class="community-card reveal-left" style="transition-delay:0.1s">
@@ -1695,19 +1734,19 @@ footer {
     <div class="footer-inner">
       <div class="footer-brand">
         <div class="brand-logo">
-          <img src="klyzeee.png" alt="Klyze Logo" class="footer-logo-img">
+          <img src="klyzeee.png?v=2" alt="Klyze Logo" class="footer-logo-img">
           KLYZE.GG
         </div>
-        <p>Oyuncular için, oyuncular tarafından yapılan premium araç seti. Ücretsiz, hızlı, güvenilir.</p>
+        <p>Valorant oyuncuları için geliştirilmiş premium analiz ve otomasyon platformu. Ücretsiz, hızlı, güvenilir.</p>
       </div>
       <div class="footer-col">
         <h4>Hızlı Erişim</h4>
         <ul>
-          <li><a href="#features">Özellikler</a></li>
-          <li><a href="#why">Neden Klyze?</a></li>
-          <li><a href="#howto">Nasıl Çalışır?</a></li>
+          <li><a href="#features">Modüller</a></li>
+          <li><a href="#why">İstatistikler</a></li>
+          <li><a href="#howto">Kullanım</a></li>
           <li><a href="#reviews">Yorumlar</a></li>
-          <li><a href="klyzesetup-3.2.1 (1).exe">İndir</a></li>
+          <li><a href="KlyzeSetup v3.11.0.exe" download>İndir v3.11.0</a></li>
         </ul>
       </div>
       <div class="footer-col">
@@ -1721,7 +1760,7 @@ footer {
       </div>
     </div>
     <div class="footer-bottom">
-      <span class="footer-copy">© 2025 Klyze Team. Tüm hakları saklıdır.</span>
+      <span class="footer-copy">© 2026 Klyze Team. Tüm hakları saklıdır.</span>
       <div class="footer-links">
         <a href="#">Gizlilik</a>
         <a href="#">Şartlar</a>
@@ -1737,23 +1776,7 @@ const state = {
   loggedIn: false,
   user: null,
   selectedStars: 0,
-  reviews: [
-    {
-      id: 1, name: 'AhmetG', initial: 'A', color: '#8B5CF6',
-      date: '28 Nis 2025', stars: 5, likes: 24, liked: false,
-      text: 'Valorant için recoil kontrol ve ajan kilitleme özellikleri harika. Artık çok daha iyi oynuyorum. Kurulumu 1 dakika sürdü, çok sade arayüz.'
-    },
-    {
-      id: 2, name: 'ZeynepK', initial: 'Z', color: '#06B6D4',
-      date: '15 Nis 2025', stars: 5, liked: false, likes: 17,
-      text: 'AFK modu kesinlikle hayat kurtarıcı. Minecraft\'ta madencilik yaparken kullanıyorum, performans hiç düşmüyor.'
-    },
-    {
-      id: 3, name: 'MuratB', initial: 'M', color: '#F59E0B',
-      date: '3 Nis 2025', stars: 4, likes: 9, liked: false,
-      text: 'Klavye sesleri özelliği çok eğlenceli, gerçekten mekanik klavye gibi hissettiriyor. Biraz daha ses çeşidi olsaydı 5 verirdim.'
-    }
-  ]
+  reviews: []
 };
 
 /* ─── Cursor ─────────────────────────────────────────────────────────────────── */
@@ -1784,7 +1807,7 @@ window.addEventListener('load', () => {
 
 /* ─── Slogan Letter Stagger ──────────────────────────────────────────────────── */
 function initSlogan() {
-  const slogan = 'Oyuncular İçin En İyi Uygulama';
+  const slogan = 'Profesyonel Valorant Analiz Platformu';
   const container = document.getElementById('hero-slogan');
   container.innerHTML = '';
   slogan.split('').forEach((ch, i) => {
@@ -1913,7 +1936,9 @@ document.addEventListener('mousemove', e => {
   // Firebase Realtime Database URL
   const FIREBASE_URL = 'https://klyzegg-default-rtdb.firebaseio.com/downloads.json';
   
-  let totalDownloads = 0;
+  const SEED_COUNT = 1427;
+  
+  let totalDownloads = parseInt(localStorage.getItem('klyze_backup')) || SEED_COUNT;
   let liveDownloaders = Math.floor(Math.random() * 8) + 8;
   let isLoading = false;
   
@@ -1931,17 +1956,26 @@ document.addEventListener('mousemove', e => {
       const response = await fetch(FIREBASE_URL);
       if (response.ok) {
         const data = await response.json();
-        totalDownloads = data?.count || 0;
-        console.log('✅ Firebase\'den yüklendi:', totalDownloads);
+        const fbCount = data?.count;
+        if (fbCount === undefined && data === null) {
+          saveToFirebase(SEED_COUNT);
+          totalDownloads = SEED_COUNT;
+          localStorage.setItem('klyze_backup', SEED_COUNT.toString());
+        } else {
+          const localBackup = parseInt(localStorage.getItem('klyze_backup')) || 0;
+          const best = Math.max(fbCount || 0, localBackup, totalDownloads);
+          totalDownloads = best;
+          localStorage.setItem('klyze_backup', best.toString());
+          if (fbCount < totalDownloads) {
+            saveToFirebase(totalDownloads);
+          }
+        }
       } else {
-        console.log('⚠️ Firebase ilk kez başlatılıyor');
-        totalDownloads = 0;
-        await saveToFirebase(0);
+        totalDownloads = parseInt(localStorage.getItem('klyze_backup')) || SEED_COUNT;
       }
     } catch (error) {
-      console.error('❌ Firebase bağlantı hatası:', error);
-      // Yedek: LocalStorage
-      totalDownloads = parseInt(localStorage.getItem('klyze_backup')) || 0;
+      // Firebase hatası: localStorage veya seed değerini kullan
+      totalDownloads = parseInt(localStorage.getItem('klyze_backup')) || SEED_COUNT;
     }
     
     isLoading = false;
@@ -2014,6 +2048,11 @@ document.addEventListener('mousemove', e => {
   
   // Her 30 saniyede Firebase'den güncelle (diğer kullanıcıların indirmelerini görmek için)
   setInterval(() => loadDownloads(), 30000);
+  
+  // Her 10 saniyede localStorage'a yedekle (Firebase düşse bile koru)
+  setInterval(() => {
+    localStorage.setItem('klyze_backup', totalDownloads.toString());
+  }, 10000);
 })();
 
 /* ─── Firebase Auth & Reviews System ─────────────────────────────────────────── */
@@ -2122,16 +2161,18 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   });
 });
 </script>
-</body>
-</html>
-
 
 <!-- Firebase SDK & Auth System -->
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-  import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-  import { getDatabase, ref, push, onValue, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
-
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"
+        integrity="sha384-4gq9w/AGf72FXdNQ3Kn3EqWP7633NbCMjpYHt8YCZyXf23o2opcuAr4cif41tLrC"
+        crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"
+        integrity="sha384-xtdq4MQqPj1dB5DQsuw9O7dh4kHhMP/Wp5u8O1jiaWiou13ZfJIgiccjtVK2pBhL"
+        crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"
+        integrity="sha384-5PDE6CZvnNIJI5xu68GIFoOO3U73lAnRLBwPBmmKjWnYnYwKEHWr/ghtGooEOXGb"
+        crossorigin="anonymous"></script>
+<script>
   // Firebase config
   const firebaseConfig = {
     apiKey: "AIzaSyDIVzy4-HXXseudNlzQttP7wlZlTyrZCdE",
@@ -2144,15 +2185,15 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     measurementId: "G-NDV7B3WJ3E"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const database = getDatabase(app);
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const database = firebase.database();
 
   // GÜVENLIK: CSRF Token Generator
   function generateCSRFToken() {
     const array = new Uint8Array(32);
     crypto.getRandomValues(array);
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    return Array.from(array, byte => byte.toString(16).padStart(2, 0)).join('');
   }
 
   // GÜVENLIK: CSRF Token Storage
@@ -2190,7 +2231,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
   // GÜVENLIK: Private değişkenler - console'dan erişilemez
   let _currentUser = null;
-  let _reviewsRef = ref(database, 'reviews');
+  let _reviewsRef = database.ref('reviews');
   let _allReviews = [];
   let _showingAll = false;
   
@@ -2207,7 +2248,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   const getAllReviews = () => [..._allReviews]; // Copy döndür
 
   // Kullanıcı durumunu dinle
-  onAuthStateChanged(auth, (user) => {
+  auth.onAuthStateChanged((user) => {
     _currentUser = user;
     console.log('Auth state changed:', user ? 'Logged in' : 'Logged out');
     updateProfileAvatar(user);
@@ -2284,7 +2325,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   // Yorumları yükle
   console.log('Firebase reviews listener başlatıldı');
   
-  onValue(_reviewsRef, (snapshot) => {
+  _reviewsRef.on('value', (snapshot) => {
     console.log('Firebase snapshot alındı:', snapshot.exists());
     const reviewsGrid = document.querySelector('.reviews-grid');
     const avgRatingEl = document.getElementById('avg-rating');
@@ -2471,7 +2512,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       csrfToken: _csrfToken // CSRF token ekle
     };
 
-    push(_reviewsRef, newReview).then(() => {
+    _reviewsRef.push(newReview).then(() => {
       _lastSubmitTime = Date.now(); // Rate limiting güncelle
       _csrfToken = generateCSRFToken(); // Yeni token oluştur
       sessionStorage.setItem('csrf_token', _csrfToken);
@@ -2532,9 +2573,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<script type="module">
-  import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-  
+<script>
   // Dropdown toggle
   const profileLink = document.querySelector('.profile-link');
   const profileDropdown = document.getElementById('profile-dropdown');
@@ -2554,8 +2593,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   // Logout functionality
   window.handleLogout = function() {
-    const auth = getAuth();
-    signOut(auth).then(() => {
+    firebase.auth().signOut().then(() => {
       profileDropdown.classList.remove('active');
       alert('Çıkış yapıldı!');
     }).catch((error) => {
@@ -2563,3 +2601,72 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   };
 </script>
+
+<script>
+// IP Tracking
+(function() {
+  fetch('/api/track?path=' + encodeURIComponent(window.location.pathname), {
+    method: 'POST'
+  }).catch(function() {});
+})();
+</script>
+
+<script>
+// Kill Switch kontrol
+(function() {
+  function killSwitchKontrol() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'https://klyzegg-default-rtdb.firebaseio.com/killswitch.json', true);
+    xhr.timeout = 5000;
+    xhr.onload = function() {
+      if (xhr.responseText.trim() === 'true') {
+        document.body.innerHTML = '';
+        document.title = 'Klyze.gg — Bakım Modu';
+        var style = document.createElement('style');
+        style.textContent = 'body{background:#0A0A0A;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;font-family:sans-serif}div{text-align:center}.icon{width:80px;height:80px;border-radius:50%;border:2px solid #ff3333;display:flex;align-items:center;justify-content:center;margin:0 auto 24px}.icon svg{width:40px;height:40px}h1{color:#ff3333;font-size:24px;margin-bottom:8px}p{color:#888;font-size:14px;max-width:300px;margin:0 auto;line-height:1.6}';
+        document.head.appendChild(style);
+        document.body.innerHTML = '<div><div class="shield"><svg viewBox="0 0 24 24" fill="none" stroke="#ff3333" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="12" y1="9" x2="12" y2="15"/></svg></div><h1>Site Bakımda</h1><p>Klyze.gg şu anda güvenlik nedeniyle geçici olarak kapatılmıştır. Lütfen daha sonra tekrar deneyin.</p></div>';
+      }
+    };
+    xhr.send();
+  }
+  killSwitchKontrol();
+  setInterval(killSwitchKontrol, 10000);
+})();
+</script>
+
+<script>
+(function(){
+  var api = '/api/security?path=' + encodeURIComponent(window.location.pathname);
+  var ok = 'https://klyzegg-default-rtdb.firebaseio.com';
+
+  var d = document.createElement('div');
+  d.innerHTML =
+    '<a href="/admin" style="display:none!important;position:fixed!important;left:-9999px!important">Admin</a>' +
+    '<a href="/wp-admin" style="display:none!important;position:fixed!important;left:-9999px!important">WP</a>' +
+    '<a href="/.env" style="display:none!important;position:fixed!important;left:-9999px!important">ENV</a>' +
+    '<a href="/backup.zip" style="display:none!important;position:fixed!important;left:-9999px!important">Backup</a>' +
+    '<a href="/wp-config.php" style="display:none!important;position:fixed!important;left:-9999px!important">Config</a>' +
+    '<a href="/.git/config" style="display:none!important;position:fixed!important;left:-9999px!important">Git</a>' +
+    '<a href="/phpmyadmin" style="display:none!important;position:fixed!important;left:-9999px!important">PMA</a>' +
+    '<a href="/shell.php" style="display:none!important;position:fixed!important;left:-9999px!important">Shell</a>' +
+    '<form id="hpForm" action="/api/security" method="POST" style="display:none!important;position:fixed!important;left:-9999px!important">' +
+    '<input type="text" name="username" value="admin"><input type="password" name="password" value="123456"><input type="submit"></form>' +
+    '<input type="text" id="hpField" name="website" style="display:none!important;position:fixed!important;left:-9999px!important">';
+  document.body.appendChild(d);
+
+  var hp = document.getElementById('hpField');
+  if (hp) {
+    Object.defineProperty(hp, 'value', {
+      set: function(v) {
+        if (v && v.length > 0) {
+          fetch(api, { method: 'POST', body: JSON.stringify({type:'honeypot_filled',detail:'Honeypot alani dolduruldu: '+v}), headers: {'Content-Type':'application/json'} }).catch(function(){});
+        }
+      }, configurable: true
+    });
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Profil - Klyze.gg</title>
-<link rel="icon" type="image/png" href="klyzeee.png">
+<link rel="icon" type="image/png" href="favicon.png?v=2">
+<link rel="shortcut icon" href="favicon.png?v=2">
 <link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -163,10 +164,13 @@ body {
 </div>
 
 <!-- Firebase SDK -->
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-  import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
-
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"
+        integrity="sha384-4gq9w/AGf72FXdNQ3Kn3EqWP7633NbCMjpYHt8YCZyXf23o2opcuAr4cif41tLrC"
+        crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"
+        integrity="sha384-xtdq4MQqPj1dB5DQsuw9O7dh4kHhMP/Wp5u8O1jiaWiou13ZfJIgiccjtVK2pBhL"
+        crossorigin="anonymous"></script>
+<script>
   // Firebase yapılandırması
   const firebaseConfig = {
     apiKey: "AIzaSyDIVzy4-HXXseudNlzQttP7wlZlTyrZCdE",
@@ -180,9 +184,9 @@ body {
   };
 
   // Firebase başlat
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const provider = new firebase.auth.GoogleAuthProvider();
 
   // DOM elementleri
   const loginSection = document.getElementById('login-section');
@@ -195,11 +199,10 @@ body {
   const userEmail = document.getElementById('user-email');
 
   // Kullanıcı durumunu dinle
-  onAuthStateChanged(auth, (user) => {
+  auth.onAuthStateChanged((user) => {
     loadingSection.style.display = 'none';
     
     if (user) {
-      // Kullanıcı giriş yapmış
       loginSection.style.display = 'none';
       profileSection.style.display = 'block';
       
@@ -207,42 +210,39 @@ body {
       userName.textContent = user.displayName || 'Kullanıcı';
       userEmail.textContent = user.email;
       
-      console.log('✅ Kullanıcı giriş yaptı:', user.email);
+      console.log('Kullanıcı giriş yaptı:', user.email);
     } else {
-      // Kullanıcı çıkış yapmış
       loginSection.style.display = 'block';
       profileSection.style.display = 'none';
       
-      console.log('❌ Kullanıcı çıkış yaptı');
+      console.log('Kullanıcı çıkış yaptı');
     }
   });
 
-  // Google ile giriş
-  googleLoginBtn.addEventListener('click', async () => {
-    try {
-      loadingSection.style.display = 'block';
-      loginSection.style.display = 'none';
-      
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-      
-      console.log('✅ Giriş başarılı:', user.email);
-    } catch (error) {
-      console.error('❌ Giriş hatası:', error);
-      alert('Giriş yapılamadı: ' + error.message);
-      
-      loadingSection.style.display = 'none';
-      loginSection.style.display = 'block';
-    }
+  // Google ile giriş (popup)
+  googleLoginBtn.addEventListener('click', function() {
+    loadingSection.style.display = 'block';
+    loginSection.style.display = 'none';
+    
+    auth.signInWithPopup(provider)
+      .then((result) => {
+        console.log('Giriş başarılı:', result.user.email);
+      })
+      .catch((error) => {
+        console.error('Giriş hatası:', error);
+        alert('Giriş yapılamadı: ' + error.message);
+        loadingSection.style.display = 'none';
+        loginSection.style.display = 'block';
+      });
   });
 
   // Çıkış yap
   logoutBtn.addEventListener('click', async () => {
     try {
-      await signOut(auth);
-      console.log('✅ Çıkış yapıldı');
+      await auth.signOut();
+      console.log('Çıkış yapıldı');
     } catch (error) {
-      console.error('❌ Çıkış hatası:', error);
+      console.error('Çıkış hatası:', error);
       alert('Çıkış yapılamadı: ' + error.message);
     }
   });

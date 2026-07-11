@@ -1,0 +1,13 @@
+{
+  "outputDirectory": "build/web",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ],
+  "functions": {
+    "api/track.js": {
+      "memory": 128,
+      "maxDuration": 10
+    }
+  }
+}

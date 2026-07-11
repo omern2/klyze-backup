@@ -1,0 +1,3 @@
+Temel Valorant terimleri:
+Peek = köşeden çıkma. Jiggle = hızlı bakma. Wide swing = geniş açı. Trade = takas. Clutch = 1vX kazanma. Eco = ekonomik round. Force = zorlama. Default = alan kontrolü. Execute = planlı hücum. Retake = geri alma. Crossfire = çapraz ateş. Lineup = sabit atış açısı. Wallbang = duvar delme. OWP = One Way Smoke (tek yönlü sis). Off-angle = beklenmedik açı. Shoulder peek = omuz gösterme. Burst = 2-3 mermilik atış. Spray = full şarjör. Repeek = tekrar çıkma. Lurk = gizlenme. Anchor = bölge savunucusu. Rotate = bölge değiştirme. Stagger = aralıklı girme. Timing = zamanlama.
+Ajan roller: Duelist (girici), Initiator (bilgi), Controller (sis), Sentinel (savunma).

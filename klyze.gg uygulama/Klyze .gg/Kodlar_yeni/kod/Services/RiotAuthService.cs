@@ -26,22 +26,22 @@ namespace ValorantAutoClicker.Services
     public class RiotAuthService : IDisposable
     {
         // ─── Riot RSO Ayarları ───────────────────────────────────────────────────
-        // Riot'un public third-party client_id'si (Riot Games tarafından açık bırakılmış)
         private const string ClientId    = "riot-client";
-        private const string RedirectUri = "http://localhost:3000/callback";
+        private static string RedirectUri => Helpers.StringObfuscator.Decode(
+            "oLy8uPLn56Snq6mkoKe7vPL7+Pj456uppKSqqauj", 0xC8);
         private const int    ListenPort  = 3000;
 
-        // Riot RSO endpoint
-        private const string AuthUrl =
-            "https://auth.riotgames.com/authorize" +
+        private static string AuthUrl =>
+            Helpers.StringObfuscator.Decode(
+                "oLy8uLvy5+epvbyg5rqhp7yvqaWtu+arp6Xnqb28oKe6obKt", 0xC8) +
             "?client_id=riot-client" +
             "&redirect_uri=http%3A%2F%2Flocalhost%3A3000%2Fcallback" +
             "&response_type=token" +
             "&scope=openid%20offline_access" +
             "&nonce=klyze_nonce";
 
-        // Riot Account API
-        private const string AccountApiUrl = "https://europe.api.riotgames.com/riot/account/v1/accounts/me";
+        private static string AccountApiUrl => Helpers.StringObfuscator.Decode(
+            "oLy8uLvy5+etvbqnuK3mqbih5rqhp7yvqaWtu+arp6XnuqGnvOepq6unvaa8577556mrq6e9pry756Wt", 0xC8);
 
         private readonly HenrikApiService _henrikApi;
         private readonly HttpClient       _http;

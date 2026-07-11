@@ -90,10 +90,13 @@ namespace ValorantAutoClicker
                 switch (args.PropertyName)
                 {
                     case nameof(VM.UpdateAvailable):
-                        if (VM.UpdateAvailable)
-                            BaslatPulseAnimasyonu();
-                        else
-                            DurdurPulseAnimasyonu();
+                        Dispatcher.Invoke(() =>
+                        {
+                            if (VM.UpdateAvailable)
+                                BaslatPulseAnimasyonu();
+                            else
+                                DurdurPulseAnimasyonu();
+                        });
                         break;
                     case nameof(VM.DownloadProgress):
                         Dispatcher.Invoke(() =>

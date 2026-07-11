@@ -61,7 +61,7 @@ namespace ValorantAutoClicker.Services
         {
             try
             {
-                var url = $"{_accountApiBaseUrl}/by-riot-id/{gameName}/{tagLine}";
+                var url = $"{_accountApiBaseUrl}/by-riot-id/{Uri.EscapeDataString(gameName)}/{Uri.EscapeDataString(tagLine)}";
                 var response = await _httpClient.GetAsync(url);
 
                 if (!response.IsSuccessStatusCode)

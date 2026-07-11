@@ -1,3 +1,0 @@
-OLUSTURULDU 29.05.2026 23:51:45
-lockfile: C:\Users\omery\AppData\Local\Riot Games\Riot Client\Config\lockfile
-var: True

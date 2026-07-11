@@ -8,13 +8,18 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ValorantAutoClicker.Helpers;
 using ValorantAutoClicker.Models;
 
 namespace ValorantAutoClicker.Services
 {
     public class AnalizService : IDisposable
     {
-        private const string BaseUrl = "https://api.henrikdev.xyz";
+        private static string BaseUrl => Helpers.StringObfuscator.Decode(
+            "rbGxtbb/6uqktazrraCrt6yuoaCz6728vw==", 0xC5);
+
+        private static string AuthHeader => Helpers.StringObfuscator.Decode(
+            "uY2MkJeKkYKZjJGXlg==", 0xF8);
 
         private readonly HttpClient _http;
         private readonly RiotLiveMatchService _riotLiveMatch;
@@ -23,9 +28,10 @@ namespace ValorantAutoClicker.Services
         {
             _http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
             if (!string.IsNullOrEmpty(ApiKeyProvider.HenrikDevKey))
-                _http.DefaultRequestHeaders.Add("Authorization", ApiKeyProvider.HenrikDevKey);
+                _http.DefaultRequestHeaders.Add(AuthHeader, ApiKeyProvider.HenrikDevKey);
             _http.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
+                new MediaTypeWithQualityHeaderValue(
+                    Helpers.StringObfuscator.Decode("mYiIlJGbmYyRl5bXkouXlg==", 0xF8)));
             _riotLiveMatch = new RiotLiveMatchService();
         }
 
@@ -82,9 +88,9 @@ namespace ValorantAutoClicker.Services
         {
             get
             {
-                var exeDir = Path.GetDirectoryName(
-                    System.Reflection.Assembly.GetExecutingAssembly().Location) ?? ".";
-                return Path.Combine(exeDir, "data");
+                return Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Klyze", "data");
             }
         }
 
@@ -104,7 +110,7 @@ namespace ValorantAutoClicker.Services
                 var path = MatchCachePath(name, tag);
                 if (!File.Exists(path)) return new List<AnalizMac>();
                 var json = File.ReadAllText(path);
-                return JsonConvert.DeserializeObject<List<AnalizMac>>(json)
+                return SafeJson.Deserialize<List<AnalizMac>>(json)
                        ?? new List<AnalizMac>();
             }
             catch { return new List<AnalizMac>(); }
@@ -131,7 +137,7 @@ namespace ValorantAutoClicker.Services
                 var path = MmrCachePath(name, tag);
                 if (!File.Exists(path)) return new List<EloGrafikNokta>();
                 var json = File.ReadAllText(path);
-                return JsonConvert.DeserializeObject<List<EloGrafikNokta>>(json)
+                return SafeJson.Deserialize<List<EloGrafikNokta>>(json)
                        ?? new List<EloGrafikNokta>();
             }
             catch { return new List<EloGrafikNokta>(); }
@@ -153,7 +159,7 @@ namespace ValorantAutoClicker.Services
 
         public async Task<List<AnalizMac>> GetTumMacGecmisiCachedAsync(
             string region, string name, string tag,
-            CancellationToken ct = default, int maxPages = 100)
+            CancellationToken ct = default, int maxPages = 20)
         {
             // 12 ay öncesinin unix timestamp'i
             long kesmeZaman = new DateTimeOffset(
@@ -196,7 +202,7 @@ namespace ValorantAutoClicker.Services
 
                 // 1000ms bekle (60 req/dk'yı aşmamak için)
                 try { await Task.Delay(1000, ct); }
-                catch (OperationCanceledException) { break; }
+                catch { break; }
 
                 var sayfa = await SayfaGetirGuvenliAsync(region, name, tag, page, ct);
                 if (sayfa == null || sayfa.Count == 0) break;
@@ -241,9 +247,9 @@ namespace ValorantAutoClicker.Services
                         region, name, tag, page, ct);
                     return sayfa;
                 }
-                catch (Exception ex) when (ex.Message.Contains("429") || ex.Message.Contains("Çok fazla"))
+                catch
                 {
-                    if (deneme >= 2) return new List<AnalizMac>(); // 3 deneme başarısız
+                    if (deneme >= 2) return new List<AnalizMac>();
                     try { await Task.Delay(5000, ct); } catch { break; }
                 }
             }
@@ -579,6 +585,18 @@ namespace ValorantAutoClicker.Services
             catch
             {
                 return null;
+            }
+        }
+
+        public async Task<bool> CheckInMatchAsync(string region, CancellationToken ct = default)
+        {
+            try
+            {
+                return await _riotLiveMatch.CheckInMatchAsync(region, ct);
+            }
+            catch
+            {
+                return false;
             }
         }
 
@@ -1314,10 +1332,39 @@ namespace ValorantAutoClicker.Services
 
         // ─── HTTP ───────────────────────────────────────────────────────────────
 
+        private static long _lastApiKeyAttemptTicks;
+        private async Task EnsureApiKeyLoadedAsync(CancellationToken ct)
+        {
+            if (_http.DefaultRequestHeaders.Contains(AuthHeader)) return;
+            if (!string.IsNullOrEmpty(ApiKeyProvider.HenrikDevKey))
+            {
+                _http.DefaultRequestHeaders.Add(AuthHeader, ApiKeyProvider.HenrikDevKey);
+                return;
+            }
+
+            var onceki = Interlocked.Read(ref _lastApiKeyAttemptTicks);
+            var simdi = DateTime.UtcNow.Ticks;
+            if (onceki > 0 && new TimeSpan(simdi - onceki).TotalSeconds < 30)
+                throw new Exception("API anahtarı yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.");
+
+            Interlocked.Exchange(ref _lastApiKeyAttemptTicks, simdi);
+
+            for (int i = 0; i < 20; i++)
+            {
+                try { await Task.Delay(500, ct); } catch { break; }
+                if (!string.IsNullOrEmpty(ApiKeyProvider.HenrikDevKey))
+                {
+                    _http.DefaultRequestHeaders.Add(AuthHeader, ApiKeyProvider.HenrikDevKey);
+                    return;
+                }
+            }
+
+            throw new Exception("API anahtarı yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.");
+        }
+
         private async Task<JObject> GetJsonAsync(string url, CancellationToken ct)
         {
-            if (!_http.DefaultRequestHeaders.Contains("Authorization") && !string.IsNullOrEmpty(ApiKeyProvider.HenrikDevKey))
-                _http.DefaultRequestHeaders.Add("Authorization", ApiKeyProvider.HenrikDevKey);
+            await EnsureApiKeyLoadedAsync(ct);
 
             HttpResponseMessage resp;
             try
@@ -1333,14 +1380,14 @@ namespace ValorantAutoClicker.Services
 
             if (!resp.IsSuccessStatusCode)
             {
-                switch ((int)resp.StatusCode)
-                {
-                    case 404: throw new Exception("Hesap bulunamadı veya maç geçmişi yok.");
-                    case 429: throw new Exception("Çok fazla istek. Lütfen bekleyin.");
-                    case 401:
-                    case 403: throw new Exception("API anahtarı geçersiz.");
-                    default:  throw new Exception($"API hatası ({(int)resp.StatusCode}).");
-                }
+                var logDir = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Klyze");
+                System.IO.Directory.CreateDirectory(logDir);
+                System.IO.File.AppendAllText(System.IO.Path.Combine(logDir, "error.log"),
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] API HATASI [{resp.StatusCode}] {url}: {body}\n");
+
+                return new JObject { ["status"] = (int)resp.StatusCode };
             }
 
             return JObject.Parse(body);
@@ -1377,7 +1424,8 @@ namespace ValorantAutoClicker.Services
             var root = await GetJsonAsync(url, ct);
 
             var data = root["data"];
-            if (data == null) throw new Exception("Maç detayı bulunamadı.");
+            if (data == null)
+                throw new Exception($"Maç detayı bulunamadı (matchId: {matchId}).");
 
             var meta = data["metadata"];
             var players = data["players"];

@@ -11,6 +11,7 @@ namespace ValorantAutoClicker
     {
         public static MainViewModel MainVM { get; private set; }
         public static FirebaseService Firebase { get; private set; }
+        public static GoogleAuthService GoogleAuth { get; private set; }
         private static System.Threading.Timer _firebaseTimer;
         private static ILogger _appLogger;
         private static string _sonGuncellemeVersiyonu = "";
@@ -96,6 +97,13 @@ namespace ValorantAutoClicker
 
                 // API key'lerini yükle
                 await ApiKeyProvider.LoadFromFirebaseAsync(Firebase);
+
+                // Google OAuth credentials'ları yükle
+                GoogleAuth = new GoogleAuthService();
+                await GoogleAuth.LoadCredentialsFromFirebaseAsync(Firebase);
+
+                // LoginVM'e GoogleAuth'u enjekte et (UI thread'de)
+                Dispatcher.Invoke(() => MainVM?.LoginVM?.SetGoogleAuth(GoogleAuth));
 
                 // Güncelleme kontrolü
                 await GuncellemeKontrolEtAsync();

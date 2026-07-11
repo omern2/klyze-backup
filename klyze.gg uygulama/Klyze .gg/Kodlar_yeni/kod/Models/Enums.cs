@@ -13,7 +13,8 @@ namespace ValorantAutoClicker.Models
         Settings,
         Support,
         Info,
-        Timer
+        Timer,
+        KlyzeAi
     }
 
     public enum Language

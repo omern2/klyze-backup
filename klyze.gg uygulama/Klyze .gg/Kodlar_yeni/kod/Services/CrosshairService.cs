@@ -4,13 +4,16 @@ using System.IO;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using ValorantAutoClicker.Helpers;
 using ValorantAutoClicker.Models;
 
 namespace ValorantAutoClicker.Services
 {
     public class CrosshairService
     {
-        private const string PROFILES_FILE = "crosshair_profiles.json";
+        private static readonly string PROFILES_FILE = System.IO.Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Klyze", "crosshair_profiles.json");
         private readonly Microsoft.Extensions.Logging.ILogger<CrosshairService> _logger;
 
         public Dictionary<string, CrosshairSettings> Profiles { get; } = new();
@@ -31,7 +34,7 @@ namespace ValorantAutoClicker.Services
                 }
 
                 var json = File.ReadAllText(PROFILES_FILE);
-                var loaded = JsonConvert.DeserializeObject<Dictionary<string, CrosshairSettings>>(json);
+                var loaded = SafeJson.Deserialize<Dictionary<string, CrosshairSettings>>(json);
                 if (loaded != null)
                 {
                     Profiles.Clear();
@@ -50,7 +53,10 @@ namespace ValorantAutoClicker.Services
         {
             try
             {
-                var json = JsonConvert.SerializeObject(Profiles, Formatting.Indented);
+                var dir = System.IO.Path.GetDirectoryName(PROFILES_FILE);
+                if (!string.IsNullOrEmpty(dir))
+                    System.IO.Directory.CreateDirectory(dir);
+                var json = SafeJson.Serialize(Profiles, Formatting.Indented);
                 File.WriteAllText(PROFILES_FILE, json);
                 _logger.LogInformation("{Count} crosshair profiles saved.", Profiles.Count);
             }

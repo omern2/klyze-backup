@@ -97,6 +97,92 @@ namespace ValorantAutoClicker.Services
             _localId = null;
             return false;
         }
+
+        // ─── Google OAuth ────────────────────────────────────────────────────────
+
+        public async Task<GoogleOAuthCredentials> GetGoogleOAuthCredentialsAsync()
+        {
+            try
+            {
+                var url = $"{RtdbUrl}/config/googleOAuth.json{Auth()}";
+                var resp = await _http.GetAsync(url);
+                if (!resp.IsSuccessStatusCode) return null;
+                var json = await resp.Content.ReadAsStringAsync();
+                if (json == "null") return null;
+                return SafeJson.Deserialize<GoogleOAuthCredentials>(json);
+            }
+            catch { return null; }
+        }
+
+        /// <summary>
+        /// Firebase signInWithIdp — Google ID token ile Firebase'e giriş yapar.
+        /// </summary>
+        public async Task<(string idToken, string localId, bool isNewUser)> GoogleSignInAsync(string googleIdToken)
+        {
+            try
+            {
+                var postBody = $"id_token={Uri.EscapeDataString(googleIdToken)}&providerId=google.com";
+                var body = JsonConvert.SerializeObject(new
+                {
+                    requestUri = "http://localhost",
+                    returnSecureToken = true,
+                    postBody = postBody
+                });
+
+                var resp = await _http.PostAsync(
+                    $"{Helpers.StringObfuscator.Decode("3MDAxMeOm5vd0NHawN3AzcDb29jf3cCa09vb09jR1cTdx5rX29mbwoWb1dfX28HawMeOx93T2uHEi9/RzYk=", 0xB4)}{ApiKey}",
+                    new StringContent(body, Encoding.UTF8, "application/json"));
+
+                if (!resp.IsSuccessStatusCode) return (null, null, false);
+
+                var json = JObject.Parse(await resp.Content.ReadAsStringAsync());
+                var idToken = json["idToken"]?.ToString();
+                var localId = json["localId"]?.ToString();
+                var isNewUser = json["isNewUser"]?.ToObject<bool>() ?? false;
+
+                // Firebase auth state'ini güncelle
+                if (!string.IsNullOrEmpty(idToken))
+                {
+                    _idToken = idToken;
+                    _localId = localId;
+                }
+
+                return (idToken, localId, isNewUser);
+            }
+            catch { return (null, null, false); }
+        }
+
+        /// <summary>
+        /// Kullanıcı profilini Firebase RTDB'ye kaydeder (/users/{uid}/).
+        /// </summary>
+        public async Task<bool> SaveUserProfileAsync(string uid, object profile)
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(profile);
+                var url = $"{RtdbUrl}/users/{uid}.json{Auth()}";
+                var resp = await _http.PutAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+                return resp.IsSuccessStatusCode;
+            }
+            catch { return false; }
+        }
+
+        /// <summary>
+        /// Kullanıcı profilini Firebase RTDB'den okur.
+        /// </summary>
+        public async Task<string> GetUserProfileAsync(string uid)
+        {
+            try
+            {
+                var url = $"{RtdbUrl}/users/{uid}.json{Auth()}";
+                var resp = await _http.GetAsync(url);
+                if (!resp.IsSuccessStatusCode) return null;
+                var json = await resp.Content.ReadAsStringAsync();
+                return json == "null" ? null : json;
+            }
+            catch { return null; }
+        }
+
         // ─── Config (API keys stored here) ──────────────────────────────────────
 
         public async Task<FirebaseConfig> GetConfigAsync()
@@ -528,7 +614,7 @@ namespace ValorantAutoClicker.Services
             catch { return false; }
         }
 
-        public async Task<AppVersionDoc> GuncellemeKontrolFirestoreAsync()
+        public async Task<AppGuncelleme> GuncellemeKontrolFirestoreAsync()
         {
             try
             {
@@ -537,9 +623,16 @@ namespace ValorantAutoClicker.Services
                 if (!resp.IsSuccessStatusCode) return null;
                 var json = await resp.Content.ReadAsStringAsync();
                 if (json == "null") return null;
-                return SafeJson.Deserialize<AppVersionDoc>(json);
+                return SafeJson.Deserialize<AppGuncelleme>(json);
             }
             catch { return null; }
+        }
+
+        /// <summary>Firebase auth state'ini güncelle (Google giriş sonrası çağrılır).</summary>
+        public void SetAuthState(string idToken, string localId)
+        {
+            _idToken = idToken;
+            _localId = localId;
         }
 
         public async Task<bool> DownloadUpdateZipAsync(string downloadUrl, string destPath, IProgress<int> progress)
@@ -547,25 +640,55 @@ namespace ValorantAutoClicker.Services
             try
             {
                 if (string.IsNullOrEmpty(downloadUrl)) return false;
-                using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(5));
-                using var resp = await _http.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead, cts.Token);
+                using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(10));
+                using var dlHttp = new HttpClient { Timeout = TimeSpan.FromMinutes(10) };
+                using var resp = await dlHttp.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead, cts.Token);
                 if (!resp.IsSuccessStatusCode) return false;
 
-                var totalBytes = resp.Content.Headers.ContentLength ?? -1L;
-                using var contentStream = await resp.Content.ReadAsStreamAsync();
-                using var fileStream = new System.IO.FileStream(destPath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None);
+                // Detect JSON (Base64) vs binary by checking first byte
+                var bodyStream = await resp.Content.ReadAsStreamAsync();
+                var header = new byte[4];
+                int headerLen = await bodyStream.ReadAsync(header, 0, 4);
 
-                var buffer = new byte[8192];
-                long totalRead = 0;
-                int bytesRead;
-
-                while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                if (headerLen > 0 && header[0] == '{')
                 {
-                    await fileStream.WriteAsync(buffer, 0, bytesRead);
-                    totalRead += bytesRead;
-                    if (totalBytes > 0 && progress != null)
+                    // JSON response — Firebase RTDB / GitHub JSON asset with Base64
+                    byte[] fullBody;
+                    using (var memStream = new System.IO.MemoryStream())
                     {
-                        progress.Report((int)((totalRead * 100) / totalBytes));
+                        memStream.Write(header, 0, headerLen);
+                        await bodyStream.CopyToAsync(memStream);
+                        fullBody = memStream.ToArray();
+                    }
+                    var json = System.Text.Encoding.UTF8.GetString(fullBody);
+                    if (json == "null" || json.Length < 100) return false;
+                    var obj = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                    var base64 = obj?.Values.FirstOrDefault();
+                    if (string.IsNullOrEmpty(base64)) return false;
+                    var bytes = Convert.FromBase64String(base64);
+                    await System.IO.File.WriteAllBytesAsync(destPath, bytes);
+                    if (progress != null) progress.Report(100);
+                }
+                else
+                {
+                    // Binary stream — ZIP or EXE
+                    var totalBytes = resp.Content.Headers.ContentLength ?? -1L;
+                    using var fileStream = new System.IO.FileStream(destPath, System.IO.FileMode.Create, System.IO.FileAccess.Write, System.IO.FileShare.None);
+
+                    // Write the header bytes we already read
+                    await fileStream.WriteAsync(header, 0, headerLen);
+                    long totalRead = headerLen;
+
+                    var buffer = new byte[8192];
+                    int bytesRead;
+                    while ((bytesRead = await bodyStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                    {
+                        await fileStream.WriteAsync(buffer, 0, bytesRead);
+                        totalRead += bytesRead;
+                        if (totalBytes > 0 && progress != null)
+                        {
+                            progress.Report((int)((totalRead * 100) / totalBytes));
+                        }
                     }
                 }
                 return true;
@@ -587,13 +710,15 @@ namespace ValorantAutoClicker.Services
         public string RtdbUrl { get; set; } = Helpers.StringObfuscator.Decode("y9fX09CZjIzIz9rZxsTEjsfGxcLWz9eO0dfHwY3FytHGwcLQxsrMjcDMzg==", 0xA3);
     }
 
-    // ─── App Version Document (Firestore app_version/current) ─────────────────────
-    public class AppVersionDoc
+    // ─── Güncelleme Modeli (Firebase RTDB /updates/latest.json) ────────────────────
+    public class AppGuncelleme
     {
-        public string version { get; set; } = "";
-        public string downloadUrl { get; set; } = "";
-        public string releaseNotes { get; set; } = "";
-        public long releasedAt { get; set; }
+        public string Version { get; set; } = "";
+        public string Title { get; set; } = "";
+        public string Notes { get; set; } = "";
+        public long Date { get; set; }
+        public string DosyaUrl { get; set; } = "";
+        public string DirectUrl { get; set; } = "";
     }
 
     // ─── Bildirim Modeli (UI için) ─────────────────────────────────────────────
@@ -606,7 +731,7 @@ namespace ValorantAutoClicker.Services
         public bool Okundu { get; set; }
         public bool Aktif { get; set; }
         public BildirimTipi Tip { get; set; } = BildirimTipi.Bilgi;
-        public AppVersionDoc Guncelleme { get; set; }
+        public AppGuncelleme Guncelleme { get; set; }
     }
 
     public enum BildirimTipi

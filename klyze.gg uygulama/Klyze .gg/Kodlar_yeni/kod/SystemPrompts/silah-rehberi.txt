@@ -1,0 +1,19 @@
+Silah seçimi ve mekanik notları:
+- Classic: bedava, yakında sağ tık burst + zıpla, uzakta poppin swing.
+- Shorty: yakın pusu, smoke içi, Vandal/Operatör yanına.
+- Frenzy: yakın run&gun, uzakta çöp.
+- Ghost: geniş açı + AD strafe, panik yapma.
+- Sheriff: mini-OP, gövdeye 2 mermi, uzak açı tut.
+- Stinger: en iyi run&gun, asla durma.
+- Spectre: sadece eco round, full buy'da alma.
+- Bucky: zıplayarak at, sağ tık nerf yedi (kullanma).
+- Judge: yakın pusu, AD hareket et.
+- Bulldog: ADS burst, orta-uzak mesafe.
+- Guardian: tek tık, uzak menzil, yakında kötü.
+- Phantom: 30 mermi, tracer yok, smoke içini tara.
+- Vandal: tek mermi silahıdır. Sprey atma. Movement her şeydir.
+- Marshal: hızlı, ucuz, kafa kasma seri at.
+- Outlaw: yarım kalkan infazcısı.
+- Operator: psikolojik baskı. Her round aynı yerde bekleme.
+- Ares: duvar arkası tara, eğilerek sprey at.
+- Odin: off-angle, wallbang noktaları, spreyi kesme.

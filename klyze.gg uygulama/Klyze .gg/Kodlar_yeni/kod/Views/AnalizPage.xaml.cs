@@ -379,13 +379,6 @@ namespace ValorantAutoClicker.Views
         private void OnHaritaGrafikCizilecek()
             => Dispatcher.Invoke(() => DrawHaritaRadarGrafik());
 
-        private void MacDetayBackdrop_PreviewMouseWheel(object sender, System.Windows.Input.MouseWheelEventArgs e)
-        {
-            var sv = MacDetayScroll;
-            sv.ScrollToVerticalOffset(sv.VerticalOffset - e.Delta);
-            e.Handled = true;
-        }
-
         private void MacGecmisiScroll_ScrollChanged(object sender, System.Windows.Controls.ScrollChangedEventArgs e)
         {
             if (sender is System.Windows.Controls.ScrollViewer sv && VM != null)
@@ -2101,8 +2094,18 @@ namespace ValorantAutoClicker.Views
                 MacDetayBackdrop.BeginAnimation(UIElement.OpacityProperty,
                     new DoubleAnimation(0, 1, new Duration(TimeSpan.FromMilliseconds(150))) { EasingFunction = ease });
 
-                MacDetayBackdrop.ClearValue(FrameworkElement.HeightProperty);
-                MacDetayScroll.ClearValue(FrameworkElement.HeightProperty);
+                // Backdrop is inside MainScrollViewer (infinite height) — constrain to viewport
+                var parentScroll = this.Parent as FrameworkElement;
+                while (parentScroll != null && !(parentScroll is ScrollViewer))
+                    parentScroll = VisualTreeHelper.GetParent(parentScroll) as FrameworkElement;
+                double h = (parentScroll as ScrollViewer)?.ViewportHeight
+                           ?? (parentScroll as FrameworkElement)?.ActualHeight
+                           ?? ActualHeight;
+                if (h > 0)
+                {
+                    MacDetayBackdrop.Height = h;
+                    MacDetayScroll.Height = h;
+                }
 
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
@@ -2280,5 +2283,6 @@ namespace ValorantAutoClicker.Views
             }
             return null;
         }
+
     }
 }

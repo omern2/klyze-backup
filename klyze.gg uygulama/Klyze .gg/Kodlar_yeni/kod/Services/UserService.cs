@@ -1,7 +1,10 @@
 using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using ValorantAutoClicker.Helpers;
 using ValorantAutoClicker.Models;
 
 namespace ValorantAutoClicker.Services
@@ -17,10 +20,11 @@ namespace ValorantAutoClicker.Services
 
         public UserService()
         {
-            var dir = AppDomain.CurrentDomain.BaseDirectory;
-            var dataDir = Path.Combine(dir, "data");
-            Directory.CreateDirectory(dataDir);
-            _userJsonPath = Path.Combine(dataDir, "user.json");
+            var dir = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Klyze", "data");
+            Directory.CreateDirectory(dir);
+            _userJsonPath = Path.Combine(dir, "user.json");
         }
 
         // ─── Giriş Durumu ────────────────────────────────────────────────────────
@@ -45,7 +49,7 @@ namespace ValorantAutoClicker.Services
             {
                 if (!File.Exists(_userJsonPath)) return null;
                 var json = File.ReadAllText(_userJsonPath);
-                _cachedProfile = JsonConvert.DeserializeObject<UserProfile>(json);
+                _cachedProfile = SafeJson.Deserialize<UserProfile>(json);
                 return _cachedProfile?.GecerliMi == true ? _cachedProfile : null;
             }
             catch { return null; }
@@ -79,8 +83,10 @@ namespace ValorantAutoClicker.Services
             catch { }
         }
 
+        private static readonly HttpClient _riotHttp = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
+
         /// <summary>
-        /// Profili Henrik Dev API'den günceller ve kaydeder.
+        /// Profili Henrik Dev API'den günceller, başarısız olursa resmi Riot API'ye düşer.
         /// </summary>
         public async Task<(bool basarili, string hata, UserProfile profil)> GirisVeGuncelleAsync(
             string oyuncuAdi,
@@ -95,12 +101,52 @@ namespace ValorantAutoClicker.Services
             }
             catch (HenrikApiException ex)
             {
+                // HenrikDev başarısız → resmi Riot API'ye düş
+                if (ex.Message.Contains("bulunamadı") && !string.IsNullOrEmpty(ApiKeyProvider.RiotApiKey))
+                {
+                    try
+                    {
+                        return await RiotApiFallbackAsync(oyuncuAdi, tag);
+                    }
+                    catch { }
+                }
                 return (false, ex.Message, null);
             }
             catch (Exception ex)
             {
                 return (false, $"Bağlantı hatası: {ex.Message}", null);
             }
+        }
+
+        private async Task<(bool basarili, string hata, UserProfile profil)> RiotApiFallbackAsync(
+            string name, string tag)
+        {
+            var url = $"https://europe.api.riotgames.com/riot/account/v1/accounts/by-riot-id/{Uri.EscapeDataString(name)}/{Uri.EscapeDataString(tag)}";
+            var req = new HttpRequestMessage(HttpMethod.Get, url);
+            req.Headers.Add("X-Riot-Token", ApiKeyProvider.RiotApiKey);
+
+            var resp = await _riotHttp.SendAsync(req);
+            if (!resp.IsSuccessStatusCode)
+            {
+                if (resp.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    throw new Exception("Hesap bulunamadı. Kullanıcı adı ve tag'i kontrol edin.");
+                if ((int)resp.StatusCode == 429)
+                    throw new Exception("Çok fazla istek. Lütfen bekleyin.");
+                throw new Exception($"API hatası: {(int)resp.StatusCode}");
+            }
+
+            var json = await resp.Content.ReadAsStringAsync();
+            var data = JObject.Parse(json);
+
+            var profil = new UserProfile
+            {
+                OyuncuAdi = data["gameName"]?.ToString() ?? name,
+                Tag = data["tagLine"]?.ToString() ?? tag,
+                Bolge = "eu",
+                SonGuncelleme = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+            };
+            SaveProfile(profil);
+            return (true, null, profil);
         }
     }
 }

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Media;
+using Newtonsoft.Json;
+using ValorantAutoClicker.Helpers;
 
 namespace ValorantAutoClicker.Models
 {
@@ -17,13 +18,23 @@ namespace ValorantAutoClicker.Models
         public int HotkeySpam { get; set; } = 1;
         public int HotkeyFakeMic { get; set; } = 0x78;
 
-        // Valorant Analysis Properties
         public string ValorantUsername { get; set; } = "";
         public string ValorantTag { get; set; } = "";
         public string ValorantRegion { get; set; } = "eu";
-        public string ValorantApiKey { get; set; } = "";
 
-        // Arama geçmişi (son 10)
+        [JsonProperty("ValorantApiKey")]
+        private string ValorantApiKeyEncrypted { get; set; } = "";
+
+        [JsonIgnore]
+        public string ValorantApiKey
+        {
+            get => SecureStorage.Decrypt(ValorantApiKeyEncrypted);
+            set => ValorantApiKeyEncrypted = SecureStorage.Encrypt(value ?? "");
+        }
+
         public List<string> SearchHistory { get; set; } = new();
+
+        public string GithubOwner { get; set; } = "";
+        public string GithubRepo { get; set; } = "";
     }
 }

@@ -43,8 +43,20 @@ namespace ValorantAutoClicker.Models
         [JsonProperty("hesapSeviyesi")]
         public int HesapSeviyesi { get; set; } = 0;
 
+        [JsonProperty("elo")]
+        public int Elo { get; set; } = 0;
+
         [JsonProperty("cardSmallUrl")]
         public string CardSmallUrl { get; set; } = "";
+
+        [JsonProperty("googleUid")]
+        public string GoogleUid { get; set; } = "";
+
+        [JsonProperty("email")]
+        public string Email { get; set; } = "";
+
+        [JsonProperty("banned")]
+        public bool IsBanned { get; set; }
 
         [JsonProperty("sonGuncelleme")]
         public long SonGuncelleme { get; set; } = 0;

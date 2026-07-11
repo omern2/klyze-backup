@@ -10,12 +10,16 @@
     <ApplicationIcon>..\ico\icon.ico</ApplicationIcon>
     <OutputPath>..\exe\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <Version>3.9.3.0</Version>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <Version>3.18.0.0</Version>
     <EmbeddedResourceUseDependentUponConvention>false</EmbeddedResourceUseDependentUponConvention>
     <DebugType>embedded</DebugType>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\..\..\klyze_update.zip" Link="klyze_update.zip" />
     <Content Include="..\ico\icon.ico" Link="icon.ico">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

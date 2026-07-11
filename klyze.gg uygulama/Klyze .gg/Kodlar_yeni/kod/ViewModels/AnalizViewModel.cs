@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -98,7 +99,17 @@ namespace ValorantAutoClicker.ViewModels
         public ObservableCollection<LiveMatchPlayer> CanliMacOyuncularim { get; } = new();
         public ObservableCollection<LiveMatchPlayer> CanliMacRakipler { get; } = new();
 
-        private System.Timers.Timer _canliMacTimer;
+        [ObservableProperty] private string _canliMacServerText = "";
+        [ObservableProperty] private double _winChanceBiz = 50;
+        [ObservableProperty] private double _winChanceRakip = 50;
+        [ObservableProperty] private SolidColorBrush _winChanceBizRenk = new(Colors.Gray);
+        [ObservableProperty] private SolidColorBrush _winChanceRakipRenk = new(Colors.Gray);
+
+        private CancellationTokenSource _canliMacCts;
+        private int _canliMacTickCount;
+        private bool _canliMacStarted;
+        private bool _isFullRefreshing;
+        private const int CanliMacFullRefreshTicks = 6;
         private bool _isLoadingCanliMac;
         private bool _isResettingFilters;
 
@@ -116,6 +127,7 @@ namespace ValorantAutoClicker.ViewModels
         [ObservableProperty] private MacDetay _seciliMacDetay;
         [ObservableProperty] private bool _macDetayVisible;
         [ObservableProperty] private bool _macDetayYukleniyor;
+        [ObservableProperty] private string _macDetayHata = "";
 
         // ─── Harita Analiz ───────────────────────────────────────────────────────
         public ObservableCollection<HaritaIstatistik> HaritaAnalizleri { get; } = new();
@@ -302,6 +314,8 @@ namespace ValorantAutoClicker.ViewModels
 
             MacDetayYukleniyor = true;
             MacDetayVisible = true;
+            MacDetayHata = "";
+            SeciliMacDetay = null;
 
             try
             {
@@ -309,16 +323,12 @@ namespace ValorantAutoClicker.ViewModels
                 var benAdi = auth?.OyuncuAdi ?? "";
                 var benTag = auth?.Tag ?? "";
 
-                MacDetayVisible = false;
                 var detay = await _analizService.GetMacDetayAsync(matchId, benAdi, benTag);
                 SeciliMacDetay = detay;
-                MacDetayVisible = true;
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show($"Maç detayı yüklenemedi: {ex.Message}", "Hata",
-                    System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
-                MacDetayVisible = false;
+                MacDetayHata = $"Maç detayı yüklenemedi: {ex.Message}";
             }
             finally
             {
@@ -534,27 +544,51 @@ namespace ValorantAutoClicker.ViewModels
 
         public void CanliMacIzlemeyiBaslat()
         {
-            CanliMacIzlemeyiDurdur();
-            _canliMacTimer = new System.Timers.Timer(30000);
-            _canliMacTimer.Elapsed += async (_, _) => await YukleCanliMacAsync();
-            _canliMacTimer.AutoReset = true;
-            _ = YukleCanliMacAsync();
+            if (_canliMacStarted) return;
+            _canliMacStarted = true;
+            _canliMacCts = new CancellationTokenSource();
+            _canliMacTickCount = 0;
+            _ = CanliMacPollingLoopAsync(_canliMacCts.Token);
         }
 
         public void CanliMacIzlemeyiDurdur()
         {
-            if (_canliMacTimer != null)
+            _canliMacStarted = false;
+            _canliMacCts?.Cancel();
+            _canliMacCts?.Dispose();
+            _canliMacCts = null;
+        }
+
+        private async Task CanliMacPollingLoopAsync(CancellationToken ct)
+        {
+            try
             {
-                _canliMacTimer.Stop();
-                _canliMacTimer.Dispose();
-                _canliMacTimer = null;
+                while (!ct.IsCancellationRequested)
+                {
+                    _canliMacTickCount++;
+                    try
+                    {
+                        await YukleCanliMacAsync().ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        CanliLog($"[CANLIMAC] Poll hata: {ex.Message}");
+                    }
+                    await Task.Delay(5000, ct).ConfigureAwait(false);
+                }
             }
+            catch (OperationCanceledException) { }
         }
 
         public async Task YukleCanliMacAsync()
         {
-            if (_isLoadingCanliMac) return;
+            if (_isLoadingCanliMac)
+            {
+                CanliLog("[CANLIMAC] Zaten yukleniyor, atlandi");
+                return;
+            }
             _isLoadingCanliMac = true;
+            CanliLog($"[CANLIMAC] Basliyor (tick={_canliMacTickCount})...");
             try
             {
                 var profil = _userService?.GetProfile();
@@ -565,29 +599,106 @@ namespace ValorantAutoClicker.ViewModels
                 }
 
                 var bolge = string.IsNullOrEmpty(profil.Bolge) ? "eu" : profil.Bolge;
-                var data = await _analizService.GetLiveMatchAsync(
-                    bolge, profil.OyuncuAdi, profil.Tag);
+
+                // Hizli kontrol: su anda mac icinde miyim?
+                var inMatch = await _analizService.CheckInMatchAsync(bolge);
 
                 var app = System.Windows.Application.Current;
                 if (app?.Dispatcher == null) return;
-                await app.Dispatcher.InvokeAsync(() =>
+
+                if (!inMatch)
                 {
-                    if (data == null)
+                    await app.Dispatcher.InvokeAsync(() =>
                     {
+                        if (CanliMacVisible)
+                        {
+                            CanliMacVisible = false;
+                            CanliMacData = null;
+                            CanliMacOyuncularim.Clear();
+                            CanliMacRakipler.Clear();
+                        }
+                        CanliMacWaiting = _analizService.IsLockfileAvailable();
+                        CanliMacError = !_analizService.IsLockfileAvailable();
+                    });
+                    return;
+                }
+
+                // Mac icinde: tam yenileme zamani mi?
+                bool needsFullRefresh = !CanliMacVisible && !_isFullRefreshing;
+                if (!needsFullRefresh && CanliMacVisible)
+                    needsFullRefresh = _canliMacTickCount > 1 && _canliMacTickCount % CanliMacFullRefreshTicks == 0;
+
+                if (!needsFullRefresh)
+                {
+                    // Veri zaten var, sadece süreyi güncelle
+                    await app.Dispatcher.InvokeAsync(() =>
+                    {
+                        if (CanliMacVisible)
+                            CanliMacTimeText = "Sürüyor";
+                    });
+                    return;
+                }
+
+                // Tam yenileme baslamadiysa baslat (fire-and-forget, timer'i bloklama)
+                if (!_isFullRefreshing)
+                {
+                    _isFullRefreshing = true;
+                    if (!CanliMacVisible)
+                    {
+                        await app.Dispatcher.InvokeAsync(() =>
+                        {
+                            CanliMacWaiting = true;
+                            CanliMacError = false;
+                        });
+                    }
+                    _ = FullRefreshAsync(bolge, profil.OyuncuAdi, profil.Tag);
+                }
+            }
+            catch
+            {
+                var app = System.Windows.Application.Current;
+                if (app?.Dispatcher != null)
+                {
+                    await app.Dispatcher.InvokeAsync(() =>
+                    {
+                        if (CanliMacVisible) return;
                         CanliMacVisible = false;
                         CanliMacData = null;
                         CanliMacOyuncularim.Clear();
                         CanliMacRakipler.Clear();
-                        if (_analizService.IsLockfileAvailable())
-                        {
-                            CanliMacWaiting = true;
-                            CanliMacError = false;
-                        }
-                        else
-                        {
-                            CanliMacWaiting = false;
-                            CanliMacError = true;
-                        }
+                        CanliMacWaiting = false;
+                        CanliMacError = true;
+                    });
+                }
+            }
+            finally
+            {
+                _isLoadingCanliMac = false;
+            }
+        }
+
+        private async Task FullRefreshAsync(string bolge, string name, string tag)
+        {
+            CanliLog("[CANLIMAC] FullRefresh basladi...");
+            try
+            {
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+                var data = await _analizService.GetLiveMatchAsync(bolge, name, tag, cts.Token);
+
+                var app = System.Windows.Application.Current;
+                if (app?.Dispatcher == null) return;
+
+                await app.Dispatcher.InvokeAsync(() =>
+                {
+                    if (data == null)
+                    {
+                        if (CanliMacVisible) return;
+                        CanliMacVisible = false;
+                        CanliMacData = null;
+                        CanliMacOyuncularim.Clear();
+                        CanliMacRakipler.Clear();
+                        CanliMacWaiting = _analizService.IsLockfileAvailable();
+                        CanliMacError = !_analizService.IsLockfileAvailable();
                         return;
                     }
 
@@ -627,29 +738,58 @@ namespace ValorantAutoClicker.ViewModels
                     foreach (var p in rakipTakim.Players)
                         CanliMacRakipler.Add(p);
 
+                    CanliMacServerText = !string.IsNullOrEmpty(data.ServerName)
+                        ? data.ServerName
+                        : BolgeToServerAdi(bolge);
+
+                    var bizElo = CanliMacOyuncularim.Where(p => p.Elo > 0).Select(p => p.Elo).DefaultIfEmpty(0).Average();
+                    var rakipElo = CanliMacRakipler.Where(p => p.Elo > 0).Select(p => p.Elo).DefaultIfEmpty(0).Average();
+                    if (bizElo + rakipElo > 0)
+                    {
+                        WinChanceBiz = Math.Round(bizElo / (bizElo + rakipElo) * 100, 1);
+                        WinChanceRakip = Math.Round(100.0 - WinChanceBiz, 1);
+                    }
+                    else
+                    {
+                        WinChanceBiz = 50;
+                        WinChanceRakip = 50;
+                    }
+                    WinChanceBizRenk = new SolidColorBrush(
+                        WinChanceBiz >= 50 ? Color.FromRgb(0, 210, 106) : Color.FromRgb(255, 70, 85));
+                    WinChanceRakipRenk = new SolidColorBrush(
+                        WinChanceRakip >= 50 ? Color.FromRgb(0, 210, 106) : Color.FromRgb(255, 70, 85));
+
                     CanliMacVisible = true;
+                    _canliMacTickCount = 0;
                 });
             }
-            catch
+            catch (Exception ex)
             {
-                var app = System.Windows.Application.Current;
-                if (app?.Dispatcher != null)
-                {
-                    await app.Dispatcher.InvokeAsync(() =>
-                    {
-                        CanliMacVisible = false;
-                        CanliMacData = null;
-                        CanliMacOyuncularim.Clear();
-                        CanliMacRakipler.Clear();
-                        CanliMacWaiting = false;
-                        CanliMacError = true;
-                    });
-                }
+                CanliLog($"[CANLIMAC] FullRefresh HATA: {ex.Message}");
             }
             finally
             {
-                _isLoadingCanliMac = false;
+                _isFullRefreshing = false;
+                CanliLog("[CANLIMAC] FullRefresh bitti");
             }
+        }
+
+        private static string BolgeToServerAdi(string bolge)
+        {
+            return bolge?.ToLowerInvariant() switch
+            {
+                "tr" or "tr1" => "Türkiye (İstanbul)",
+                "eu" => "Europe (Frankfurt)",
+                "na" or "us" => "North America (Chicago)",
+                "br" or "br1" => "Brazil (São Paulo)",
+                "latam" or "la" or "la1" or "la2" => "Latin America (Miami)",
+                "kr" or "kr1" => "Korea (Seoul)",
+                "ap" or "jp" or "jp1" => "Asia Pacific (Tokyo)",
+                "sg2" => "Asia Pacific (Singapore)",
+                "oc1" => "Oceania (Sydney)",
+                "ru" => "Russia (Moscow)",
+                _ => $"{bolge?.ToUpperInvariant() ?? "EU"}"
+            };
         }
 
         private void SekmeDegistir(object parameter)
@@ -720,6 +860,8 @@ namespace ValorantAutoClicker.ViewModels
 
         public async Task YukleAsync()
         {
+            if (IsLoading) return;
+
             var profil = _userService?.GetProfile();
             if (profil == null || !profil.GecerliMi)
             {
@@ -960,7 +1102,15 @@ namespace ValorantAutoClicker.ViewModels
                 AktiviteGrafikCizilecek?.Invoke();
                 HaritaGrafikCizilecek?.Invoke();
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException)
+            {
+                HasData = _allMacGecmisiItems.Count > 0 || EloGrafikNoktalari.Count > 0;
+                if (!HasData)
+                {
+                    HasError = true;
+                    ErrorMessage = "Veriler yuklenirken zaman asimi. Lutfen tekrar deneyin.";
+                }
+            }
             catch (Exception ex)
             {
                 HasError     = true;
@@ -1043,6 +1193,23 @@ namespace ValorantAutoClicker.ViewModels
                 MmrVar       = mmrVar,
                 EloDeger     = elo
             };
+        }
+
+        private static readonly object _canliLogLock = new();
+        private static void CanliLog(string msg)
+        {
+            var line = $"[{DateTime.Now:HH:mm:ss}] {msg}";
+            System.Diagnostics.Debug.WriteLine(line);
+            try
+            {
+                lock (_canliLogLock)
+                {
+                    File.AppendAllText(
+                        System.IO.Path.Combine(System.IO.Path.GetTempPath(), "riot_debug.log"),
+                        line + Environment.NewLine);
+                }
+            }
+            catch { }
         }
     }
 }

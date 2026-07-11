@@ -65,3 +65,6 @@ data/
 config.json
 *.key
 *.pem
+
+# Local Netlify folder
+.netlify

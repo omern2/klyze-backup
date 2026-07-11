@@ -13,45 +13,56 @@ namespace ValorantAutoClicker.Services
     {
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
-        private string _baseUrl = "https://europe.api.riotgames.com";
-        private string _accountApiBaseUrl = "https://europe.api.riotgames.com/riot/account/v1/accounts";
+
+        private static string EuropeUrl => Helpers.StringObfuscator.Decode(
+            "r7Ozt7T96OiisrWot6Lppreu6bWuqLOgpqqitOmkqKo=", 0xC7);
+        private static string AmericasUrl => Helpers.StringObfuscator.Decode(
+            "r7Ozt7T96OimqqK1rqSmtOmmt67pta6os6CmqqK06aSoqg==", 0xC7);
+        private static string SeaUrl => Helpers.StringObfuscator.Decode(
+            "r7Ozt7T96Oi0oqbppreu6bWuqLOgpqqitOmkqKo=", 0xC7);
+        private static string AccountPath => Helpers.StringObfuscator.Decode(
+            "6LWuqLPopqSkqLKps+ix9uimpKSosqmztA==", 0xC7);
+
+        private string _baseUrl;
+        private string _accountApiBaseUrl;
 
         public ValorantApiService(string apiKey)
         {
             _apiKey = apiKey;
             _httpClient = new HttpClient();
-            _httpClient.DefaultRequestHeaders.Add("X-Riot-Token", _apiKey);
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Add(
+                Helpers.StringObfuscator.Decode("n+qVrqiz6pOorKKp", 0xC7), _apiKey);
+            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(
+                Helpers.StringObfuscator.Decode("mYiIlJGbmYyRl5bXkouXlg==", 0xF8)));
+            _baseUrl = EuropeUrl;
+            _accountApiBaseUrl = EuropeUrl + AccountPath;
         }
 
-        // Update region-specific URLs
         public void SetRegion(string region)
         {
-            // Update base URL based on region
-            // Riot uses different regional shards: americas, europe, sea, etc.
             switch (region.ToLower())
             {
                 case "na":
                 case "br":
                 case "lan":
                 case "las":
-                    _baseUrl = "https://americas.api.riotgames.com";
-                    _accountApiBaseUrl = "https://americas.api.riotgames.com/riot/account/v1/accounts";
+                    _baseUrl = AmericasUrl;
+                    _accountApiBaseUrl = AmericasUrl + AccountPath;
                     break;
                 case "eu":
                 case "tr":
                 case "ru":
-                    _baseUrl = "https://europe.api.riotgames.com";
-                    _accountApiBaseUrl = "https://europe.api.riotgames.com/riot/account/v1/accounts";
+                    _baseUrl = EuropeUrl;
+                    _accountApiBaseUrl = EuropeUrl + AccountPath;
                     break;
                 case "kr":
                 case "jp":
-                    _baseUrl = "https://sea.api.riotgames.com";
-                    _accountApiBaseUrl = "https://sea.api.riotgames.com/riot/account/v1/accounts";
+                    _baseUrl = SeaUrl;
+                    _accountApiBaseUrl = SeaUrl + AccountPath;
                     break;
                 default:
-                    _baseUrl = "https://europe.api.riotgames.com";
-                    _accountApiBaseUrl = "https://europe.api.riotgames.com/riot/account/v1/accounts";
+                    _baseUrl = EuropeUrl;
+                    _accountApiBaseUrl = EuropeUrl + AccountPath;
                     break;
             }
         }
@@ -61,7 +72,7 @@ namespace ValorantAutoClicker.Services
         {
             try
             {
-                var url = $"{_accountApiBaseUrl}/by-riot-id/{gameName}/{tagLine}";
+                var url = $"{_accountApiBaseUrl}/by-riot-id/{Uri.EscapeDataString(gameName)}/{Uri.EscapeDataString(tagLine)}";
                 var response = await _httpClient.GetAsync(url);
 
                 if (!response.IsSuccessStatusCode)

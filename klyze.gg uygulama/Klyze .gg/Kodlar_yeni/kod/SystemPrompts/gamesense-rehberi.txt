@@ -1,0 +1,7 @@
+Game sense kuralları:
+- Crosshair placement: her zaman kafa hizasında, duvar kenarında peekleyeceğin yere bak.
+- Peek: Jiggle peek (küçük adımla çık-bak-gir), wide swing (geniş açıdan koşarak çık), shoulder peek (omuz göster).
+- Trade: Takım arkadaşın ölünce hemen onun öldüğü açıya bak ve düşmanı öldür.
+- Post-plant: Bombayı savun, koridorlara bak, süreyi kullan. Peekleme, bombayı izle.
+- Retake: Bombayı geri al, sayısal avantajı kullan, tek tek çatışma yaratma. Smokela görüşü kapat.
+- Communication: Net ve kısa konuş. "3 A Main, 1 çıktı 1 öldü, 80 can." Corner/cubby check etmeyi unutma.

@@ -537,6 +537,7 @@ namespace ValorantAutoClicker.Models
         public string Mode { get; set; } = "";
         public string GameType { get; set; } = "";
         public long EstimatedTime { get; set; }
+        public string ServerName { get; set; } = "";
         public LiveMatchTeam RedTeam { get; set; } = new();
         public LiveMatchTeam BlueTeam { get; set; } = new();
     }
@@ -590,6 +591,79 @@ namespace ValorantAutoClicker.Models
 
         public ImageSource RankIkonKaynak => RankIkonHelper.RankIkon(_rank);
 
+        public ImageSource RankIkonFromTierKaynak => RankIkonHelper.RankIkonFromTier(_tier, 20);
+
+        private string _playerCardUrl = "";
+        public string PlayerCardUrl
+        {
+            get => _playerCardUrl;
+            set => SetProperty(ref _playerCardUrl, value);
+        }
+
+        private int _tier;
+        public int Tier
+        {
+            get => _tier;
+            set
+            {
+                if (SetProperty(ref _tier, value))
+                    OnPropertyChanged(nameof(RankIkonFromTierKaynak));
+            }
+        }
+
+        private int _elo;
+        public int Elo
+        {
+            get => _elo;
+            set => SetProperty(ref _elo, value);
+        }
+
+        private int _kills;
+        public int Kills
+        {
+            get => _kills;
+            set
+            {
+                if (SetProperty(ref _kills, value))
+                    OnPropertyChanged(nameof(KdaText));
+            }
+        }
+
+        private int _deaths;
+        public int Deaths
+        {
+            get => _deaths;
+            set
+            {
+                if (SetProperty(ref _deaths, value))
+                    OnPropertyChanged(nameof(KdaText));
+            }
+        }
+
+        private int _assists;
+        public int Assists
+        {
+            get => _assists;
+            set
+            {
+                if (SetProperty(ref _assists, value))
+                    OnPropertyChanged(nameof(KdaText));
+            }
+        }
+
+        public string KdaText => HasKda ? $"{Kills}/{Deaths}/{Assists}" : "--/--/--";
+
+        private bool _hasKda = true;
+        public bool HasKda
+        {
+            get => _hasKda;
+            set
+            {
+                if (SetProperty(ref _hasKda, value))
+                    OnPropertyChanged(nameof(KdaText));
+            }
+        }
+
         private string _puuid = "";
         public string Puuid
         {
@@ -603,6 +677,41 @@ namespace ValorantAutoClicker.Models
             get => _isCurrentUser;
             set => SetProperty(ref _isCurrentUser, value);
         }
+
+        private bool _match1Win;
+        public bool Match1Win
+        {
+            get => _match1Win;
+            set { if (SetProperty(ref _match1Win, value)) OnPropertyChanged(nameof(Match1Brush)); }
+        }
+
+        private bool _match2Win;
+        public bool Match2Win
+        {
+            get => _match2Win;
+            set { if (SetProperty(ref _match2Win, value)) OnPropertyChanged(nameof(Match2Brush)); }
+        }
+
+        private bool _match3Win;
+        public bool Match3Win
+        {
+            get => _match3Win;
+            set { if (SetProperty(ref _match3Win, value)) OnPropertyChanged(nameof(Match3Brush)); }
+        }
+
+        private bool _match4Win;
+        public bool Match4Win
+        {
+            get => _match4Win;
+            set { if (SetProperty(ref _match4Win, value)) OnPropertyChanged(nameof(Match4Brush)); }
+        }
+
+        public SolidColorBrush Match1Brush => Match1Win ? _yesil : _kirmizi;
+        public SolidColorBrush Match2Brush => Match2Win ? _yesil : _kirmizi;
+        public SolidColorBrush Match3Brush => Match3Win ? _yesil : _kirmizi;
+        public SolidColorBrush Match4Brush => Match4Win ? _yesil : _kirmizi;
+        private static readonly SolidColorBrush _yesil = new(System.Windows.Media.Color.FromRgb(0x22, 0xC5, 0x5E));
+        private static readonly SolidColorBrush _kirmizi = new(System.Windows.Media.Color.FromRgb(0xEF, 0x44, 0x44));
     }
 
     // ─── Maç Detay ───────────────────────────────────────────────────────────

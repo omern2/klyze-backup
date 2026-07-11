@@ -1499,10 +1499,270 @@
 
                 <!-- CANLI MAC TAB -->
                 <StackPanel x:Name="IcerikCanliMac" Visibility="{Binding TabCanliMac, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="Canlı Maç" FontSize="16" FontWeight="Bold" Foreground="White"
-                               HorizontalAlignment="Center" Margin="0,40,0,0"/>
-                    <TextBlock Text="Yakında" FontSize="12" Foreground="#555555"
-                               HorizontalAlignment="Center" Margin="0,8,0,0"/>
+
+                    <!-- BEKLENIYOR -->
+                    <StackPanel Visibility="{Binding CanliMacWaiting, Converter={StaticResource BoolToVis}}"
+                                HorizontalAlignment="Center" Margin="0,60,0,0">
+                        <Ellipse Width="10" Height="10" Fill="#555555" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+                        <TextBlock Text="Maç bekleniyor..." FontSize="13" Foreground="#555555"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="Riot istemcisi açık ancak henüz bir maçta değilsin." FontSize="10"
+                                   Foreground="#333333" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                        <TextBlock Text="Bir maça girince otomatik olarak görünecek." FontSize="10"
+                                   Foreground="#333333" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <!-- HATA: Riot kapali -->
+                    <StackPanel Visibility="{Binding CanliMacError, Converter={StaticResource BoolToVis}}"
+                                HorizontalAlignment="Center" Margin="0,60,0,0">
+                        <TextBlock Text="Riot İstemcisi Bulunamadı" FontSize="13" Foreground="#888888"
+                                   HorizontalAlignment="Center"/>
+                        <TextBlock Text="Canlı maç takibi için Riot istemcisinin açık olması gerekir."
+                                   FontSize="10" Foreground="#555555" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                    </StackPanel>
+
+                    <!-- CANLI MAC ICERIK -->
+                    <StackPanel Visibility="{Binding CanliMacVisible, Converter={StaticResource BoolToVis}}"
+                                Margin="0,0,0,24">
+
+                        <!-- ═══ UST BILGI BANNER ═══ -->
+                        <Border Background="#141414" BorderBrush="#222222" BorderThickness="1"
+                                CornerRadius="10" Padding="16,12" Margin="0,0,0,12">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+                                <StackPanel Grid.Column="0" Orientation="Horizontal">
+                                    <Ellipse x:Name="CanliNokta" Width="8" Height="8" Fill="#00D26A"
+                                             VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                    <TextBlock Text="Canlı Maç" FontSize="14" FontWeight="Bold"
+                                               Foreground="White" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <Border Grid.Column="1" Background="#252525" CornerRadius="4"
+                                        Padding="8,4" Margin="12,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding CanliMacTypeText}" FontSize="10"
+                                               Foreground="#AAAAAA" FontWeight="SemiBold"/>
+                                </Border>
+
+                                <Border Grid.Column="2" Background="#252525" CornerRadius="4"
+                                        Padding="8,4" Margin="6,0,0,0" VerticalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="{Binding CanliMacMapText}" FontSize="10"
+                                                   Foreground="#CCCCCC" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <StackPanel Grid.Column="3" Orientation="Horizontal"
+                                            HorizontalAlignment="Right" VerticalAlignment="Center" Margin="12,0,0,0">
+                                    <TextBlock Text="{Binding CanliMacServerText, StringFormat='Sunucu: {0}'}"
+                                               FontSize="10" Foreground="#777777" Margin="0,0,12,0"/>
+                                    <TextBlock Text="{Binding CanliMacTimeText}" FontSize="10" Foreground="#777777"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+
+                        <!-- ═══ KAZANMA SANSI BAR ═══ -->
+                        <Border Background="#141414" BorderBrush="#222222" BorderThickness="1"
+                                CornerRadius="10" Padding="16,12" Margin="0,0,0,16">
+                            <StackPanel>
+                                <TextBlock Text="TAKIMINIZIN KAZANMA ŞANSI" FontSize="10"
+                                           Foreground="#666666" FontWeight="SemiBold" Margin="0,0,0,8"/>
+                                <Grid Height="24">
+                                    <!-- Arkaplan -->
+                                    <Border CornerRadius="12" Background="#1A1A1A"/>
+
+                                    <!-- Oransal kolonlar -->
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="{Binding WinChanceBiz, Converter={StaticResource StarConv}}"/>
+                                            <ColumnDefinition Width="{Binding WinChanceRakip, Converter={StaticResource StarConv}}"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Background="{Binding WinChanceBizRenk}"
+                                                CornerRadius="12,0,0,12" Opacity="0.8"/>
+                                        <Border Grid.Column="1" Background="{Binding WinChanceRakipRenk}"
+                                                CornerRadius="0,12,12,0" Opacity="0.8"/>
+                                    </Grid>
+
+                                    <!-- Yuzde yazilari (ustte) -->
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                                                VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding WinChanceBiz, StringFormat='{}{0:F0}% Takımınız'}"
+                                                   FontSize="11" FontWeight="Bold" Foreground="White"
+                                                   Margin="0,0,16,0"/>
+                                        <TextBlock Text="{Binding WinChanceRakip, StringFormat='Rakip %{0:F0}'}"
+                                                   FontSize="11" FontWeight="Bold" Foreground="White"/>
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- ═══ TAKIM KARTLARI ═══ -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- SOL: TAKIMIMIZ -->
+                            <StackPanel Grid.Column="0" x:Name="BenimTakimPanel">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <TextBlock Text="TAKIMINIZ" FontSize="11" FontWeight="Bold"
+                                               Foreground="#00D26A" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding CanliMacOyuncularim.Count, StringFormat=' ({0})'}"
+                                               FontSize="10" Foreground="#555555" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                </StackPanel>
+
+                                <ItemsControl ItemsSource="{Binding CanliMacOyuncularim}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border x:Name="OyuncuKart" Background="#141414" BorderBrush="#222222" BorderThickness="1"
+                                                    CornerRadius="8" Padding="10,6" Margin="0,0,0,6" Height="56">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="36"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!-- Profil Fotografi -->
+                                                    <Border Width="36" Height="36" CornerRadius="18"
+                                                            Background="#2A2A2A" ClipToBounds="True">
+                                                        <Image Source="{Binding PlayerCardUrl}"
+                                                               Width="36" Height="36" Stretch="UniformToFill"
+                                                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                    </Border>
+
+                                                    <!-- Bilgiler -->
+                                                    <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Name}" FontSize="12"
+                                                                       FontWeight="SemiBold" Foreground="White"/>
+                                                            <TextBlock Text="{Binding Tag, StringFormat='#{}'}"
+                                                                       FontSize="11" Foreground="#666666" Margin="4,0,0,0"/>
+                                                            <Border Background="#2A3A2A" CornerRadius="3" Padding="4,1" Margin="6,0,0,0">
+                                                                <TextBlock Text="{Binding Agent}" FontSize="8"
+                                                                           Foreground="#66BB6A" FontWeight="SemiBold"/>
+                                                            </Border>
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                                            <Image Source="{Binding RankIkonFromTierKaynak}"
+                                                                   Width="14" Height="14" VerticalAlignment="Center"
+                                                                   RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                            <TextBlock Text="{Binding Rank}" FontSize="10"
+                                                                       Foreground="#AAAAAA" FontWeight="SemiBold"
+                                                                       Margin="4,0,4,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding Elo, StringFormat='• {0} ELO'}"
+                                                                       FontSize="10" Foreground="#666666" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="|" FontSize="10" Foreground="#333333"
+                                                                       Margin="6,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="K/D/A" FontSize="9" Foreground="#555555"
+                                                                       VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding KdaText}" FontSize="10"
+                                                                       Foreground="#CCCCCC" FontWeight="SemiBold"
+                                                                       Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                                            <!-- Son 4 maç W/L kareleri -->
+                                                            <Border Width="8" Height="8" CornerRadius="2" Margin="4,0,1,0"
+                                                                    Background="{Binding Match1Win, Converter={StaticResource MacSonucBgConv}}"/>
+                                                            <Border Width="8" Height="8" CornerRadius="2" Margin="1,0"
+                                                                    Background="{Binding Match2Win, Converter={StaticResource MacSonucBgConv}}"/>
+                                                            <Border Width="8" Height="8" CornerRadius="2" Margin="1,0"
+                                                                    Background="{Binding Match3Win, Converter={StaticResource MacSonucBgConv}}"/>
+                                                            <Border Width="8" Height="8" CornerRadius="2" Margin="1,0,0,0"
+                                                                    Background="{Binding Match4Win, Converter={StaticResource MacSonucBgConv}}"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+
+                            <!-- AYIRAC -->
+                            <Border Grid.Column="1" Background="#222222" Width="1" Margin="0,28,0,0"/>
+
+                            <!-- SAG: RAKIP TAKIM -->
+                            <StackPanel Grid.Column="2" x:Name="RakipTakimPanel">
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                    <TextBlock Text="RAKİP TAKIM" FontSize="11" FontWeight="Bold"
+                                               Foreground="#FF4655" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding CanliMacRakipler.Count, StringFormat=' ({0})'}"
+                                               FontSize="10" Foreground="#555555" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                </StackPanel>
+
+                                <ItemsControl ItemsSource="{Binding CanliMacRakipler}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border x:Name="OyuncuKart" Background="#141414" BorderBrush="#222222" BorderThickness="1"
+                                                    CornerRadius="8" Padding="10,6" Margin="0,0,0,6" Height="56">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="36"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                    </Grid.ColumnDefinitions>
+
+                                                    <!-- Profil Fotografi -->
+                                                    <Border Width="36" Height="36" CornerRadius="18"
+                                                            Background="#2A2A2A" ClipToBounds="True">
+                                                        <Image Source="{Binding PlayerCardUrl}"
+                                                               Width="36" Height="36" Stretch="UniformToFill"
+                                                               RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                    </Border>
+
+                                                    <!-- Bilgiler -->
+                                                    <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="{Binding Name}" FontSize="12"
+                                                                       FontWeight="SemiBold" Foreground="White"/>
+                                                            <TextBlock Text="{Binding Tag, StringFormat='#{}'}"
+                                                                       FontSize="11" Foreground="#666666" Margin="4,0,0,0"/>
+                                                            <Border Background="#2A3A2A" CornerRadius="3" Padding="4,1" Margin="6,0,0,0">
+                                                                <TextBlock Text="{Binding Agent}" FontSize="8"
+                                                                           Foreground="#66BB6A" FontWeight="SemiBold"/>
+                                                            </Border>
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                                            <Image Source="{Binding RankIkonFromTierKaynak}"
+                                                                   Width="14" Height="14" VerticalAlignment="Center"
+                                                                   RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                            <TextBlock Text="{Binding Rank}" FontSize="10"
+                                                                       Foreground="#AAAAAA" FontWeight="SemiBold"
+                                                                       Margin="4,0,4,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding Elo, StringFormat='• {0} ELO'}"
+                                                                       FontSize="10" Foreground="#666666" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="|" FontSize="10" Foreground="#333333"
+                                                                       Margin="6,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Text="K/D/A" FontSize="9" Foreground="#555555"
+                                                                       VerticalAlignment="Center"/>
+                                                            <TextBlock Text="{Binding KdaText}" FontSize="10"
+                                                                       Foreground="#CCCCCC" FontWeight="SemiBold"
+                                                                       Margin="4,0,0,0" VerticalAlignment="Center"/>
+                                                            <!-- Son 4 maç W/L kareleri -->
+                                                            <Border Width="8" Height="8" CornerRadius="2" Margin="4,0,1,0"
+                                                                    Background="{Binding Match1Win, Converter={StaticResource MacSonucBgConv}}"/>
+                                                            <Border Width="8" Height="8" CornerRadius="2" Margin="1,0"
+                                                                    Background="{Binding Match2Win, Converter={StaticResource MacSonucBgConv}}"/>
+                                                            <Border Width="8" Height="8" CornerRadius="2" Margin="1,0"
+                                                                    Background="{Binding Match3Win, Converter={StaticResource MacSonucBgConv}}"/>
+                                                            <Border Width="8" Height="8" CornerRadius="2" Margin="1,0,0,0"
+                                                                    Background="{Binding Match4Win, Converter={StaticResource MacSonucBgConv}}"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Grid>
+
+                    </StackPanel>
                 </StackPanel>
 
             </StackPanel>
@@ -1512,11 +1772,10 @@
         <Border x:Name="MacDetayBackdrop" Visibility="Collapsed"
                 Background="#0D0D0D"
                 HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                IsHitTestVisible="True"
-                PreviewMouseWheel="MacDetayBackdrop_PreviewMouseWheel">
+                IsHitTestVisible="True">
             <ScrollViewer x:Name="MacDetayScroll" VerticalScrollBarVisibility="Hidden"
                           CanContentScroll="False" Background="Transparent"
-                          Padding="28,0,28,4"
+                          Padding="20,0,20,4"
                           Focusable="True">
                 <StackPanel>
 
@@ -1527,6 +1786,16 @@
                                    HorizontalAlignment="Center" Margin="0,0,0,12"/>
                         <ProgressBar IsIndeterminate="True" Height="2" Width="120"
                                      Background="#252525" Foreground="#555555"/>
+                    </StackPanel>
+
+                    <!-- Hata -->
+                    <StackPanel Visibility="{Binding MacDetayHata, Converter={StaticResource StrToVis}}"
+                                HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,120,0,0">
+                        <TextBlock Text="Maç detayı yüklenemedi" FontSize="14" FontWeight="Bold"
+                                   Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                        <TextBlock Text="{Binding MacDetayHata}" FontSize="12" Foreground="#FFAAAA"
+                                   HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"
+                                   MaxWidth="400"/>
                     </StackPanel>
 
                     <!-- Icerik -->

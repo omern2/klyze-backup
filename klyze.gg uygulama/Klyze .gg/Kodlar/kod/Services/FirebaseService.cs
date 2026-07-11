@@ -33,6 +33,54 @@ namespace ValorantAutoClicker.Services
 
         private string Auth() => string.IsNullOrEmpty(_idToken) ? "" : $"?auth={_idToken}";
 
+        // ─── Audit Log ────────────────────────────────────────────────────────────
+
+        private string DetermineSeverity(string node)
+        {
+            if (node == "rooms" || node == "lobbies" || node == "matchmaking")
+                return "warning";
+            if (node == "config" || node == "apiKeys" || node == "auth")
+                return "critical";
+            return "info";
+        }
+
+        public async Task WriteAuditAsync(string node, string action, object oldValue, object newValue)
+        {
+            try
+            {
+                var audit = new
+                {
+                    timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                    action,
+                    node,
+                    oldValue = oldValue != null ? JToken.FromObject(oldValue) : null,
+                    newValue = newValue != null ? JToken.FromObject(newValue) : null,
+                    authUid = _localId ?? "anonymous",
+                    severity = DetermineSeverity(node.Split('/')[0])
+                };
+                var auditId = Guid.NewGuid().ToString("N")[..12];
+                var json = JsonConvert.SerializeObject(audit, Formatting.None,
+                    new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+                var url = $"{RtdbUrl}/audit/{auditId}.json{Auth()}";
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                _ = _http.PutAsync(url, content).ConfigureAwait(false);
+
+                var bildirim = new
+                {
+                    id = auditId,
+                    baslik = $"{action.ToUpper()} — {node}",
+                    mesaj = $"Severity: {DetermineSeverity(node.Split('/')[0])} | Auth: {_localId ?? "anonymous"}",
+                    tarih = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                    tip = "Guvenlik",
+                    auditRef = auditId
+                };
+                var bildirimJson = JsonConvert.SerializeObject(bildirim);
+                var bildirimUrl = $"{RtdbUrl}/bildirimler/{auditId}.json{Auth()}";
+                _ = _http.PutAsync(bildirimUrl, new StringContent(bildirimJson, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            }
+            catch { }
+        }
+
         // ─── Anonymous Auth ──────────────────────────────────────────────────────
 
         public async Task<bool> AnonimGirisAsync()
@@ -55,6 +103,100 @@ namespace ValorantAutoClicker.Services
             {
                 return false;
             }
+        }
+
+        // ─── Auth State (set after Google sign-in) ───────────────────────────────
+
+        public void SetAuthState(string idToken, string localId)
+        {
+            _idToken = idToken;
+            _localId = localId;
+        }
+
+        // ─── Google OAuth ────────────────────────────────────────────────────────
+
+        public async Task<GoogleOAuthCredentials> GetGoogleOAuthCredentialsAsync()
+        {
+            try
+            {
+                var url = $"{RtdbUrl}/config/googleOAuth.json{Auth()}";
+                var resp = await _http.GetAsync(url);
+                if (!resp.IsSuccessStatusCode) return null;
+                var json = await resp.Content.ReadAsStringAsync();
+                if (json == "null") return null;
+                return JsonConvert.DeserializeObject<GoogleOAuthCredentials>(json);
+            }
+            catch { return null; }
+        }
+
+        /// <summary>
+        /// Firebase signInWithIdp — Google ID token ile Firebase'e giriş yapar.
+        /// Auth state (idToken, localId) otomatik güncellenir.
+        /// </summary>
+        public async Task<(string idToken, string localId, bool isNewUser)> GoogleSignInAsync(string googleIdToken)
+        {
+            try
+            {
+                var postBody = $"id_token={Uri.EscapeDataString(googleIdToken)}&providerId=google.com";
+                var body = JsonConvert.SerializeObject(new
+                {
+                    requestUri = "http://localhost",
+                    returnSecureToken = true,
+                    postBody = postBody
+                });
+
+                var resp = await _http.PostAsync(
+                    $"https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key={ApiKey}",
+                    new StringContent(body, Encoding.UTF8, "application/json"));
+
+                if (!resp.IsSuccessStatusCode) return (null, null, false);
+
+                var json = JObject.Parse(await resp.Content.ReadAsStringAsync());
+                var idToken = json["idToken"]?.ToString();
+                var localId = json["localId"]?.ToString();
+                var isNewUser = json["isNewUser"]?.ToObject<bool>() ?? false;
+
+                if (!string.IsNullOrEmpty(idToken))
+                {
+                    _idToken = idToken;
+                    _localId = localId;
+                }
+
+                return (idToken, localId, isNewUser);
+            }
+            catch { return (null, null, false); }
+        }
+
+        /// <summary>
+        /// Kullanıcı profilini Firebase RTDB'ye kaydeder (/users/{uid}/).
+        /// </summary>
+        public async Task<bool> SaveUserProfileAsync(string uid, object profile)
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(profile);
+                var url = $"{RtdbUrl}/users/{uid}.json{Auth()}";
+                var resp = await _http.PutAsync(url, new StringContent(json, Encoding.UTF8, "application/json"));
+                _ = WriteAuditAsync($"users/{uid}", "create", null, profile).ConfigureAwait(false);
+                return resp.IsSuccessStatusCode;
+            }
+            catch { return false; }
+        }
+
+        /// <summary>
+        /// Kullanıcı profilini Firebase RTDB'den okur (/users/{uid}/).
+        /// </summary>
+        public async Task<string> GetUserProfileAsync(string uid)
+        {
+            try
+            {
+                var url = $"{RtdbUrl}/users/{uid}.json{Auth()}";
+                var resp = await _http.GetAsync(url);
+                if (!resp.IsSuccessStatusCode) return null;
+                var json = await resp.Content.ReadAsStringAsync();
+                return json == "null" ? null : json;
+            }
+            catch { return null; }
         }
 
         // ─── Config (API keys stored here) ──────────────────────────────────────
@@ -91,6 +233,7 @@ namespace ValorantAutoClicker.Services
                 var err = await resp.Content.ReadAsStringAsync();
                 throw new Exception($"RTDB yazma hatası: {resp.StatusCode} — {err}");
             }
+            _ = WriteAuditAsync($"lobbies/{lobbyId}", "create", null, lobi).ConfigureAwait(false);
             return lobbyId;
         }
 
@@ -100,6 +243,7 @@ namespace ValorantAutoClicker.Services
             {
                 var url = $"{RtdbUrl}/lobbies/{lobbyId}.json{Auth()}";
                 await _http.DeleteAsync(url);
+                _ = WriteAuditAsync($"lobbies/{lobbyId}", "delete", new { id = lobbyId }, null).ConfigureAwait(false);
             }
             catch { }
         }
@@ -180,6 +324,7 @@ namespace ValorantAutoClicker.Services
                 var err = await resp.Content.ReadAsStringAsync();
                 throw new Exception($"RTDB queue hatası: {resp.StatusCode} — {err}");
             }
+            _ = WriteAuditAsync($"matchmaking/{localId}", "create", null, data).ConfigureAwait(false);
         }
 
         public async Task QueueKaldirAsync(string localId)
@@ -188,6 +333,7 @@ namespace ValorantAutoClicker.Services
             {
                 var url = $"{RtdbUrl}/matchmaking/{localId}.json{Auth()}";
                 await _http.DeleteAsync(url);
+                _ = WriteAuditAsync($"matchmaking/{localId}", "delete", new { id = localId }, null).ConfigureAwait(false);
             }
             catch { }
         }
@@ -244,6 +390,7 @@ namespace ValorantAutoClicker.Services
                 var err = await resp.Content.ReadAsStringAsync();
                 throw new Exception($"RTDB oda hatası: {resp.StatusCode} — {err}");
             }
+            _ = WriteAuditAsync($"rooms/{roomId}", "create", null, data).ConfigureAwait(false);
             return roomId;
         }
 
@@ -253,6 +400,7 @@ namespace ValorantAutoClicker.Services
             var data = new { groupCode = groupCode, status = "group_code_set" };
             var body = JsonConvert.SerializeObject(data);
             await _http.PatchAsync(url, new StringContent(body, Encoding.UTF8, "application/json"));
+            _ = WriteAuditAsync($"rooms/{roomId}", "update", null, data).ConfigureAwait(false);
         }
 
         public async Task OdaSilAsync(string roomId)
@@ -261,6 +409,7 @@ namespace ValorantAutoClicker.Services
             {
                 var url = $"{RtdbUrl}/rooms/{roomId}.json{Auth()}";
                 await _http.DeleteAsync(url);
+                _ = WriteAuditAsync($"rooms/{roomId}", "delete", new { id = roomId }, null).ConfigureAwait(false);
             }
             catch { }
         }
@@ -356,6 +505,19 @@ namespace ValorantAutoClicker.Services
             StopListening();
             _http?.Dispose();
         }
+    }
+
+    // ─── Google OAuth Credentials ────────────────────────────────────────────────
+    public class GoogleOAuthCredentials
+    {
+        [JsonProperty("clientId")]
+        public string ClientId { get; set; }
+
+        [JsonProperty("clientSecret")]
+        public string ClientSecret { get; set; }
+
+        [JsonProperty("firebaseApiKey")]
+        public string FirebaseApiKey { get; set; }
     }
 
     // ─── Güncelleme Modeli ────────────────────────────────────────────────────────

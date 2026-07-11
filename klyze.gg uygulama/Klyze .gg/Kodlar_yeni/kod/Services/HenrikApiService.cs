@@ -17,7 +17,8 @@ namespace ValorantAutoClicker.Services
     /// </summary>
     public class HenrikApiService : IDisposable
     {
-        private const string BaseUrl = "https://api.henrikdev.xyz";
+        private static string BaseUrl => Helpers.StringObfuscator.Decode(
+            "rbGxtbb/6uqktazrraCrt6yuoaCz6728vw==", 0xC5);
 
         private readonly HttpClient _http;
 
@@ -25,9 +26,22 @@ namespace ValorantAutoClicker.Services
         {
             _http = new HttpClient { Timeout = TimeSpan.FromSeconds(15) };
             if (!string.IsNullOrEmpty(ApiKeyProvider.HenrikDevKey))
-                _http.DefaultRequestHeaders.Add("Authorization", ApiKeyProvider.HenrikDevKey);
+                _http.DefaultRequestHeaders.Add(
+                    Helpers.StringObfuscator.Decode("uY2MkJeKkYKZjJGXlg==", 0xF8), ApiKeyProvider.HenrikDevKey);
             _http.DefaultRequestHeaders.Accept.Add(
-                new MediaTypeWithQualityHeaderValue("application/json"));
+                new MediaTypeWithQualityHeaderValue(
+                    Helpers.StringObfuscator.Decode("mYiIlJGbmYyRl5bXkouXlg==", 0xF8)));
+            _ = EagerLoadApiKeyAsync();
+        }
+
+        private static async Task EagerLoadApiKeyAsync()
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                try { await Task.Delay(500); } catch { break; }
+                if (!string.IsNullOrEmpty(ApiKeyProvider.HenrikDevKey))
+                    return;
+            }
         }
 
         // ─── Public API ──────────────────────────────────────────────────────────
@@ -92,7 +106,23 @@ namespace ValorantAutoClicker.Services
             string name, string tag, CancellationToken ct = default)
         {
             // 1. Hesap bilgisi (bölge için)
-            var account = await GetAccountAsync(name, tag, ct);
+            HenrikAccountData account;
+            try
+            {
+                account = await GetAccountAsync(name, tag, ct);
+            }
+            catch (HenrikApiException ex) when (
+                ex.Message.Contains("maç verisi alınamadı") ||
+                ex.Message.Contains("bölge bilgisi alınamadı"))
+            {
+                // Hesap var ama veri alınamıyor → temel profille devam et
+                account = new HenrikAccountData
+                {
+                    Name   = name,
+                    Tag    = tag,
+                    Region = "eu"
+                };
+            }
 
             // 2. MMR bilgisi
             HenrikMmrData mmr = null;
@@ -115,8 +145,9 @@ namespace ValorantAutoClicker.Services
                 Rutbe              = mmr?.CurrentTierPatched ?? "",
                 RutbePuani         = mmr?.RankingInTier ?? 0,
                 CurrentTier        = mmr?.CurrentTier ?? 0,
-                KazanmaOrani       = 0,   // Henrik v2 MMR'da winrate yok, ayrı endpoint gerekir
-                EnCokOynadigiAjan  = "",  // Ayrı endpoint gerekir
+                Elo                = mmr?.Elo ?? 0,
+                KazanmaOrani       = 0,
+                EnCokOynadigiAjan  = "",
                 KdOrani            = 0,
                 Acs                = 0,
                 SonGuncelleme      = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
@@ -125,10 +156,42 @@ namespace ValorantAutoClicker.Services
 
         // ─── HTTP ────────────────────────────────────────────────────────────────
 
+        private static string AuthHeader => Helpers.StringObfuscator.Decode(
+            "uY2MkJeKkYKZjJGXlg==", 0xF8);
+
+        private static long _lastApiKeyAttemptTicks;
+        private async Task EnsureApiKeyLoadedAsync(CancellationToken ct)
+        {
+            if (_http.DefaultRequestHeaders.Contains(AuthHeader)) return;
+            if (!string.IsNullOrEmpty(ApiKeyProvider.HenrikDevKey))
+            {
+                _http.DefaultRequestHeaders.Add(AuthHeader, ApiKeyProvider.HenrikDevKey);
+                return;
+            }
+
+            var onceki = Interlocked.Read(ref _lastApiKeyAttemptTicks);
+            var simdi = DateTime.UtcNow.Ticks;
+            if (onceki > 0 && new TimeSpan(simdi - onceki).TotalSeconds < 30)
+                throw new HenrikApiException("API anahtarı yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.");
+
+            Interlocked.Exchange(ref _lastApiKeyAttemptTicks, simdi);
+
+            for (int i = 0; i < 20; i++)
+            {
+                try { await Task.Delay(500, ct); } catch { break; }
+                if (!string.IsNullOrEmpty(ApiKeyProvider.HenrikDevKey))
+                {
+                    _http.DefaultRequestHeaders.Add(AuthHeader, ApiKeyProvider.HenrikDevKey);
+                    return;
+                }
+            }
+
+            throw new HenrikApiException("API anahtarı yüklenemedi. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.");
+        }
+
         private async Task<string> GetJsonAsync(string url, CancellationToken ct)
         {
-            if (!_http.DefaultRequestHeaders.Contains("Authorization") && !string.IsNullOrEmpty(ApiKeyProvider.HenrikDevKey))
-                _http.DefaultRequestHeaders.Add("Authorization", ApiKeyProvider.HenrikDevKey);
+            await EnsureApiKeyLoadedAsync(ct);
 
             HttpResponseMessage response;
             try
@@ -157,9 +220,19 @@ namespace ValorantAutoClicker.Services
             var status = root["status"]?.Value<int>() ?? 200;
             if (status == 200) return;
 
-            var msg = root["errors"]?[0]?["message"]?.ToString()
-                   ?? root["message"]?.ToString()
-                   ?? $"API hatası ({status})";
+            var error = root["errors"]?[0];
+            var code = error?["code"]?.Value<int>() ?? 0;
+            var msg  = error?["message"]?.ToString()
+                    ?? root["message"]?.ToString()
+                    ?? $"API hatası ({status})";
+
+            switch (code)
+            {
+                case 22: throw new HenrikApiException("Hesap bulunamadı. Kullanıcı adı ve tag'i kontrol edin.");
+                case 23: throw new HenrikApiException("Hesap bulundu ancak bölge bilgisi alınamadı. Lütfen en az bir maç (deathmatch vb.) oynayıp tekrar deneyin.");
+                case 24: throw new HenrikApiException("Hesap bulundu ancak maç verisi alınamadı. Lütfen en az bir maç oynayıp tekrar deneyin.");
+                case 25: throw new HenrikApiException("MMR verisi bulunamadı. Lütfen rekabetli maç oynayın.");
+            }
 
             switch (status)
             {
@@ -175,13 +248,38 @@ namespace ValorantAutoClicker.Services
         {
             switch ((int)code)
             {
-                case 404: throw new HenrikApiException("Hesap bulunamadı. Kullanıcı adı ve tag'i kontrol edin.");
+                case 404:
+                    var (hatakodu, hatamsg) = ParseErrorBody(body);
+                    switch (hatakodu)
+                    {
+                        case 23: throw new HenrikApiException("Hesap bulundu ancak bölge bilgisi alınamadı. Lütfen en az bir maç (deathmatch vb.) oynayıp tekrar deneyin.");
+                        case 24: throw new HenrikApiException("Hesap bulundu ancak maç verisi alınamadı. Lütfen en az bir maç oynayıp tekrar deneyin.");
+                        case 25: throw new HenrikApiException("MMR verisi bulunamadı. Lütfen rekabetli maç oynayın.");
+                        default: throw new HenrikApiException("Hesap bulunamadı. Kullanıcı adı ve tag'i kontrol edin.");
+                    }
                 case 429: throw new HenrikApiException("Çok fazla istek gönderildi. Lütfen bekleyin.");
                 case 401:
                 case 403: throw new HenrikApiException("API anahtarı geçersiz veya yetkisiz.");
                 case >= 500: throw new HenrikApiException("Sunucu hatası. Lütfen tekrar deneyin.");
                 default:  throw new HenrikApiException($"Bağlantı hatası ({(int)code}).");
             }
+        }
+
+        private static (int code, string message) ParseErrorBody(string body)
+        {
+            try
+            {
+                var root = JObject.Parse(body);
+                var errors = root["errors"];
+                if (errors != null && errors.HasValues)
+                {
+                    var c = errors[0]?["code"]?.Value<int>() ?? 0;
+                    var m = errors[0]?["message"]?.ToString() ?? "";
+                    return (c, m);
+                }
+            }
+            catch { }
+            return (0, "");
         }
 
         public void Dispose() => _http?.Dispose();

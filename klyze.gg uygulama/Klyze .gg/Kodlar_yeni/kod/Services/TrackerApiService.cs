@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using ValorantAutoClicker.Helpers;
 using ValorantAutoClicker.Models;
 
 namespace ValorantAutoClicker.Services
@@ -17,13 +18,14 @@ namespace ValorantAutoClicker.Services
     public class TrackerApiService : IDisposable
     {
         private readonly HttpClient _http;
-        // standard endpoint kullan
-        private const string BaseUrl = "https://public-api.tracker.gg/v2/valorant/standard";
+        private static string BaseUrl => Helpers.StringObfuscator.Decode(
+            "rrKytrX86em2s6Sqr6Xrp7av6LK0p6Wto7TooaHpsPTpsKeqqbSnqLLptbKnqKKntKI=", 0xC6);
         private const int TimeoutSeconds = 15;
 
-        // ─── LRU Önbellek ────────────────────────────────────────────────────────
+        // ─── LRU Önbellek (thread-safe) ──────────────────────────────────────────
         private readonly Dictionary<string, (TrackerPlayerProfile Profile, DateTime FetchedAt)> _cache = new();
         private readonly LinkedList<string> _cacheOrder = new();
+        private readonly object _cacheLock = new();
         private const int MaxCacheSize = 50;
         private static readonly TimeSpan CacheTtl = TimeSpan.FromMinutes(5);
 
@@ -36,8 +38,10 @@ namespace ValorantAutoClicker.Services
             {
                 Timeout = TimeSpan.FromSeconds(TimeoutSeconds)
             };
-            _http.DefaultRequestHeaders.Add("TRN-Api-Key", apiKey);
-            _http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _http.DefaultRequestHeaders.Add(
+                Helpers.StringObfuscator.Decode("kpSI64e2r+uNo78=", 0xC6), apiKey);
+            _http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(
+                Helpers.StringObfuscator.Decode("mYiIlJGbmYyRl5bXkouXlg==", 0xF8)));
         }
 
         // ─── Public API ──────────────────────────────────────────────────────────
@@ -115,7 +119,7 @@ namespace ValorantAutoClicker.Services
             var json = await response.Content.ReadAsStringAsync();
             try
             {
-                return JsonConvert.DeserializeObject<T>(json);
+                return SafeJson.Deserialize<T>(json);
             }
             catch (JsonException ex)
             {
@@ -237,40 +241,44 @@ namespace ValorantAutoClicker.Services
 
         private bool TryGetFromCache(string key, out TrackerPlayerProfile profile)
         {
-            profile = null;
-            if (!_cache.TryGetValue(key, out var entry)) return false;
-            if (DateTime.Now - entry.FetchedAt > CacheTtl)
+            lock (_cacheLock)
             {
-                _cache.Remove(key);
+                profile = null;
+                if (!_cache.TryGetValue(key, out var entry)) return false;
+                if (DateTime.Now - entry.FetchedAt > CacheTtl)
+                {
+                    _cache.Remove(key);
+                    _cacheOrder.Remove(key);
+                    return false;
+                }
                 _cacheOrder.Remove(key);
-                return false;
+                _cacheOrder.AddFirst(key);
+                profile = entry.Profile;
+                return true;
             }
-            // LRU: en son kullanılanı başa taşı
-            _cacheOrder.Remove(key);
-            _cacheOrder.AddFirst(key);
-            profile = entry.Profile;
-            return true;
         }
 
         private void AddToCache(string key, TrackerPlayerProfile profile)
         {
-            if (_cache.ContainsKey(key))
+            lock (_cacheLock)
             {
-                _cacheOrder.Remove(key);
-            }
-            else if (_cache.Count >= MaxCacheSize)
-            {
-                // En eski kaydı sil (LRU)
-                var oldest = _cacheOrder.Last?.Value;
-                if (oldest != null)
+                if (_cache.ContainsKey(key))
                 {
-                    _cache.Remove(oldest);
-                    _cacheOrder.RemoveLast();
+                    _cacheOrder.Remove(key);
                 }
-            }
+                else if (_cache.Count >= MaxCacheSize)
+                {
+                    var oldest = _cacheOrder.Last?.Value;
+                    if (oldest != null)
+                    {
+                        _cache.Remove(oldest);
+                        _cacheOrder.RemoveLast();
+                    }
+                }
 
-            _cache[key] = (profile, DateTime.Now);
-            _cacheOrder.AddFirst(key);
+                _cache[key] = (profile, DateTime.Now);
+                _cacheOrder.AddFirst(key);
+            }
         }
 
         public void Dispose()

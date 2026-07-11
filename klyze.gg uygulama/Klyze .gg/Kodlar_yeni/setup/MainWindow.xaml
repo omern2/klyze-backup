@@ -1,143 +1,103 @@
 <Window x:Class="KlyzeSetup.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Klyze Setup" Width="640" Height="480"
+        Title="Klyze Kurulum Rehberi"
+        Width="560" Height="420"
         WindowStartupLocation="CenterScreen"
-        Background="#1A1A1A"
-        WindowStyle="None" AllowsTransparency="True"
-        ResizeMode="NoResize"
-        MouseLeftButtonDown="Window_MouseLeftButtonDown">
-    <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="0" GlassFrameThickness="0"/>
-    </WindowChrome.WindowChrome>
-    <Border CornerRadius="12" Background="#1A1A1A" BorderBrush="#333333" BorderThickness="1">
-        <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        ResizeMode="NoResize">
+    <Window.Resources>
+        <Style TargetType="TextBlock" x:Key="PageTitle">
+            <Setter Property="FontSize" Value="18"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,12"/>
+        </Style>
+    </Window.Resources>
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" Background="#0D0D0D" CornerRadius="12,12,0,0" Padding="20,14">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Image Grid.Column="0" Source="..\ico\icon.ico" Width="24" Height="24" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Center"/>
-                    <TextBlock Grid.Column="1" Text="Klyze Setup" FontSize="16" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" Margin="10,0,0,0"/>
-                    <Button Grid.Column="2" Background="Transparent" BorderThickness="0" Cursor="Hand" Width="28" Height="28" Click="CloseBtn_Click">
-                        <TextBlock Text="✕" Foreground="#888888" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    </Button>
-                </Grid>
-            </Border>
-
-            <Grid Grid.Row="1" Margin="40,20,40,20">
-                <Grid x:Name="PageWelcome" Visibility="Visible">
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Image Source="..\ico\icon.ico" Width="64" Height="64" RenderOptions.BitmapScalingMode="HighQuality" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Klyze v3.9.3 Kurulumu" FontSize="22" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,20,0,8"/>
-                        <TextBlock Text="Valorant oyuncuları için geliştirilmiş araç seti" FontSize="13" Foreground="#888888" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
-                        <Border Background="#252525" CornerRadius="8" Padding="16" Margin="0,24,0,0">
-                            <StackPanel>
-                                <TextBlock Text="Bu kurulum şunları yapacak:" FontSize="12" Foreground="#AAAAAA" Margin="0,0,0,10"/>
-                                <TextBlock Text="✓  Klyze uygulamasını bilgisayarınıza kuracak" FontSize="12" Foreground="#888888" Margin="4,0,0,4"/>
-                                <TextBlock Text="✓  Masaüstü kısayolu oluşturacak" FontSize="12" Foreground="#888888" Margin="4,0,0,4"/>
-                                <TextBlock Text="✓  Başlat menüsüne ekleyecek" FontSize="12" Foreground="#888888" Margin="4,0,0,4"/>
-                                <TextBlock Text="✓  Oyun modlarını ve araçları kullanıma sunacak" FontSize="12" Foreground="#888888" Margin="4,0,0,0"/>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </Grid>
-
-                <Grid x:Name="PageLicense" Visibility="Collapsed">
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="Kullanım Koşulları" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-                        <Border Background="#252525" CornerRadius="8" Padding="16" MaxHeight="200">
-                            <ScrollViewer>
-                                <TextBlock Text="Klyze yazılımı, Valorant oyuncuları için geliştirilmiş bir araç setidir. Bu yazılım, Riot Games'in Hizmet Şartları'na uygun olarak tasarlanmıştır. Kullanıcı, yazılımı kendi sorumluluğunda kullanmayı kabul eder. Yazılım, herhangi bir garanti olmaksızın 'olduğu gibi' sunulmaktadır. Geliştirici, yazılımın kullanımından doğabilecek herhangi bir zarardan sorumlu değildir." FontSize="12" Foreground="#AAAAAA" TextWrapping="Wrap" LineHeight="20"/>
-                            </ScrollViewer>
-                        </Border>
-                        <CheckBox x:Name="LicenseCheck" Content="Koşulları kabul ediyorum" FontSize="12" Foreground="#AAAAAA" Margin="0,16,0,0" Checked="LicenseCheck_Changed" Unchecked="LicenseCheck_Changed"/>
-                    </StackPanel>
-                </Grid>
-
-                <Grid x:Name="PagePath" Visibility="Collapsed">
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="Kurulum Konumu" FontSize="20" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-                        <TextBlock Text="Klyze'nin kurulacağı klasörü seçin:" FontSize="12" Foreground="#888888" HorizontalAlignment="Center" Margin="0,0,0,12"/>
-                        <Border Background="#252525" CornerRadius="8" Padding="12">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock x:Name="InstallPathText" Grid.Column="0" FontSize="12" Foreground="White" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                <Button Grid.Column="1" Content="Değiştir" Background="#333333" Foreground="White" BorderThickness="0" FontSize="11" Padding="10,4" Cursor="Hand" Click="BrowsePath_Click"/>
-                            </Grid>
-                        </Border>
-                        <TextBlock Text="Kurulum için gerekli alan: ~7 MB" FontSize="11" Foreground="#666666" Margin="0,10,0,0" HorizontalAlignment="Center"/>
-                    </StackPanel>
-                </Grid>
-
-                <Grid x:Name="PageProgress" Visibility="Collapsed">
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="400">
-                        <TextBlock x:Name="ProgressTitle" Text="Kuruluyor..." FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,24"/>
-                        <Border Background="#252525" CornerRadius="8" Height="8">
-                            <Border x:Name="ProgressBar" Background="#2ECC71" CornerRadius="8" Width="0" HorizontalAlignment="Left"/>
-                        </Border>
-                        <TextBlock x:Name="ProgressText" Text="Dosyalar hazırlanıyor..." FontSize="12" Foreground="#888888" HorizontalAlignment="Center" Margin="0,12,0,0"/>
-                        <TextBlock x:Name="ProgressDetail" Text="" FontSize="11" Foreground="#666666" HorizontalAlignment="Center" Margin="0,4,0,0"/>
-                    </StackPanel>
-                </Grid>
-
-                <Grid x:Name="PageComplete" Visibility="Collapsed">
-                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Text="✓" FontSize="48" Foreground="#2ECC71" HorizontalAlignment="Center"/>
-                        <TextBlock Text="Kurulum Tamamlandı!" FontSize="22" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" Margin="0,12,0,4"/>
-                        <TextBlock Text="Klyze başarıyla bilgisayarınıza kuruldu." FontSize="13" Foreground="#888888" HorizontalAlignment="Center"/>
-                        <Border Background="#252525" CornerRadius="8" Padding="14,10" Margin="0,20,0,0">
-                            <StackPanel>
-                                <TextBlock Text="Kurulan dosyalar:" FontSize="11" Foreground="#AAAAAA" Margin="0,0,0,6"/>
-                                <TextBlock x:Name="FinalPathText" FontSize="11" Foreground="#666666"/>
-                                <TextBlock Text="Masaüstü kısayolu oluşturuldu" FontSize="11" Foreground="#666666" Margin="0,2,0,0"/>
-                            </StackPanel>
-                        </Border>
-                        <CheckBox x:Name="LaunchCheck" Content="Klyze'yi başlat" FontSize="12" Foreground="#AAAAAA" Margin="0,16,0,0" IsChecked="True"/>
-                    </StackPanel>
-                </Grid>
+        <Grid Grid.Row="0">
+            <Grid x:Name="PageWelcome" Visibility="Visible" VerticalAlignment="Center">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="Klyze v3.9.9 Kurulumu" Style="{StaticResource PageTitle}"/>
+                    <TextBlock Text="Valorant oyuncuları için geliştirilmiş araç seti" FontSize="12" Foreground="#555555" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" Margin="0,0,0,16"/>
+                    <Border Background="#F0F0F0" Padding="16" Margin="0,0,0,0">
+                        <StackPanel>
+                            <TextBlock Text="Bu kurulum şunları yapacak:" FontSize="11" Foreground="#333333" Margin="0,0,0,8"/>
+                            <TextBlock Text="✓  Klyze uygulamasını bilgisayarınıza kuracak" FontSize="11" Foreground="#555555" Margin="8,0,0,2"/>
+                            <TextBlock Text="✓  Masaüstü kısayolu oluşturacak" FontSize="11" Foreground="#555555" Margin="8,0,0,2"/>
+                            <TextBlock Text="✓  Başlat menüsüne ekleyecek" FontSize="11" Foreground="#555555" Margin="8,0,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
             </Grid>
 
-            <Border Grid.Row="2" Background="#0D0D0D" CornerRadius="0,0,12,12" Padding="20,12">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Button x:Name="BackBtn" Grid.Column="0" Content="← Geri" Background="#333333" Foreground="White" BorderThickness="0" FontSize="13" Padding="20,8" Cursor="Hand" Click="BackBtn_Click" Visibility="Collapsed">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                                <ControlTemplate.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="bd" Property="Background" Value="#444444"/>
-                                    </Trigger>
-                                    <Trigger Property="IsEnabled" Value="False">
-                                        <Setter TargetName="bd" Property="Background" Value="#222222"/>
-                                        <Setter Property="Foreground" Value="#555555"/>
-                                    </Trigger>
-                                </ControlTemplate.Triggers>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                    <TextBlock Grid.Column="1" x:Name="StepText" Text="1/5" FontSize="11" Foreground="#555555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                    <Button x:Name="NextBtn" Grid.Column="2" Content="İleri →" Style="{StaticResource SetupBtn}" Click="NextBtn_Click" IsDefault="True"/>
-                </Grid>
-            </Border>
+            <Grid x:Name="PageLicense" Visibility="Collapsed" VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="Kullanım Koşulları" Style="{StaticResource PageTitle}"/>
+                    <Border Background="#F0F0F0" Padding="12" MaxHeight="180">
+                        <ScrollViewer>
+                            <TextBlock Text="Klyze yazılımı, Valorant oyuncuları için geliştirilmiş bir araç setidir. Bu yazılım, Riot Games'in Hizmet Şartları'na uygun olarak tasarlanmıştır. Kullanıcı, yazılımı kendi sorumluluğunda kullanmayı kabul eder. Yazılım, herhangi bir garanti olmaksızın 'olduğu gibi' sunulmaktadır. Geliştirici, yazılımın kullanımından doğabilecek herhangi bir zarardan sorumlu değildir." FontSize="11" TextWrapping="Wrap" LineHeight="18"/>
+                        </ScrollViewer>
+                    </Border>
+                    <CheckBox x:Name="LicenseCheck" Content="Koşulları kabul ediyorum" FontSize="11" Margin="0,10,0,0" Checked="LicenseCheck_Changed" Unchecked="LicenseCheck_Changed"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid x:Name="PagePath" Visibility="Collapsed" VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="Kurulum Konumu" Style="{StaticResource PageTitle}"/>
+                    <TextBlock Text="Klyze'nin kurulacağı klasörü seçin:" FontSize="11" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                    <Border Background="#F0F0F0" Padding="8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="InstallPathText" Grid.Column="0" FontSize="11" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                            <Button Grid.Column="1" Content="Değiştir" FontSize="11" Padding="8,2" Margin="4,0,0,0" Click="BrowsePath_Click"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+            </Grid>
+
+            <Grid x:Name="PageProgress" Visibility="Collapsed" VerticalAlignment="Center">
+                <StackPanel HorizontalAlignment="Center" Width="400">
+                    <TextBlock x:Name="ProgressTitle" Text="Kuruluyor..." Style="{StaticResource PageTitle}"/>
+                    <ProgressBar x:Name="ProgressBar" Height="8" Foreground="#4CAF50" Maximum="100"/>
+                    <TextBlock x:Name="ProgressText" Text="Dosyalar hazırlanıyor..." FontSize="11" Foreground="#555555" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                    <TextBlock x:Name="ProgressDetail" Text="" FontSize="10" Foreground="#888888" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid x:Name="PageComplete" Visibility="Collapsed" VerticalAlignment="Center">
+                <StackPanel HorizontalAlignment="Center">
+                    <TextBlock Text="Kurulum Tamamlandı!" FontSize="20" FontWeight="Bold" HorizontalAlignment="Center"/>
+                    <TextBlock Text="Klyze başarıyla bilgisayarınıza kuruldu." FontSize="12" Foreground="#555555" HorizontalAlignment="Center" Margin="0,4,0,12"/>
+                    <Border Background="#F0F0F0" Padding="12">
+                        <StackPanel>
+                            <TextBlock Text="Kurulan dosyalar:" FontSize="11" Foreground="#333333" Margin="0,0,0,4"/>
+                            <TextBlock x:Name="FinalPathText" FontSize="10" Foreground="#555555"/>
+                            <TextBlock Text="Masaüstü kısayolu oluşturuldu" FontSize="10" Foreground="#555555" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                    <CheckBox x:Name="LaunchCheck" Content="Klyze'yi başlat" FontSize="11" Margin="0,10,0,0" IsChecked="True"/>
+                </StackPanel>
+            </Grid>
         </Grid>
-    </Border>
+
+        <Grid Grid.Row="1" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="BackBtn" Grid.Column="0" Content="← Geri" FontSize="12" Padding="16,4" Visibility="Collapsed" Click="BackBtn_Click"/>
+            <TextBlock Grid.Column="1" x:Name="StepText" Text="1/5" FontSize="10" Foreground="#888888" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <Button x:Name="NextBtn" Grid.Column="2" Content="İleri →" FontSize="12" Padding="16,4" IsDefault="True" Click="NextBtn_Click"/>
+        </Grid>
+    </Grid>
 </Window>

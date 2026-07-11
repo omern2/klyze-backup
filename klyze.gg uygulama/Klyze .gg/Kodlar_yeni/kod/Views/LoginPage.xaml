@@ -69,181 +69,279 @@
                            RenderOptions.BitmapScalingMode="HighQuality"/>
                     <TextBlock Text="Klyze" FontSize="28" FontWeight="Bold"
                                Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,6"/>
-                    <TextBlock Text="Riot ID ile giriş yap" FontSize="13"
+                    <TextBlock Text="Hesabınla giriş yap" FontSize="13"
                                Foreground="#555555" HorizontalAlignment="Center"/>
                 </StackPanel>
 
-                <!-- Riot ID alanı (isim + # + tag tek satırda) -->
-                <StackPanel Margin="0,0,0,10">
-                    <TextBlock Text="Riot ID" FontSize="11" FontWeight="SemiBold"
-                               Foreground="#666666" Margin="2,0,0,8"/>
-                    <!-- İsim + Tag yan yana -->
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="90"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBox Grid.Column="0"
-                                 Style="{StaticResource RiotInput}"
-                                 Text="{Binding OyuncuAdi, UpdateSourceTrigger=PropertyChanged}"
-                                 KeyDown="Input_KeyDown">
-                            <TextBox.Resources>
-                                <Style TargetType="Border"><Setter Property="CornerRadius" Value="10,0,0,10"/></Style>
-                            </TextBox.Resources>
-                        </TextBox>
-                        <!-- # ayırıcı -->
-                        <Border Grid.Column="1" Background="#222222" Width="32"
-                                BorderBrush="#2A2A2A" BorderThickness="0,1,0,1">
-                            <TextBlock Text="#" FontSize="16" FontWeight="Bold"
-                                       Foreground="#444444"
-                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <!-- Tag -->
-                        <TextBox Grid.Column="2"
-                                 Style="{StaticResource RiotInput}"
-                                 Text="{Binding Tag, UpdateSourceTrigger=PropertyChanged}"
-                                 KeyDown="Input_KeyDown">
-                            <TextBox.Resources>
-                                <Style TargetType="Border"><Setter Property="CornerRadius" Value="0,10,10,0"/></Style>
-                            </TextBox.Resources>
-                        </TextBox>
-                    </Grid>
-                    <TextBlock Margin="2,7,0,0" FontSize="10" Foreground="#3A3A3A">
-                        <Run Text="Örnek:"/>
-                        <Run Text=" omern2" Foreground="#4A4A4A"/>
-                        <Run Text=" # " Foreground="#333333"/>
-                        <Run Text="TR1" Foreground="#4A4A4A"/>
-                    </TextBlock>
-                </StackPanel>
+                <!-- ═══════════════ AŞAMA 1: Google ile Giriş ═══════════════ -->
+                <StackPanel Visibility="{Binding GoogleStepVisible, Converter={StaticResource BoolToVis}}">
 
-                <!-- Bölge seçimi -->
-                <StackPanel Margin="0,14,0,24">
-                    <TextBlock Text="Bölge" FontSize="11" FontWeight="SemiBold"
-                               Foreground="#666666" Margin="2,0,0,8"/>
-                    <ComboBox x:Name="BolgeBox"
-                              SelectedValue="{Binding Bolge}"
-                              Background="#1A1A1A" Foreground="White"
-                              BorderBrush="#2A2A2A" BorderThickness="1"
-                              Height="46" FontSize="13" Cursor="Hand">
-                        <ComboBox.Template>
-                            <ControlTemplate TargetType="ComboBox">
-                                <Border x:Name="bd" Background="#1A1A1A" BorderBrush="#2A2A2A"
-                                        BorderThickness="1" CornerRadius="10">
-                                    <Grid>
-                                        <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
-                                                          Margin="14,0,36,0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="▾" Foreground="#555555" FontSize="12"
-                                                   HorizontalAlignment="Right" VerticalAlignment="Center"
-                                                   Margin="0,0,14,0"/>
-                                        <Popup x:Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen}"
-                                               AllowsTransparency="True" Focusable="False"
-                                               PopupAnimation="Fade">
-                                            <Border Background="#1E1E1E" BorderBrush="#333333"
-                                                    BorderThickness="1" CornerRadius="10" Margin="0,4,0,0"
-                                                    MinWidth="{TemplateBinding ActualWidth}">
-                                                <ItemsPresenter/>
-                                            </Border>
-                                        </Popup>
-                                        <ToggleButton IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                                                      Background="Transparent" BorderThickness="0" Opacity="0"/>
+                    <!-- Google ile Giriş Yap Butonu -->
+                    <Button Height="54" FontSize="14" FontWeight="SemiBold"
+                            BorderThickness="0" Cursor="Hand" Margin="0,0,0,14"
+                            Command="{Binding GoogleLoginCommand}"
+                            IsEnabled="{Binding IsGoogleLoading, Converter={StaticResource InvBool}}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Background="#FFFFFF" CornerRadius="12">
+                                    <Grid Margin="16,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <!-- Google "G" icon (SVG path-based) -->
+                                        <Border Grid.Column="0" Width="24" Height="24" Margin="0,0,12,0"
+                                                Background="Transparent">
+                                            <Canvas Width="24" Height="24">
+                                                <Path Data="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"
+                                                      Fill="#4285F4"/>
+                                                <Path Data="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                                                      Fill="#34A853"/>
+                                                <Path Data="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                                                      Fill="#FBBC05"/>
+                                                <Path Data="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                                                      Fill="#EA4335"/>
+                                            </Canvas>
+                                        </Border>
+                                        <TextBlock Grid.Column="1" Text="Google ile Giriş Yap"
+                                                   FontSize="14" FontWeight="SemiBold"
+                                                   Foreground="#333333"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Grid>
                                 </Border>
                                 <ControlTemplate.Triggers>
                                     <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter TargetName="bd" Property="BorderBrush" Value="#444444"/>
+                                        <Setter TargetName="bd" Property="Opacity" Value="0.88"/>
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="bd" Property="Opacity" Value="0.5"/>
                                     </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
-                        </ComboBox.Template>
-                        <ComboBox.ItemContainerStyle>
-                            <Style TargetType="ComboBoxItem">
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="Foreground" Value="#AAAAAA"/>
-                                <Setter Property="Padding" Value="14,10"/>
-                                <Setter Property="FontSize" Value="13"/>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="ComboBoxItem">
-                                            <Border x:Name="bd" Background="{TemplateBinding Background}"
-                                                    Padding="{TemplateBinding Padding}">
-                                                <ContentPresenter/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="bd" Property="Background" Value="#2A2A2A"/>
-                                                </Trigger>
-                                                <Trigger Property="IsSelected" Value="True">
-                                                    <Setter Property="Foreground" Value="White"/>
-                                                </Trigger>
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ComboBox.ItemContainerStyle>
-                        <ComboBoxItem Content="EU — Avrupa" Tag="eu"/>
-                        <ComboBoxItem Content="NA — Kuzey Amerika" Tag="na"/>
-                        <ComboBoxItem Content="AP — Asya Pasifik" Tag="ap"/>
-                        <ComboBoxItem Content="KR — Kore" Tag="kr"/>
-                        <ComboBoxItem Content="BR — Brezilya" Tag="br"/>
-                        <ComboBoxItem Content="LATAM — Latin Amerika" Tag="latam"/>
-                    </ComboBox>
-                </StackPanel>
+                        </Button.Template>
+                    </Button>
 
-                <!-- Hata mesajı -->
-                <Border Background="#1A0808" CornerRadius="10" Padding="14,11" Margin="0,0,0,18"
-                        BorderBrush="#FF4655" BorderThickness="1"
-                        Visibility="{Binding ErrorMessage, Converter={StaticResource StrToVis}}">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="uyari.png" Width="16" Height="16"
-                               Margin="0,0,10,0" VerticalAlignment="Center"/>
-                        <TextBlock Text="{Binding ErrorMessage}" FontSize="12"
-                                   Foreground="#FFAAAA" TextWrapping="Wrap" VerticalAlignment="Center"/>
-                    </StackPanel>
-                </Border>
-
-                <!-- Yükleniyor -->
-                <Border Margin="0,0,0,16"
-                        Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
-                    <StackPanel>
-                        <TextBlock Text="Hesap bilgileri doğrulanıyor..."
+                    <!-- Yükleniyor (Google adımında) -->
+                    <StackPanel Margin="0,0,0,10"
+                                Visibility="{Binding IsGoogleLoading, Converter={StaticResource BoolToVis}}">
+                        <TextBlock Text="Tarayıcıda giriş yapın..."
                                    FontSize="12" Foreground="#555555"
-                                   HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                                   HorizontalAlignment="Center" Margin="0,0,0,8"/>
                         <ProgressBar IsIndeterminate="True" Height="2"
                                      Background="#252525" Foreground="#666666"/>
                     </StackPanel>
-                </Border>
 
-                <!-- Giriş Butonu -->
-                <Button Height="52" FontSize="14" FontWeight="Bold"
-                        BorderThickness="0" Cursor="Hand"
-                        Command="{Binding GirisCommand}"
-                        IsEnabled="{Binding IsLoading, Converter={StaticResource InvBool}}">
-                    <Button.Template>
-                        <ControlTemplate TargetType="Button">
-                            <Border x:Name="bd" Background="White" CornerRadius="12">
-                                <TextBlock Text="Giriş Yap" FontSize="14" FontWeight="Bold"
-                                           Foreground="#0f0d0dff"
+                    <!-- Auth mesajı (hata) -->
+                    <Border Background="#1A0808" CornerRadius="10" Padding="14,11" Margin="0,0,0,10"
+                            BorderBrush="#FF4655" BorderThickness="1"
+                            Visibility="{Binding AuthMessage, Converter={StaticResource StrToVis}}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="uyari.png" Width="16" Height="16"
+                                   Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding AuthMessage}" FontSize="12"
+                                       Foreground="#FFAAAA" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Alt not -->
+                    <TextBlock Margin="0,20,0,0" TextAlignment="Center" TextWrapping="Wrap">
+                        <Run Text="Şifren istenmez." FontSize="10" Foreground="#3A3A3A"/>
+                        <Run Text=" Sadece Google hesabıyla giriş yapılır." FontSize="10" Foreground="#333333"/>
+                    </TextBlock>
+
+                </StackPanel>
+
+                <!-- ═══════════════ AŞAMA 2: Riot ID ═══════════════ -->
+                <StackPanel Visibility="{Binding RiiotStepVisible, Converter={StaticResource BoolToVis}}">
+
+                    <!-- Geri butonu + Google email -->
+                    <Grid Margin="0,0,0,20">
+                        <Button HorizontalAlignment="Left" Background="Transparent"
+                                BorderThickness="0" Cursor="Hand" Padding="0"
+                                Command="{Binding BackToGoogleCommand}">
+                            <TextBlock Text="← Geri" FontSize="11" Foreground="#555555"/>
+                        </Button>
+                        <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                            <TextBlock Text="Giriş yapılan: " FontSize="11" Foreground="#444444"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding GoogleEmail}" FontSize="11" Foreground="#666666"
+                                       VerticalAlignment="Center" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Riot ID alanı (isim + # + tag tek satırda) -->
+                    <StackPanel Margin="0,0,0,10">
+                        <TextBlock Text="Riot ID" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="#666666" Margin="2,0,0,8"/>
+                        <!-- İsim + Tag yan yana -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="90"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0"
+                                     Style="{StaticResource RiotInput}"
+                                     Text="{Binding OyuncuAdi, UpdateSourceTrigger=PropertyChanged}"
+                                     KeyDown="Input_KeyDown">
+                                <TextBox.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="10,0,0,10"/></Style>
+                                </TextBox.Resources>
+                            </TextBox>
+                            <!-- # ayırıcı -->
+                            <Border Grid.Column="1" Background="#222222" Width="32"
+                                    BorderBrush="#2A2A2A" BorderThickness="0,1,0,1">
+                                <TextBlock Text="#" FontSize="16" FontWeight="Bold"
+                                           Foreground="#444444"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" Value="True">
-                                    <Setter TargetName="bd" Property="Opacity" Value="0.88"/>
-                                </Trigger>
-                                <Trigger Property="IsEnabled" Value="False">
-                                    <Setter TargetName="bd" Property="Opacity" Value="0.35"/>
-                                </Trigger>
-                            </ControlTemplate.Triggers>
-                        </ControlTemplate>
-                    </Button.Template>
-                </Button>
+                            <!-- Tag -->
+                            <TextBox Grid.Column="2"
+                                     Style="{StaticResource RiotInput}"
+                                     Text="{Binding Tag, UpdateSourceTrigger=PropertyChanged}"
+                                     KeyDown="Input_KeyDown">
+                                <TextBox.Resources>
+                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="0,10,10,0"/></Style>
+                                </TextBox.Resources>
+                            </TextBox>
+                        </Grid>
+                        <TextBlock Margin="2,7,0,0" FontSize="10" Foreground="#3A3A3A">
+                            <Run Text="Örnek:"/>
+                            <Run Text=" omern2" Foreground="#4A4A4A"/>
+                            <Run Text=" # " Foreground="#333333"/>
+                            <Run Text="TR1" Foreground="#4A4A4A"/>
+                        </TextBlock>
+                    </StackPanel>
 
-                <!-- Alt not -->
-                <TextBlock Margin="0,20,0,0" TextAlignment="Center" TextWrapping="Wrap">
-                    <Run Text="Şifren istenmez." FontSize="10" Foreground="#3A3A3A"/>
-                    <Run Text=" Sadece Riot ID ile doğrulama yapılır." FontSize="10" Foreground="#333333"/>
-                </TextBlock>
+                    <!-- Bölge seçimi -->
+                    <StackPanel Margin="0,14,0,24">
+                        <TextBlock Text="Bölge" FontSize="11" FontWeight="SemiBold"
+                                   Foreground="#666666" Margin="2,0,0,8"/>
+                        <ComboBox x:Name="BolgeBox"
+                                  SelectedValue="{Binding Bolge}"
+                                  Background="#1A1A1A" Foreground="White"
+                                  BorderBrush="#2A2A2A" BorderThickness="1"
+                                  Height="46" FontSize="13" Cursor="Hand">
+                            <ComboBox.Template>
+                                <ControlTemplate TargetType="ComboBox">
+                                    <Border x:Name="bd" Background="#1A1A1A" BorderBrush="#2A2A2A"
+                                            BorderThickness="1" CornerRadius="10">
+                                        <Grid>
+                                            <ContentPresenter Content="{TemplateBinding SelectionBoxItem}"
+                                                              Margin="14,0,36,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="&#x25BE;" Foreground="#555555" FontSize="12"
+                                                       HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                       Margin="0,0,14,0"/>
+                                            <Popup x:Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen}"
+                                                   AllowsTransparency="True" Focusable="False"
+                                                   PopupAnimation="Fade">
+                                                <Border Background="#1E1E1E" BorderBrush="#333333"
+                                                        BorderThickness="1" CornerRadius="10" Margin="0,4,0,0"
+                                                        MinWidth="{TemplateBinding ActualWidth}">
+                                                    <ItemsPresenter/>
+                                                </Border>
+                                            </Popup>
+                                            <ToggleButton IsChecked="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                                          Background="Transparent" BorderThickness="0" Opacity="0"/>
+                                        </Grid>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="bd" Property="BorderBrush" Value="#444444"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </ComboBox.Template>
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="#AAAAAA"/>
+                                    <Setter Property="Padding" Value="14,10"/>
+                                    <Setter Property="FontSize" Value="13"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ComboBoxItem">
+                                                <Border x:Name="bd" Background="{TemplateBinding Background}"
+                                                        Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="bd" Property="Background" Value="#2A2A2A"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsSelected" Value="True">
+                                                        <Setter Property="Foreground" Value="White"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                            <ComboBoxItem Content="EU — Avrupa" Tag="eu"/>
+                            <ComboBoxItem Content="NA — Kuzey Amerika" Tag="na"/>
+                            <ComboBoxItem Content="AP — Asya Pasifik" Tag="ap"/>
+                            <ComboBoxItem Content="KR — Kore" Tag="kr"/>
+                            <ComboBoxItem Content="BR — Brezilya" Tag="br"/>
+                            <ComboBoxItem Content="LATAM — Latin Amerika" Tag="latam"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Hata mesajı -->
+                    <Border Background="#1A0808" CornerRadius="10" Padding="14,11" Margin="0,0,0,18"
+                            BorderBrush="#FF4655" BorderThickness="1"
+                            Visibility="{Binding ErrorMessage, Converter={StaticResource StrToVis}}">
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="uyari.png" Width="16" Height="16"
+                                   Margin="0,0,10,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ErrorMessage}" FontSize="12"
+                                       Foreground="#FFAAAA" TextWrapping="Wrap" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Yükleniyor -->
+                    <Border Margin="0,0,0,16"
+                            Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}">
+                        <StackPanel>
+                            <TextBlock Text="Hesap bilgileri doğrulanıyor..."
+                                       FontSize="12" Foreground="#555555"
+                                       HorizontalAlignment="Center" Margin="0,0,0,10"/>
+                            <ProgressBar IsIndeterminate="True" Height="2"
+                                         Background="#252525" Foreground="#666666"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Giriş Butonu -->
+                    <Button Height="52" FontSize="14" FontWeight="Bold"
+                            BorderThickness="0" Cursor="Hand"
+                            Command="{Binding GirisCommand}"
+                            IsEnabled="{Binding IsLoading, Converter={StaticResource InvBool}}">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Background="White" CornerRadius="12">
+                                    <TextBlock Text="Giriş Yap" FontSize="14" FontWeight="Bold"
+                                               Foreground="#0f0d0dff"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bd" Property="Opacity" Value="0.88"/>
+                                    </Trigger>
+                                    <Trigger Property="IsEnabled" Value="False">
+                                        <Setter TargetName="bd" Property="Opacity" Value="0.35"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <!-- Alt not -->
+                    <TextBlock Margin="0,20,0,0" TextAlignment="Center" TextWrapping="Wrap">
+                        <Run Text="Şifren istenmez." FontSize="10" Foreground="#3A3A3A"/>
+                        <Run Text=" Sadece Riot ID ile doğrulama yapılır." FontSize="10" Foreground="#333333"/>
+                    </TextBlock>
+
+                </StackPanel>
 
             </StackPanel>
         </Border>

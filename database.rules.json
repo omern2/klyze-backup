@@ -1,0 +1,267 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "users": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "$uid": {
+        ".validate": "auth.uid === $uid && newData.hasChildren(['oyuncuAdi', 'tag', 'bolge'])",
+        "oyuncuAdi": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 30" },
+        "tag": { ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 10" },
+        "bolge": { ".validate": "newData.isString()" },
+        "elo": { ".validate": "newData.isNumber()" },
+        "currentTier": { ".validate": "newData.isNumber()" },
+        "rutbePuani": { ".validate": "newData.isNumber()" },
+        "cardSmallUrl": { ".validate": "newData.isString()" },
+        "email": { ".validate": "newData.isString()" },
+        "googleUid": { ".validate": "newData.isString()" },
+        "banned": { ".validate": "newData.isBoolean()" },
+        "sonGuncelleme": { ".validate": "newData.isNumber()" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "downloads": {
+      ".read": true,
+      ".write": true,
+      ".validate": "newData.hasChildren(['count', 'lastUpdate'])",
+      "count": {
+        ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999999999"
+      },
+      "lastUpdate": {
+        ".validate": "newData.isString()"
+      },
+      "$other": { ".validate": false }
+    },
+
+    "reviews": {
+      ".read": true,
+      ".write": "auth != null",
+      "$reviewId": {
+        ".validate": "newData.hasChildren(['userName', 'rating', 'text', 'timestamp', 'likes', 'csrfToken'])",
+        "userName": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 50"
+        },
+        "userPhoto": {
+          ".validate": "newData.isString() && newData.val().length <= 500"
+        },
+        "rating": {
+          ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 5"
+        },
+        "text": {
+          ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 500"
+        },
+        "timestamp": {
+          ".validate": "newData.isNumber() && newData.val() <= now + 60000"
+        },
+        "likes": {
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999999"
+        },
+        "csrfToken": {
+          ".validate": "newData.isString() && newData.val().length == 64"
+        },
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    "config": {
+      ".read": "auth != null",
+      ".write": "auth != null",
+      "apiKeys": {
+        "$key": {
+          ".validate": "newData.isString() && newData.val().length < 100"
+        }
+      }
+    },
+
+    "lobbies": {
+      ".indexOn": ["status", "expiresAt", "createdAt"],
+      "$lobbyId": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['hostName', 'hostTag', 'hostElo', 'hostTier', 'region', 'status', 'createdAt', 'expiresAt']) &&
+                      newData.child('hostName').isString() && newData.child('hostName').val().length <= 20 &&
+                      newData.child('hostTag').isString() && newData.child('hostTag').val().length <= 10 &&
+                      newData.child('hostElo').isNumber() &&
+                      newData.child('hostTier').isNumber() &&
+                      newData.child('region').isString() &&
+                      newData.child('status').isString() &&
+                      newData.child('createdAt').isNumber() &&
+                      newData.child('expiresAt').isNumber()",
+        "hostName": { ".validate": true },
+        "hostTag": { ".validate": true },
+        "hostElo": { ".validate": true },
+        "hostTier": { ".validate": true },
+        "groupCode": { ".validate": "newData.isString() && newData.val().length <= 10" },
+        "region": { ".validate": true },
+        "status": { ".validate": "newData.val().matches(/^(waiting|matched|cancelled)$/)" },
+        "createdAt": { ".validate": true },
+        "expiresAt": { ".validate": true },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "matchmaking": {
+      ".indexOn": ["status", "region", "createdAt"],
+      "$userId": {
+        ".read": "auth != null && $userId === auth.uid",
+        ".write": "auth != null && $userId === auth.uid",
+        ".validate": "newData.hasChildren(['playerName', 'playerTag', 'elo', 'tier', 'region', 'status', 'createdAt']) &&
+                      newData.child('playerName').isString() &&
+                      newData.child('playerTag').isString() &&
+                      newData.child('elo').isNumber() &&
+                      newData.child('tier').isNumber() &&
+                      newData.child('region').isString() &&
+                      newData.child('status').isString() &&
+                      newData.child('createdAt').isNumber()",
+        "playerName": { ".validate": true },
+        "playerTag": { ".validate": true },
+        "elo": { ".validate": true },
+        "tier": { ".validate": true },
+        "region": { ".validate": true },
+        "status": { ".validate": "newData.val().matches(/^(searching|found|cancelled)$/)" },
+        "createdAt": { ".validate": true },
+        "localId": { ".validate": true },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "rooms": {
+      ".indexOn": ["status", "player1LocalId", "player2LocalId", "createdAt", "expiresAt"],
+      "$roomId": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['status', 'createdAt']) &&
+                      newData.child('status').isString() &&
+                      newData.child('createdAt').isNumber() &&
+                      (!newData.hasChild('hostName') || (newData.child('hostName').isString() && newData.child('hostName').val().length <= 20)) &&
+                      (!newData.hasChild('hostTag') || (newData.child('hostTag').isString() && newData.child('hostTag').val().length <= 10)) &&
+                      (!newData.hasChild('hostElo') || newData.child('hostElo').isNumber()) &&
+                      (!newData.hasChild('hostTier') || newData.child('hostTier').isNumber()) &&
+                      (!newData.hasChild('expiresAt') || newData.child('expiresAt').isNumber()) &&
+                      (!newData.hasChild('player1Elo') || newData.child('player1Elo').isNumber()) &&
+                      (!newData.hasChild('player1Tier') || newData.child('player1Tier').isNumber()) &&
+                      (!newData.hasChild('player2Elo') || newData.child('player2Elo').isNumber()) &&
+                      (!newData.hasChild('player2Tier') || newData.child('player2Tier').isNumber())",
+        "id": { ".validate": "newData.isString()" },
+        "hostName": { ".validate": "newData.isString() && newData.val().length <= 20" },
+        "hostTag": { ".validate": "newData.isString() && newData.val().length <= 10" },
+        "hostElo": { ".validate": "newData.isNumber()" },
+        "hostTier": { ".validate": "newData.isNumber()" },
+        "hostRank": { ".validate": "newData.isString()" },
+        "gameMode": { ".validate": "newData.isString()" },
+        "region": { ".validate": "newData.isString()" },
+        "maxPlayers": { ".validate": "newData.isNumber()" },
+        "players": { ".validate": true },
+        "player1LocalId": { ".validate": "newData.isString()" },
+        "player1Name": { ".validate": "newData.isString() && newData.val().length <= 20" },
+        "player1Tag": { ".validate": "newData.isString() && newData.val().length <= 10" },
+        "player1Elo": { ".validate": "newData.isNumber()" },
+        "player1Tier": { ".validate": "newData.isNumber()" },
+        "player1CardUrl": { ".validate": "newData.isString()" },
+        "player2LocalId": { ".validate": "newData.isString()" },
+        "player2Name": { ".validate": "newData.isString() && newData.val().length <= 20" },
+        "player2Tag": { ".validate": "newData.isString() && newData.val().length <= 10" },
+        "player2Elo": { ".validate": "newData.isNumber()" },
+        "player2Tier": { ".validate": "newData.isNumber()" },
+        "player2CardUrl": { ".validate": "newData.isString()" },
+        "groupCode": { ".validate": "newData.isString() && newData.val().length <= 10" },
+        "status": { ".validate": "newData.val().matches(/^(waiting|matched|group_code_set|completed|cancelled)$/)" },
+        "createdAt": { ".validate": true },
+        "expiresAt": { ".validate": "newData.isNumber()" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "bildirimler": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["timestamp", "okundu"],
+      "$bildirimId": {
+        "ip": { ".validate": "newData.isString()" },
+        "timestamp": { ".validate": "newData.isNumber()" },
+        "type": { ".validate": "newData.isString()" },
+        "severity": { ".validate": "newData.isString()" },
+        "message": { ".validate": "newData.isString()" },
+        "path": { ".validate": "newData.isString()" },
+        "okundu": { ".validate": "newData.isBoolean()" },
+        "details": { ".validate": "newData.isString()" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "tracking": {
+      "ips": {
+        ".indexOn": ["timestamp"],
+        ".read": true,
+        ".write": true,
+        "$pushId": {
+          "ip": { ".validate": "newData.isString()" },
+          "timestamp": { ".validate": "newData.isNumber()" },
+          "userAgent": { ".validate": "newData.isString()" },
+          "path": { ".validate": "newData.isString()" },
+          "$other": { ".validate": false }
+        }
+      },
+      "threats": {
+        ".indexOn": ["timestamp", "severity", "blocked"],
+        ".read": true,
+        ".write": true,
+        "$threatId": {
+          "ip": { ".validate": "newData.isString()" },
+          "timestamp": { ".validate": "newData.isNumber()" },
+          "path": { ".validate": "newData.isString()" },
+          "userAgent": { ".validate": "newData.isString()" },
+          "method": { ".validate": "newData.isString()" },
+          "severity": { ".validate": "newData.isString()" },
+          "blocked": { ".validate": "newData.isBoolean()" },
+          "threats": { ".validate": true },
+          "country": { ".validate": "newData.isString()" },
+          "city": { ".validate": "newData.isString()" },
+          "isp": { ".validate": "newData.isString()" },
+          "$other": { ".validate": false }
+        }
+      }
+    },
+
+    "audit": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["timestamp", "severity", "node"],
+      "$auditId": {
+        "action": { ".validate": "newData.isString()" },
+        "node": { ".validate": "newData.isString()" },
+        "childId": { ".validate": "newData.isString()" },
+        "path": { ".validate": "newData.isString()" },
+        "key": { ".validate": "newData.isString()" },
+        "previousValue": { ".validate": "newData.isString()" },
+        "newValue": { ".validate": "newData.isString()" },
+        "authUid": { ".validate": "newData.isString()" },
+        "timestamp": { ".validate": "newData.isNumber()" },
+        "severity": { ".validate": "newData.isString()" },
+        "message": { ".validate": "newData.isString()" },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "killswitch": {
+      ".read": true,
+      ".write": true,
+      ".validate": "newData.isBoolean()"
+    },
+
+    "updates": {
+      ".read": true,
+      ".write": "auth != null",
+      "latest": {
+        "$field": {
+          ".validate": "newData.isString() || newData.isBoolean()"
+        }
+      }
+    }
+  }
+}

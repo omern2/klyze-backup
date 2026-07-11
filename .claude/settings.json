@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(claude mcp add magic --scope user --env API_KEY=\"99756a828c6658b38d599db22596042b9040f8f9d8d894d9998339daf059ccbe\" -- npx -y @21st-dev/magic@latest)",
+      "PowerShell(git clone https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git \"klyze site\")",
+      "Read(//home/omery/Music/klyze kayak kodları/klyze site/**)"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\omery\\Music\\klyze kayak kodlar�\\klyze site\\components"
+    ]
+  }
+}

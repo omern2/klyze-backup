@@ -1,0 +1,8 @@
+{
+  "rules": {
+    "tracking": {
+      ".read": true,
+      ".write": true
+    }
+  }
+}

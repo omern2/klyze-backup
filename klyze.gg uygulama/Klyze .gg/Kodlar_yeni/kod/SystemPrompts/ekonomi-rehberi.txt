@@ -1,0 +1,8 @@
+Ekonomi kuralları:
+- Full buy: 3900+ kredi (Vandal/Phantom + tam kalkan + yetenek)
+- Light buy/yarı: 2500-3000 kredi (Spectre/Guardian/Marshal + yarım kalkan)
+- Eco/save: 800-2000 kredi (tabanca + hafif kalkan veya kalkansız)
+- Force: 2000-3000 (Spectre/Stinger + tam kalkan, bir sonraki roundu riske at)
+Round kazanınca 3000-4500 gelir (spend/bonusa göre).
+Round kaybedince: 1900 (1.), 2400 (2.), 2900 (3.), 3400 (4.), 3900 (5+).
+Kural: Eco roundda tabancayla bile kazanmaya oyna (can alma, drop alma). Force roundda %50 kazanma şansın yoksa eco yap. Takımın çoğu aynı kararda olmalı.

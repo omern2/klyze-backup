@@ -2,11 +2,11 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Input;
+using Microsoft.Win32;
 using System.Windows.Threading;
 
 namespace KlyzeSetup
@@ -22,8 +22,32 @@ namespace KlyzeSetup
         {
             InitializeComponent();
 
+            var args = Environment.GetCommandLineArgs();
+            bool isUpdate = args.Length > 1 && args[1] == "-update";
+
+            if (isUpdate)
+            {
+                // Silent update mode: extract zip to current dir, launch Klyze, exit
+                var exeDir = Path.GetDirectoryName(Environment.ProcessPath);
+                if (exeDir != null)
+                {
+                    _installPath = exeDir;
+                    _ = Task.Run(async () =>
+                    {
+                        await ExtractUpdateAsync();
+                        var exePath = Path.Combine(_installPath, "Klyze.exe");
+                        if (File.Exists(exePath))
+                        {
+                            try { Process.Start(exePath); } catch { }
+                        }
+                        await Dispatcher.InvokeAsync(() => Close());
+                    });
+                }
+                return;
+            }
+
             _installPath = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "Klyze");
 
             InstallPathText.Text = _installPath;
@@ -31,22 +55,14 @@ namespace KlyzeSetup
             UpdateUI();
         }
 
-        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
         {
-            if (e.ButtonState == MouseButtonState.Pressed)
-                DragMove();
-        }
-
-        private void CloseBtn_Click(object sender, RoutedEventArgs e)
-        {
-            if (_currentPage == 4)
-                Close();
-            else
+            if (_currentPage != 4 && _currentPage != 0)
             {
-                var result = System.Windows.MessageBox.Show("Kurulum iptal edilsin mi?", "Klyze Setup",
+                var result = System.Windows.MessageBox.Show("Kurulum iptal edilsin mi?", "Klyze Kurulum Rehberi",
                     MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (result == MessageBoxResult.Yes)
-                    Close();
+                if (result != MessageBoxResult.Yes)
+                    e.Cancel = true;
             }
         }
 
@@ -100,12 +116,14 @@ namespace KlyzeSetup
 
         private void BrowsePath_Click(object sender, RoutedEventArgs e)
         {
-            using var dialog = new FolderBrowserDialog();
-            dialog.SelectedPath = _installPath;
-            dialog.Description = "Klyze kurulum klasörünü seçin";
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            var dialog = new OpenFolderDialog
             {
-                _installPath = dialog.SelectedPath;
+                InitialDirectory = _installPath,
+                Title = "Klyze kurulum klasörünü seçin"
+            };
+            if (dialog.ShowDialog(this) == true)
+            {
+                _installPath = Path.Combine(dialog.FolderName, "Klyze");
                 InstallPathText.Text = _installPath;
             }
         }
@@ -157,6 +175,29 @@ namespace KlyzeSetup
             }
         }
 
+        private async Task ExtractUpdateAsync()
+        {
+            var zipUrl = "https://github.com/omern2/klyze-backup/releases/download/v3.18.0/Klyze-v3.18.0.zip";
+
+            using var http = new HttpClient { Timeout = TimeSpan.FromMinutes(5) };
+            using var resp = await http.GetAsync(zipUrl, HttpCompletionOption.ResponseHeadersRead);
+            resp.EnsureSuccessStatusCode();
+
+            using var stream = await resp.Content.ReadAsStreamAsync();
+            using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
+            {
+                foreach (var entry in archive.Entries)
+                {
+                    var destPath = Path.Combine(_installPath, entry.FullName);
+                    var destDir = Path.GetDirectoryName(destPath);
+                    if (!string.IsNullOrEmpty(destDir))
+                        Directory.CreateDirectory(destDir);
+                    if (!string.IsNullOrEmpty(entry.Name))
+                        entry.ExtractToFile(destPath, overwrite: true);
+                }
+            }
+        }
+
         private async Task InstallAsync()
         {
             try
@@ -167,46 +208,8 @@ namespace KlyzeSetup
                     ProgressText.Text = "Kurulum paketi açılıyor...";
                 });
 
-                var assembly = Assembly.GetExecutingAssembly();
-                var resourceName = "KlyzeSetup.klyze_update.zip";
-
                 await Task.Delay(300);
-
-                using (var stream = assembly.GetManifestResourceStream(resourceName))
-                {
-                    if (stream == null)
-                        throw new Exception("Kurulum paketi bulunamadı.");
-
-                    using (var archive = new ZipArchive(stream, ZipArchiveMode.Read))
-                    {
-                        var entries = archive.Entries;
-                        int total = entries.Count;
-                        int completed = 0;
-
-                        foreach (var entry in entries)
-                        {
-                            var destPath = Path.Combine(_installPath, entry.FullName);
-                            var destDir = Path.GetDirectoryName(destPath);
-                            if (!string.IsNullOrEmpty(destDir))
-                                Directory.CreateDirectory(destDir);
-
-                            if (!string.IsNullOrEmpty(entry.Name))
-                                entry.ExtractToFile(destPath, overwrite: true);
-
-                            completed++;
-                            int progress = (int)((double)completed / total * 100);
-
-                            await Dispatcher.InvokeAsync(() =>
-                            {
-                                ProgressBar.Width = progress * 4;
-                                ProgressText.Text = $"Dosyalar çıkarılıyor... ({completed}/{total})";
-                                ProgressDetail.Text = entry.FullName;
-                            });
-
-                            await Task.Delay(20);
-                        }
-                    }
-                }
+                await ExtractUpdateAsync();
 
                 await Dispatcher.InvokeAsync(() =>
                 {
@@ -221,7 +224,7 @@ namespace KlyzeSetup
 
                 await Dispatcher.InvokeAsync(() =>
                 {
-                    ProgressBar.Width = 400;
+                    ProgressBar.Value = 100;
                     FinalPathText.Text = _installPath;
                     ShowPage(4);
                     NextBtn.Visibility = Visibility.Visible;

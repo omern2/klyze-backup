@@ -92,7 +92,22 @@ namespace ValorantAutoClicker.Services
             string name, string tag, CancellationToken ct = default)
         {
             // 1. Hesap bilgisi (bölge için)
-            var account = await GetAccountAsync(name, tag, ct);
+            HenrikAccountData account;
+            try
+            {
+                account = await GetAccountAsync(name, tag, ct);
+            }
+            catch (HenrikApiException ex) when (
+                ex.Message.Contains("maç verisi alınamadı") ||
+                ex.Message.Contains("bölge bilgisi alınamadı"))
+            {
+                account = new HenrikAccountData
+                {
+                    Name   = name,
+                    Tag    = tag,
+                    Region = "eu"
+                };
+            }
 
             // 2. MMR bilgisi
             HenrikMmrData mmr = null;
@@ -157,9 +172,19 @@ namespace ValorantAutoClicker.Services
             var status = root["status"]?.Value<int>() ?? 200;
             if (status == 200) return;
 
-            var msg = root["errors"]?[0]?["message"]?.ToString()
-                   ?? root["message"]?.ToString()
-                   ?? $"API hatası ({status})";
+            var error = root["errors"]?[0];
+            var code = error?["code"]?.Value<int>() ?? 0;
+            var msg  = error?["message"]?.ToString()
+                    ?? root["message"]?.ToString()
+                    ?? $"API hatası ({status})";
+
+            switch (code)
+            {
+                case 22: throw new HenrikApiException("Hesap bulunamadı. Kullanıcı adı ve tag'i kontrol edin.");
+                case 23: throw new HenrikApiException("Hesap bulundu ancak bölge bilgisi alınamadı. Lütfen en az bir maç (deathmatch vb.) oynayıp tekrar deneyin.");
+                case 24: throw new HenrikApiException("Hesap bulundu ancak maç verisi alınamadı. Lütfen en az bir maç oynayıp tekrar deneyin.");
+                case 25: throw new HenrikApiException("MMR verisi bulunamadı. Lütfen rekabetli maç oynayın.");
+            }
 
             switch (status)
             {
@@ -175,7 +200,24 @@ namespace ValorantAutoClicker.Services
         {
             switch ((int)code)
             {
-                case 404: throw new HenrikApiException("Hesap bulunamadı. Kullanıcı adı ve tag'i kontrol edin.");
+                case 404:
+                    try
+                    {
+                        var root = JObject.Parse(body);
+                        var errs = root["errors"];
+                        if (errs != null && errs.HasValues)
+                        {
+                            var ec = errs[0]?["code"]?.Value<int>() ?? 0;
+                            switch (ec)
+                            {
+                                case 23: throw new HenrikApiException("Hesap bulundu ancak bölge bilgisi alınamadı. Lütfen en az bir maç (deathmatch vb.) oynayıp tekrar deneyin.");
+                                case 24: throw new HenrikApiException("Hesap bulundu ancak maç verisi alınamadı. Lütfen en az bir maç oynayıp tekrar deneyin.");
+                                case 25: throw new HenrikApiException("MMR verisi bulunamadı. Lütfen rekabetli maç oynayın.");
+                            }
+                        }
+                    }
+                    catch { }
+                    throw new HenrikApiException("Hesap bulunamadı. Kullanıcı adı ve tag'i kontrol edin.");
                 case 429: throw new HenrikApiException("Çok fazla istek gönderildi. Lütfen bekleyin.");
                 case 401:
                 case 403: throw new HenrikApiException("API anahtarı geçersiz veya yetkisiz.");

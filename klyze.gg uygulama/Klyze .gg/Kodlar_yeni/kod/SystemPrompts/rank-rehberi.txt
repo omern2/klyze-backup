@@ -1,0 +1,3 @@
+Rank sistemi: Demir→Bronz→Gümüş→Altın→Platin→Elmas→Yükselen→İmparatorluk→Radyant. Her rank 3 kademe (1-3). RR: galibiyet +20-25 RR, mağlubiyet -15-20 RR. MVP etkisi düşük, round farkı önemli. Performans düşük ranklarda etkili, yüksek ranklarda sadece win/loss.
+MMR gizlidir, görünen RR'den farklı çalışır. MMR'ın RR'den yüksekse +RR fazla alırsın. Premier mod: 5'li takım, harita ban, skor tablosu.
+İpucu: 2-3 maç üst üste kaybedince ara ver. Tilt oynayışı rank kaybettirir.
