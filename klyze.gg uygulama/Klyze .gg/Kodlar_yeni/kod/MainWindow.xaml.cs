@@ -99,6 +99,8 @@ namespace ValorantAutoClicker
                         Dispatcher.Invoke(() =>
                         {
                             var p = VM.DownloadProgress;
+                            if (PanelProgressTrack.ActualWidth <= 0)
+                                PanelProgressTrack.UpdateLayout();
                             PanelProgressFill.Width = PanelProgressTrack.ActualWidth > 0
                                 ? (p * PanelProgressTrack.ActualWidth) / 100 : 0;
                             PanelGuncelleBtnText.Text = $"İndiriliyor... %{p}";
@@ -141,20 +143,20 @@ namespace ValorantAutoClicker
 
                 VM.LoadConfig();
 
-                // Play DataContext
-                if (PlayPageControl != null)
-                {
-                    var playPage = new ValorantAutoClicker.Views.PlayPage();
-                    playPage.DataContext = VM.PlayVM;
-                    PlayPageControl.Content = playPage;
-                }
-
                 // Analiz DataContext
                 if (AnalizPageControl != null)
                 {
                     var analizPage = new ValorantAutoClicker.Views.AnalizPage();
                     analizPage.DataContext = VM.AnalizVM;
                     AnalizPageControl.Content = analizPage;
+                }
+
+                // Play DataContext
+                if (PlayPageControl != null)
+                {
+                    var playPage = new ValorantAutoClicker.Views.PlayPage();
+                    playPage.DataContext = VM.PlayVM;
+                    PlayPageControl.Content = playPage;
                 }
 
                 // Login DataContext
@@ -164,6 +166,41 @@ namespace ValorantAutoClicker
                     loginPage.DataContext = VM.LoginVM;
                     LoginPageControl.Content = loginPage;
                 }
+
+                // Klyze AI events
+
+                System.ComponentModel.PropertyChangedEventHandler aiSohbetHandler = null;
+                System.Collections.Specialized.NotifyCollectionChangedEventHandler aiMesajHandler = null;
+
+                aiSohbetHandler = (s, pce) =>
+                {
+                    if (pce.PropertyName == nameof(VM.KlyzeAiVM.AktifSohbet) && Dispatcher != null)
+                    {
+                        Dispatcher.Invoke(async () =>
+                        {
+                            if (VM.KlyzeAiVM.AktifSohbet?.Mesajlar != null)
+                            {
+                                VM.KlyzeAiVM.AktifSohbet.Mesajlar.CollectionChanged += aiMesajHandler;
+                                await Task.Delay(50);
+                                //if (AiChatScroll != null)
+                                //    AiChatScroll.ScrollToVerticalOffset(AiChatScroll.ScrollableHeight);
+                            }
+                        });
+                    }
+                };
+                VM.KlyzeAiVM.PropertyChanged += aiSohbetHandler;
+
+                aiMesajHandler = (s, cce) =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        if (AiChatScroll != null)
+                            AiChatScroll.ScrollToVerticalOffset(AiChatScroll.ScrollableHeight);
+                    });
+                };
+
+                if (VM.KlyzeAiVM.AktifSohbet?.Mesajlar != null)
+                    VM.KlyzeAiVM.AktifSohbet.Mesajlar.CollectionChanged += aiMesajHandler;
 
                 // Giriş yapıldı eventi
                 VM.GirisYapildi += OnGirisYapildi;
@@ -198,7 +235,9 @@ namespace ValorantAutoClicker
         {
             try
             {
-                var path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ekipman.json");
+                var path = System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Klyze", "ekipman.json");
                 if (System.IO.File.Exists(path))
                 {
                     var json = System.IO.File.ReadAllText(path);
@@ -222,9 +261,7 @@ namespace ValorantAutoClicker
             _allSearchItems = new List<SearchItem>
             {
                 new SearchItem { Name = "Ana Sayfa", Description = "Ana sayfaya dön", Icon = "🏠", Page = PageType.Home },
-                new SearchItem { Name = "Ajan Seçimi", Description = "Otomatik ajan kilitleme", Icon = "🎯", Page = PageType.Agent },
-                new SearchItem { Name = "AFK Mode", Description = "Otomatik hareket ile AFK kalma", Icon = "💤", Page = PageType.Afk },
-                new SearchItem { Name = "Yazı Spam", Description = "Sohbete otomatik mesaj gönderme", Icon = "💬", Page = PageType.Spam },
+
                 new SearchItem { Name = "Crosshair", Description = "Crosshair ayarları ve yönetimi", Icon = "🎯", Page = PageType.Crosshair },
                 new SearchItem { Name = "Fake Ses", Description = "Sanal mikrofon ile ses oynatma", Icon = "🎤", Page = PageType.FakeMic },
                 new SearchItem { Name = "Oyna", Description = "Maç bulma ve lobi yönetimi", Icon = "🎮", Page = PageType.Play },
@@ -233,6 +270,7 @@ namespace ValorantAutoClicker
                 new SearchItem { Name = "Destek", Description = "Yardım ve destek sayfası", Icon = "❓", Page = PageType.Support },
                 new SearchItem { Name = "Bilgi", Description = "Uygulama hakkında bilgi", Icon = "ℹ️", Page = PageType.Info },
                 new SearchItem { Name = "Timer", Description = "Zamanlayıcı ve geri sayım", Icon = "⏱️", Page = PageType.Timer },
+
             };
             _searchItems = new ObservableCollection<SearchItem>();
             SearchResultsList.ItemsSource = _searchItems;
@@ -313,7 +351,7 @@ namespace ValorantAutoClicker
 
         private void OnPageChanged(PageType page)
         {
-            var pages = new[] { HomePage, AgentPage, AfkPage, SpamPage, CrosshairPage, FakeMicPage, PlayPage, AnalizPage, SettingsPage, SupportPage, InfoPage, TimerPage };
+            var pages = new[] { HomePage, AgentPage, AfkPage, SpamPage, CrosshairPage, FakeMicPage, PlayPage, AnalizPage, SettingsPage, SupportPage, InfoPage, TimerPage, KlyzeAiPage };
             foreach (var p in pages)
                 if (p != null) p.Visibility = Visibility.Collapsed;
 
@@ -331,6 +369,7 @@ namespace ValorantAutoClicker
                 PageType.Support => SupportPage,
                 PageType.Info => InfoPage,
                 PageType.Timer => TimerPage,
+                PageType.KlyzeAi => KlyzeAiPage,
                 _ => HomePage
             };
 
@@ -342,20 +381,26 @@ namespace ValorantAutoClicker
                     if (AnalizPageControl?.Content is Views.AnalizPage ap && ap.DataContext == null)
                         ap.DataContext = VM.AnalizVM;
                     try { _ = VM.AnalizVM.YukleAsync(); }
-                    catch (Exception ex) { System.IO.File.AppendAllText("exe/error.log", $"[AnalizLoad] {ex}\n"); }
+                    catch { }
                 }
                 if (page == PageType.Agent) LoadSavedProfiles();
                 if (page == PageType.Crosshair) InitCrosshairPage();
                 if (page == PageType.FakeMic) InitFakeMicPage();
+                if (page == PageType.KlyzeAi)
+                {
+                    ExpandToolsIfNeeded();
+                    Dispatcher.InvokeAsync(() =>
+                    {
+                        if (AiChatScroll != null)
+                            AiChatScroll.ScrollToVerticalOffset(AiChatScroll.ScrollableHeight);
+                    });
+                }
                 if (newPage.Children.Count > 0 && newPage.Children[0] is StackPanel sp)
                     PlayStaggeredEntry(sp);
             }
 
             // Nav buton aktif durumları
             SetNavActive(MenuHome, page == PageType.Home);
-            SetNavActive(MenuAgent, page == PageType.Agent);
-            SetNavActive(MenuAfk, page == PageType.Afk);
-            SetNavActive(MenuSpam, page == PageType.Spam);
             SetNavActive(MenuCrosshair, page == PageType.Crosshair);
             SetNavActive(MenuFakeMic, page == PageType.FakeMic);
             SetNavActive(MenuPlay, page == PageType.Play);
@@ -568,11 +613,12 @@ namespace ValorantAutoClicker
         {
             try
             {
+                var iconPath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "icon.ico");
                 _trayIcon = new WinForms.NotifyIcon
                 {
-                    Text = "Klyze v3.9.0",
-                    Icon = System.IO.File.Exists("icon.ico")
-                        ? new System.Drawing.Icon("icon.ico")
+                    Text = "Klyze v3.12.0",
+                    Icon = System.IO.File.Exists(iconPath)
+                        ? new System.Drawing.Icon(iconPath)
                         : System.Drawing.SystemIcons.Application,
                     Visible = false
                 };
@@ -629,19 +675,12 @@ namespace ValorantAutoClicker
 
         private void OnAnyPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            string logPath = System.IO.Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory, "scroll_debug.log");
-            try { System.IO.File.AppendAllText(logPath, $"CLASS: sender={sender.GetType().Name} delta={e.Delta}\n"); }
-            catch { }
-
             if (AnalizPage.Visibility == Visibility.Visible &&
                 AnalizPageControl?.Content is Views.AnalizPage ap &&
                 ap.MacDetayBackdrop.Visibility == Visibility.Visible)
             {
                 var sv = ap.MacDetayScroll;
                 sv.ScrollToVerticalOffset(sv.VerticalOffset - e.Delta);
-                try { System.IO.File.AppendAllText(logPath, $"  SCROLLED: vo={sv.VerticalOffset}\n"); }
-                catch { }
                 e.Handled = true;
             }
         }
@@ -670,6 +709,13 @@ namespace ValorantAutoClicker
             => VM.NavigateCommand.Execute(PageType.Support);
         private void MenuInfo_Click(object sender, RoutedEventArgs e)
             => VM.NavigateCommand.Execute(PageType.Info);
+        private void MenuKlyzeAi_Click(object sender, RoutedEventArgs e)
+            => VM.NavigateCommand.Execute(PageType.KlyzeAi);
+        private void KlyzeAiGirisKutusu_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter && VM?.KlyzeAiVM?.GonderCommand?.CanExecute(null) == true)
+                VM.KlyzeAiVM.GonderCommand.Execute(null);
+        }
 
         // Araçlar accordion — tıkla aç/kapat
         private bool _toolsExpanded = false;
@@ -678,7 +724,20 @@ namespace ValorantAutoClicker
         {
             if (ToolsSubmenu == null) return;
             _toolsExpanded = !_toolsExpanded;
-            double targetHeight = _toolsExpanded ? 225 : 0;
+            double targetHeight = _toolsExpanded ? 88 : 0;
+            var anim = new DoubleAnimation(ToolsSubmenu.Height, targetHeight,
+                new Duration(TimeSpan.FromMilliseconds(220)))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            ToolsSubmenu.BeginAnimation(FrameworkElement.HeightProperty, anim);
+        }
+
+        private void ExpandToolsIfNeeded()
+        {
+            if (ToolsSubmenu == null || _toolsExpanded) return;
+            _toolsExpanded = true;
+            double targetHeight = 88;
             var anim = new DoubleAnimation(ToolsSubmenu.Height, targetHeight,
                 new Duration(TimeSpan.FromMilliseconds(220)))
             {
@@ -838,7 +897,9 @@ namespace ValorantAutoClicker
 
         private System.Collections.Generic.List<object> LoadAgentProfiles()
         {
-            var path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ajan_profilleri.json");
+            var path = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Klyze", "ajan_profilleri.json");
             if (System.IO.File.Exists(path))
             {
                 var json = System.IO.File.ReadAllText(path);
@@ -849,7 +910,9 @@ namespace ValorantAutoClicker
 
         private void SaveAgentProfiles(System.Collections.Generic.List<object> profiles)
         {
-            var path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ajan_profilleri.json");
+            var path = System.IO.Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Klyze", "ajan_profilleri.json");
             var json = System.Text.Json.JsonSerializer.Serialize(profiles, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
             System.IO.File.WriteAllText(path, json);
         }
@@ -1538,8 +1601,33 @@ namespace ValorantAutoClicker
         private void Youtube_Click(object sender, System.Windows.Input.MouseButtonEventArgs e) => OpenUrl("https://www.youtube.com/channel/UCp2HkORdCOwCqsthrbrFpRg/");
         private void Tiktok_Click(object sender, System.Windows.Input.MouseButtonEventArgs e) => OpenUrl("https://www.tiktok.com/@autoclicker.v");
 
+        private static readonly string[] AllowedDomains = {
+            "instagram.com",
+            "www.instagram.com",
+            "youtube.com",
+            "www.youtube.com",
+            "tiktok.com",
+            "www.tiktok.com",
+            "vb-audio.com",
+            "www.vb-audio.com",
+            "wa.me"
+        };
+
+        private static bool IsUrlAllowed(string url)
+        {
+            if (string.IsNullOrEmpty(url)) return false;
+            try
+            {
+                var uri = new Uri(url);
+                return uri.Scheme == "https" &&
+                       AllowedDomains.Any(d => uri.Host.EndsWith(d, StringComparison.OrdinalIgnoreCase));
+            }
+            catch { return false; }
+        }
+
         private void OpenUrl(string url)
         {
+            if (!IsUrlAllowed(url)) return;
             try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo { FileName = url, UseShellExecute = true }); }
             catch { }
         }
@@ -1687,6 +1775,7 @@ namespace ValorantAutoClicker
         // ─── BİLDİRİM ZİLİ + DROPDOWN ─────────────────────────────────
 
         private Storyboard _pulseStoryboard;
+        private Storyboard _taramaStoryboard;
 
         private void BildirimZili_Click(object sender, MouseButtonEventArgs e)
         {
@@ -1698,27 +1787,50 @@ namespace ValorantAutoClicker
 
         private void BildirimPanelAc()
         {
-            // Profil panelini kapat (çakışmasın)
-            if (ProfileDropdown.Visibility == Visibility.Visible)
-                ProfilPanelKapat();
-
-            // Panel içeriğini güncelle
-            PanelGuncelleBtn.Visibility = Visibility.Visible;
-            PanelErrorArea.Visibility = Visibility.Collapsed;
-            PanelProgressTrack.Visibility = Visibility.Collapsed;
-            PanelGuncelleBtnText.Text = "Güncelle";
-
-            if (VM.UpdateAvailable)
+            try
             {
-                PanelNoUpdate.Visibility = Visibility.Collapsed;
-                PanelUpdate.Visibility = Visibility.Visible;
-                PanelVersionText.Text = $"v{VM.LocalVersion} → v{VM.RemoteVersion}";
-                PanelReleaseNotes.Text = VM.ReleaseNotes;
+                // Profil panelini kapat (çakışmasın)
+                if (ProfileDropdown.Visibility == Visibility.Visible)
+                    ProfilPanelKapat();
+
+                // Panel içeriğini güncelle
+                PanelGuncelleBtn.Visibility = Visibility.Collapsed;
+                PanelErrorArea.Visibility = Visibility.Collapsed;
+                PanelProgressTrack.Visibility = Visibility.Collapsed;
+
+                var bildirimVar = VM != null && VM.BildirimVar;
+                var guncellemeVar = VM != null && VM.UpdateAvailable;
+
+                if (guncellemeVar)
+                {
+                    // Güncelleme var
+                    PanelNoUpdate.Visibility = Visibility.Collapsed;
+                    PanelBildirim.Visibility = Visibility.Collapsed;
+                    PanelUpdate.Visibility = Visibility.Visible;
+                    PanelGuncelleBtn.Visibility = Visibility.Visible;
+                    PanelVersionText.Text = $"v{VM.RemoteVersion}";
+                    PanelReleaseNotes.Text = VM.ReleaseNotes ?? "";
+                }
+                else if (bildirimVar)
+                {
+                    PanelNoUpdate.Visibility = Visibility.Collapsed;
+                    PanelBildirim.Visibility = Visibility.Visible;
+                    PanelBildirimBaslik.Text = VM.BildirimBaslik;
+                    PanelBildirimMesaj.Text = VM.BildirimMesaj;
+                    PanelUpdate.Visibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    PanelBildirim.Visibility = Visibility.Collapsed;
+                    PanelUpdate.Visibility = Visibility.Collapsed;
+                    PanelNoUpdate.Visibility = Visibility.Visible;
+                }
             }
-            else
+            catch
             {
                 PanelNoUpdate.Visibility = Visibility.Visible;
                 PanelUpdate.Visibility = Visibility.Collapsed;
+                PanelBildirim.Visibility = Visibility.Collapsed;
             }
 
             BildirimDropdownOverlay.Visibility = Visibility.Visible;
@@ -1787,6 +1899,7 @@ namespace ValorantAutoClicker
             PanelGuncelleBtnText.Text = "İndiriliyor... %0";
             PanelProgressTrack.Visibility = Visibility.Visible;
             PanelProgressFill.Width = 0;
+            PanelProgressTrack.UpdateLayout();
             PanelErrorArea.Visibility = Visibility.Collapsed;
 
             await VM.GuncellemeIndirCommand.ExecuteAsync(null);
@@ -1871,7 +1984,9 @@ namespace ValorantAutoClicker
                     ["mousepad"] = EquipMousepad.Text?.Trim() ?? ""
                 };
                 var json = System.Text.Json.JsonSerializer.Serialize(data, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
-                System.IO.File.WriteAllText(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "ekipman.json"), json);
+                System.IO.File.WriteAllText(System.IO.Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                    "Klyze", "ekipman.json"), json);
                 ShowEquipSavedView(data);
             }
             catch { }
@@ -1892,6 +2007,12 @@ namespace ValorantAutoClicker
             SavedHeadset.Text = data.GetValueOrDefault("headset", "-");
             SavedMousepad.Text = data.GetValueOrDefault("mousepad", "-");
             EquipSavedPanel.Visibility = Visibility.Visible;
+        }
+
+        private void UpdateBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if (VM != null && !string.IsNullOrEmpty(VM.DownloadUrl) && !VM.IsDownloading)
+                _ = VM.GuncellemeIndirAsync();
         }
 
     }

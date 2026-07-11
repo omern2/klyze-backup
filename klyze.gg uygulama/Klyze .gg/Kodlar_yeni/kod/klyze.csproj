@@ -11,16 +11,23 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <OutputPath>..\exe\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-    <Version>3.9.3.0</Version>
-    <AssemblyVersion>3.9.3.0</AssemblyVersion>
-    <FileVersion>3.9.3.0</FileVersion>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <SelfContained>true</SelfContained>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <Version>3.19.0.0</Version>
+    <AssemblyVersion>3.19.0.0</AssemblyVersion>
+    <FileVersion>3.19.0.0</FileVersion>
+    <SuppressIldasm>true</SuppressIldasm>
+    <DebugType>embedded</DebugType>
+    <!-- BitMono disabled for debugging -->
+    <BitMonoFailOnError>false</BitMonoFailOnError>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="..\ico\icon.ico" Link="icon.ico">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="..\ico\*.png">
@@ -30,15 +37,24 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="..\ico\ranklar\*.png">
+    <EmbeddedResource Include="..\ico\ranklar\*.png">
       <Link>ranklar\%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="protections.json" CopyToOutputDirectory="Never" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="SystemPrompts\*.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--PackageReference Include="BitMono.Integration" Version="0.40.1"-->
     <PackageReference Include="NAudio" Version="2.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="8.0.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
@@ -46,3 +62,4 @@
   </ItemGroup>
 
 </Project>
+

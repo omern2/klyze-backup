@@ -20,6 +20,28 @@
         <SolidColorBrush x:Key="AccentWhite" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="AccentLightGray" Color="#E0E0E0"/>
         <SolidColorBrush x:Key="BorderCol" Color="#2A2A2A"/>
+        <!-- Clean button style – no default chrome, subtle hover fade -->
+        <Style x:Key="AiCleanBtn" TargetType="Button">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          Content="{TemplateBinding Content}"
+                                          ContentTemplate="{TemplateBinding ContentTemplate}"
+                                          RecognizesAccessKey="True"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Opacity" Value="0.7"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <Style x:Key="NavBtn" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -293,7 +315,7 @@
                     <ControlTemplate TargetType="CheckBox">
                         <StackPanel Orientation="Horizontal">
                             <Border x:Name="box" Width="18" Height="18" Background="#252525" BorderBrush="#444" BorderThickness="1.5" CornerRadius="3" Margin="0,0,8,0">
-                                <TextBlock x:Name="tick" +&#10003;" FontSize="11" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+                                <TextBlock x:Name="tick" Text="&#10003;" FontSize="11" FontWeight="Bold" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
                             </Border>
                             <ContentPresenter VerticalAlignment="Center"/>
                         </StackPanel>
@@ -371,7 +393,7 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <ContentPresenter Grid.Column="0" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" VerticalAlignment="Center" IsHitTestVisible="False"/>
-                                <TextBlock Grid.Column="1" +â–¼" FontSize="10" Foreground="#888888" VerticalAlignment="Center" Margin="0,0,4,0"/>
+                                <TextBlock Grid.Column="1" Text="&#9660;" FontSize="10" Foreground="#888888" VerticalAlignment="Center" Margin="0,0,4,0"/>
                             </Grid>
                             <ToggleButton x:Name="ToggleButton" Style="{StaticResource ComboToggleBtn}" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press"/>
                             <Popup x:Name="PART_Popup" AllowsTransparency="True" Placement="Bottom" IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}}" Focusable="False" PopupAnimation="Slide">
@@ -542,7 +564,7 @@
                                 <Border Width="26" Height="26" Background="Transparent">
                                     <Image Source="pack://application:,,,/Assets/Icons/ana%20sayfa%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                 </Border>
-                                <TextBlock x:Name="LblHome" +Ana Sayfa" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                <TextBlock x:Name="LblHome" Text="Ana Sayfa" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
                             </StackPanel>
                         </Button>
 
@@ -552,42 +574,18 @@
                                 <Border Width="26" Height="26" Background="Transparent">
                                     <Image Source="pack://application:,,,/Assets/Icons/ara%C3%A7lar%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                 </Border>
-                                <TextBlock x:Name="LblTools" +Araçlar" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                <TextBlock x:Name="LblTools" Text="Araçlar" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
                             </StackPanel>
                         </Button>
                         <Border x:Name="ToolsSubmenu" Height="0" ClipToBounds="True"
                                 Background="#181818" BorderBrush="#2A2A2A" BorderThickness="0,0,0,1">
                             <StackPanel>
-                                <Button x:Name="MenuAgent" Style="{StaticResource NavBtn}" Click="MenuAgent_Click" Height="44">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="24,0,0,0">
-                                        <Border Width="20" Height="20" Background="Transparent">
-                                            <Image Source="pack://application:,,,/Assets/Icons/ajan%20se%C3%A7imi%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                        </Border>
-                                        <TextBlock x:Name="LblAgent" +Ajan Seçimi" FontSize="11" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button x:Name="MenuAfk" Style="{StaticResource NavBtn}" Click="MenuAfk_Click" Height="44">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="24,0,0,0">
-                                        <Border Width="20" Height="20" Background="Transparent">
-                                            <Image Source="pack://application:,,,/Assets/Icons/afk%20modu%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                        </Border>
-                                        <TextBlock x:Name="LblAfk" +AFK Mode" FontSize="11" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button x:Name="MenuSpam" Style="{StaticResource NavBtn}" Click="MenuSpam_Click" Height="44">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="24,0,0,0">
-                                        <Border Width="20" Height="20" Background="Transparent">
-                                            <Image Source="pack://application:,,,/Assets/Icons/yaz%C4%B1%20spam%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                        </Border>
-                                        <TextBlock x:Name="LblSpam" +Yazı Spam" FontSize="11" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                                    </StackPanel>
-                                </Button>
                                 <Button x:Name="MenuCrosshair" Style="{StaticResource NavBtn}" Click="MenuCrosshair_Click" Height="44">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="24,0,0,0">
                                         <Border Width="20" Height="20" Background="Transparent">
                                             <Image Source="pack://application:,,,/Assets/Icons/cross%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8" RenderOptions.BitmapScalingMode="HighQuality"/>
                                         </Border>
-                                        <TextBlock x:Name="LblCrosshair" +Crosshair" FontSize="11" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                        <TextBlock x:Name="LblCrosshair" Text="Crosshair" FontSize="11" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="8,0,0,0"/>
                                     </StackPanel>
                                 </Button>
                                 <Button x:Name="MenuFakeMic" Style="{StaticResource NavBtn}" Click="MenuFakeMic_Click" Height="44">
@@ -595,7 +593,7 @@
                                         <Border Width="20" Height="20" Background="Transparent">
                                             <Image Source="pack://application:,,,/Assets/Icons/fake%20mic%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0.8" RenderOptions.BitmapScalingMode="HighQuality"/>
                                         </Border>
-                                        <TextBlock x:Name="LblFakeMic" +Fake Ses" FontSize="11" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="8,0,0,0"/>
+                                        <TextBlock x:Name="LblFakeMic" Text="Fake Ses" FontSize="11" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="8,0,0,0"/>
                                     </StackPanel>
                                 </Button>
                             </StackPanel>
@@ -610,7 +608,7 @@
                                 <Border Width="26" Height="26" Background="Transparent">
                                     <Image Source="pack://application:,,,/Assets/Icons/oyna%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                 </Border>
-                                <TextBlock x:Name="LblPlay" +Oyna" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                <TextBlock x:Name="LblPlay" Text="Oyna" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
                             </StackPanel>
                         </Button>
                         <Button x:Name="MenuAnaliz" Style="{StaticResource NavBtn}" Click="MenuAnaliz_Click">
@@ -618,7 +616,7 @@
                                 <Border Width="26" Height="26" Background="Transparent">
                                     <Image Source="pack://application:,,,/Assets/Icons/analiz%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                 </Border>
-                                <TextBlock x:Name="LblAnaliz" +Analiz" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                <TextBlock x:Name="LblAnaliz" Text="Analiz" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
                             </StackPanel>
                         </Button>
                         <Separator Background="{StaticResource BorderCol}" Margin="10,4"/>
@@ -627,7 +625,7 @@
                                 <Border Width="26" Height="26" Background="Transparent">
                                     <Image Source="pack://application:,,,/Assets/Icons/ayarlar%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                 </Border>
-                                <TextBlock x:Name="LblSettings" +Ayarlar" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                <TextBlock x:Name="LblSettings" Text="Ayarlar" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
                             </StackPanel>
                         </Button>
                         <Button x:Name="MenuSupport" Style="{StaticResource NavBtn}" Click="MenuSupport_Click">
@@ -635,7 +633,7 @@
                                 <Border Width="26" Height="26" Background="Transparent">
                                     <Image Source="pack://application:,,,/Assets/Icons/bilgi%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                 </Border>
-                                <TextBlock x:Name="LblSupport" +Destek" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                <TextBlock x:Name="LblSupport" Text="Destek" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
                             </StackPanel>
                         </Button>
                         <Button x:Name="MenuInfo" Style="{StaticResource NavBtn}" Click="MenuInfo_Click">
@@ -643,7 +641,7 @@
                                 <Border Width="26" Height="26" Background="Transparent">
                                     <Image Source="pack://application:,,,/Assets/Icons/bilgi%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                 </Border>
-                                <TextBlock x:Name="LblInfo" +Bilgi" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
+                                <TextBlock x:Name="LblInfo" Text="Bilgi" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
                             </StackPanel>
                         </Button>
                     </StackPanel>
@@ -652,8 +650,8 @@
         </Border>
         <!-- MAIN AREA -->
         <Grid Grid.Row="1" Grid.Column="1">
-            <!-- Pages Container with External Scrollbar -->
-            <Grid Grid.Row="0">
+            <!-- Pages Container (excludes KlyzeAiPage for transparent bg) -->
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="6"/>
@@ -679,7 +677,7 @@
                                 <Border Grid.Column="0" Width="32" Height="32" CornerRadius="6" Background="#2A2A2A" Margin="3,0,0,0">
                                     <Image Source="pack://application:,,,/Assets/Icons/b%C3%BCy%C3%BCtec%20icon.png" Width="24" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                 </Border>
-                                <TextBox x:Name="SearchBox" Grid.Column="1" +" FontSize="13" Foreground="White" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Margin="8,0,8,0" CaretBrush="White">
+                                <TextBox x:Name="SearchBox" Grid.Column="1" Text="" FontSize="13" Foreground="White" Background="Transparent" BorderThickness="0" VerticalAlignment="Center" Margin="8,0,8,0" CaretBrush="White">
                                     <TextBox.Resources>
                                         <SolidColorBrush x:Key="MaterialDesignTextBoxBackground" Color="Transparent"/>
                                     </TextBox.Resources>
@@ -757,12 +755,12 @@
                                         </Border>
                                     </StackPanel>
                                     <TextBlock Text="Klyze'e Hoş Geldiniz" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,6"/>
-                                    <TextBlock Text="Profesyonel oyuncular için geliştirilmiş, çok yönlü bir oyun otomasyon ve analiz platformu" FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,0,0,14" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="Klyze v3.18.0 - Google giriş, otomatik güncelleme ve performans iyileştirmeleri" FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,0,0,14" TextTrimming="CharacterEllipsis"/>
                                     <TextBlock FontSize="12" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="20">
-                                        <Run +Klyze, Valorant başta olmak üzere birden fazla oyunda performansınızı artırmak için tasarlanmış kapsamlı bir araç setidir. "/>
-                                        <Run +Ajan kilitleme ve AFK modu gibi otomasyon araçlarıyla oyun içi işlemlerinizi hızlandırırken, "/>
-                                        <Run +Tracker.gg entegrasyonu sayesinde rakiplerinizi analiz edebilir, detaylı maç istatistikleriyle oyununuzu bir üst seviyeye taşıyabilirsiniz. "/>
-                                        <Run +Crosshair yönetimi, yazı spam ve daha fazlası tek bir çatı altında."/>
+                                        <Run Text="Klyze, Valorant başta olmak üzere birden fazla oyunda performansınızı artırmak için tasarlanmış kapsamlı bir araç setidir. "/>
+                                        <Run Text="Sanal mikrofon ve crosshair yönetimi gibi araçlarla oyun deneyiminizi zenginleştirirken, "/>
+                                        <Run Text="Riot API entegrasyonu sayesinde rakiplerinizi analiz edebilir, detaylı maç istatistikleriyle oyununuzu bir üst seviyeye taşıyabilirsiniz. "/>
+                                        <Run Text="Crosshair yönetimi ve daha fazlası tek bir çatı altında."/>
                                     </TextBlock>
                                 </StackPanel>
                                 <Image Grid.Column="1" Source="uygulama_logusu.png" Width="64" Height="64" Opacity="0.15" Margin="16,0,0,0"/>
@@ -785,7 +783,7 @@
                                         <Image Source="pack://application:,,,/Assets/Icons/ara%C3%A7lar%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                     </Border>
                                     <TextBlock Text="Araçlar" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,4"/>
-                                    <TextBlock Text="Ajan kilitleme, AFK modu ve yazı spam - tüm otomasyon araçları tek dokunuşla hazır." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
+                                    <TextBlock Text="Crosshair yönetimi ve sanal mikrofon - tüm araçlar tek dokunuşla hazır." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="2" Background="{StaticResource CardBg}" CornerRadius="10" Padding="18,16" BorderBrush="#2A2A2A" BorderThickness="1">
@@ -794,7 +792,7 @@
                                         <Image Source="pack://application:,,,/Assets/Icons/analiz%20icon.png" Width="24" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                     </Border>
                                     <TextBlock Text="Analiz" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,4"/>
-                                    <TextBlock Text="Tracker.gg ile oyuncu profili sorgulama, maç istatistikleri ve detaylı performans analizi." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
+                                    <TextBlock Text="Riot API ile oyuncu profili sorgulama, maç istatistikleri ve detaylı performans analizi." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="4" Background="{StaticResource CardBg}" CornerRadius="10" Padding="18,16" BorderBrush="#2A2A2A" BorderThickness="1">
@@ -844,71 +842,157 @@
                                 </Border>
                                 <StackPanel Grid.Row="4" Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
                                     <TextBlock Text="Kısayol ile Başlat" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}"/>
-                                    <TextBlock Text="F6 AFK  |  F7 Spam  |  F8 Ajan  |  F9 Crosshair  (Ayarlardan değiştir)" FontSize="10" Foreground="#FF4655"/>
+                                    <TextBlock Text="F8 Crosshair  |  F9 Fake Ses  (Ayarlardan değiştir)" FontSize="10" Foreground="#FF4655"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
 
-                        <!-- Ekipman Anketi -->
+                        <!-- Ekipman Kartı -->
                         <TextBlock Text="Ekipman Bilgileriniz" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextGray}" Margin="0,0,0,12"/>
                         <Border Background="{StaticResource CardBg}" CornerRadius="12" Padding="22,20" Margin="0,0,0,16" BorderBrush="#2A2A2A" BorderThickness="1">
                             <StackPanel>
+                                <!-- FORM MODU -->
                                 <StackPanel x:Name="EquipFormPanel">
-                                    <TextBlock Text="Oyun ekipmanlarını gir, kaydedelim." FontSize="11" Foreground="{StaticResource TextGray}" Margin="0,0,0,16"/>
-                                    <Grid Margin="0,0,0,12">
+                                    <TextBlock Text="Oyun ekipmanlarını gir, kaydedelim." FontSize="11" Foreground="#666" Margin="0,0,0,18"/>
+                                    <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="80"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"><Image Source="pack://application:,,,/Assets/Icons/fare%20icon.png" Width="24" Height="24" RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,6,0"/><TextBlock Text="Fare" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextGray}" VerticalAlignment="Center"/></StackPanel>
-                                        <TextBox x:Name="EquipMouse" Grid.Column="1" Style="{StaticResource DarkInput}" +" FontSize="11"/>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <!-- Fare -->
+                                        <Border Grid.Column="0" Grid.Row="0" Background="#191919" CornerRadius="10" Padding="14,14" Margin="0,0,6,10" BorderBrush="#2A2A2A" BorderThickness="1">
+                                            <StackPanel>
+                                                <Path Data="M9 2C6.79 2 5 3.79 5 6v4c0 2.21 1.79 4 4 4h2c2.21 0 4-1.79 4-4V6c0-2.21-1.79-4-4-4H9zm0 2h2c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2H9c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM8 16.5v3h8v-3H8z" Width="28" Height="28" Stretch="Uniform" Fill="#888" Margin="0,0,0,8" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Fare" FontSize="10" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                                                <TextBox x:Name="EquipMouse" Style="{StaticResource DarkInput}" Text="" FontSize="11" HorizontalAlignment="Stretch"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <!-- Klavye -->
+                                        <Border Grid.Column="1" Grid.Row="0" Background="#191919" CornerRadius="10" Padding="14,14" Margin="3,0,3,10" BorderBrush="#2A2A2A" BorderThickness="1">
+                                            <StackPanel>
+                                                <Path Data="M20 5H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 12H4V7h16v10zM10 9h2v2h-2V9zm0 3h2v2h-2v-2zm-3-3h2v2H7V9zm0 3h2v2H7v-2zm6-3h2v2h-2V9zm0 3h2v2h-2v-2zm3 3H7v2h9v-2zm0-6h2v2h-2V9z" Width="28" Height="28" Stretch="Uniform" Fill="#888" Margin="0,0,0,8" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Klavye" FontSize="10" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                                                <TextBox x:Name="EquipKeyboard" Style="{StaticResource DarkInput}" Text="" FontSize="11" HorizontalAlignment="Stretch"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <!-- Monitör -->
+                                        <Border Grid.Column="2" Grid.Row="0" Background="#191919" CornerRadius="10" Padding="14,14" Margin="6,0,0,10" BorderBrush="#2A2A2A" BorderThickness="1">
+                                            <StackPanel>
+                                                <Path Data="M20 3H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h6v2H8v2h8v-2h-2v-2h6c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H4V5h16v12z" Width="28" Height="28" Stretch="Uniform" Fill="#888" Margin="0,0,0,8" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Monitör" FontSize="10" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                                                <TextBox x:Name="EquipMonitor" Style="{StaticResource DarkInput}" Text="" FontSize="11" HorizontalAlignment="Stretch"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <!-- Kulaklık -->
+                                        <Border Grid.Column="0" Grid.Row="1" Background="#191919" CornerRadius="10" Padding="14,14" Margin="0,0,6,0" BorderBrush="#2A2A2A" BorderThickness="1">
+                                            <StackPanel>
+                                                <Path Data="M12 1c-4.41 0-8 3.59-8 8v3c0 2.76 2.24 5 5 5h2v-6H6v-2c0-3.31 2.69-6 6-6s6 2.69 6 6v2h-5v6h2c2.76 0 5-2.24 5-5V9c0-4.41-3.59-8-8-8zM9 19v2h6v-2H9z" Width="28" Height="28" Stretch="Uniform" Fill="#888" Margin="0,0,0,8" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Kulaklık" FontSize="10" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                                                <TextBox x:Name="EquipHeadset" Style="{StaticResource DarkInput}" Text="" FontSize="11" HorizontalAlignment="Stretch"/>
+                                            </StackPanel>
+                                        </Border>
+                                        <!-- Mousepad -->
+                                        <Border Grid.Column="1" Grid.Row="1" Background="#191919" CornerRadius="10" Padding="14,14" Margin="3,0,3,0" BorderBrush="#2A2A2A" BorderThickness="1">
+                                            <StackPanel>
+                                                <Path Data="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H4V4h16v16zM6 8h12v2H6V8zm0 4h12v2H6v-2zm0 4h8v2H6v-2z" Width="28" Height="28" Stretch="Uniform" Fill="#888" Margin="0,0,0,8" HorizontalAlignment="Center"/>
+                                                <TextBlock Text="Mousepad" FontSize="10" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                                                <TextBox x:Name="EquipMousepad" Style="{StaticResource DarkInput}" Text="" FontSize="11" HorizontalAlignment="Stretch"/>
+                                            </StackPanel>
+                                        </Border>
                                     </Grid>
-                                    <Grid Margin="0,0,0,12">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="80"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"><Image Source="pack://application:,,,/Assets/Icons/klavye%20icon.png" Width="24" Height="24" RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,6,0"/><TextBlock Text="Klavye" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextGray}" VerticalAlignment="Center"/></StackPanel>
-                                        <TextBox x:Name="EquipKeyboard" Grid.Column="1" Style="{StaticResource DarkInput}" +" FontSize="11"/>
-                                    </Grid>
-                                    <Grid Margin="0,0,0,12">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="80"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"><Image Source="pack://application:,,,/Assets/Icons/monitor%20icon.png" Width="24" Height="24" RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,6,0"/><TextBlock Text="Monitör" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextGray}" VerticalAlignment="Center"/></StackPanel>
-                                        <TextBox x:Name="EquipMonitor" Grid.Column="1" Style="{StaticResource DarkInput}" +" FontSize="11"/>
-                                    </Grid>
-                                    <Grid Margin="0,0,0,12">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="80"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"><Image Source="pack://application:,,,/Assets/Icons/kulaklik%20icon.png" Width="24" Height="24" RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,6,0"/><TextBlock Text="Kulaklık" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextGray}" VerticalAlignment="Center"/></StackPanel>
-                                        <TextBox x:Name="EquipHeadset" Grid.Column="1" Style="{StaticResource DarkInput}" +" FontSize="11"/>
-                                    </Grid>
-                                    <Grid Margin="0,0,0,16">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="80"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center"><Image Source="pack://application:,,,/Assets/Icons/mousepad%20icon.png" Width="24" Height="24" RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,6,0"/><TextBlock Text="Mousepad" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextGray}" VerticalAlignment="Center"/></StackPanel>
-                                        <TextBox x:Name="EquipMousepad" Grid.Column="1" Style="{StaticResource DarkInput}" +" FontSize="11"/>
-                                    </Grid>
-                                    <Button Style="{StaticResource PrimaryBtn}" Height="36" FontSize="12" Click="EquipSaveBtn_Click"><StackPanel Orientation="Horizontal" HorizontalAlignment="Center"><Image Source="pack://application:,,,/Assets/Icons/kaydet%20icon.png" Width="24" Height="24" RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,8,0"/><TextBlock Text="Ekipmanları Kaydet" FontSize="12" VerticalAlignment="Center"/></StackPanel></Button>
+                                    <Button Style="{StaticResource PrimaryBtn}" Height="38" FontSize="12" Click="EquipSaveBtn_Click" Margin="0,14,0,0">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Path Data="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" Width="20" Height="20" Stretch="Uniform" Fill="White" Margin="0,0,8,0"/>
+                                            <TextBlock Text="Ekipmanları Kaydet" FontSize="12" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
                                 </StackPanel>
+
+                                <!-- KAYITLI MOD -->
                                 <StackPanel x:Name="EquipSavedPanel" Visibility="Collapsed">
-                                    <StackPanel Orientation="Horizontal"><Image Source="pack://application:,,,/Assets/Icons/check%20icon.png" Width="24" Height="24" RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,8,0"/><TextBlock Text="Ekipman bilgilerin kaydedildi!" FontSize="13" FontWeight="SemiBold" Foreground="#2ECC71"/></StackPanel>
-                                    <Border Background="#1E1E1E" CornerRadius="8" Padding="14,12" Margin="0,0,0,12">
-                                        <StackPanel>
-                                            <Grid Margin="0,0,0,6"><Grid.ColumnDefinitions><ColumnDefinition Width="60"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" +Fare" FontSize="11" Foreground="#888"/><TextBlock x:Name="SavedMouse" Grid.Column="1" +-" FontSize="11" Foreground="White"/></Grid>
-                                            <Grid Margin="0,0,0,6"><Grid.ColumnDefinitions><ColumnDefinition Width="60"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" +Klavye" FontSize="11" Foreground="#888"/><TextBlock x:Name="SavedKeyboard" Grid.Column="1" +-" FontSize="11" Foreground="White"/></Grid>
-                                            <Grid Margin="0,0,0,6"><Grid.ColumnDefinitions><ColumnDefinition Width="60"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" +Monitör" FontSize="11" Foreground="#888"/><TextBlock x:Name="SavedMonitor" Grid.Column="1" +-" FontSize="11" Foreground="White"/></Grid>
-                                            <Grid Margin="0,0,0,6"><Grid.ColumnDefinitions><ColumnDefinition Width="60"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" +Kulaklık" FontSize="11" Foreground="#888"/><TextBlock x:Name="SavedHeadset" Grid.Column="1" +-" FontSize="11" Foreground="White"/></Grid>
-                                            <Grid><Grid.ColumnDefinitions><ColumnDefinition Width="60"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions><TextBlock Grid.Column="0" +Mousepad" FontSize="11" Foreground="#888"/><TextBlock x:Name="SavedMousepad" Grid.Column="1" +-" FontSize="11" Foreground="White"/></Grid>
+                                    <Border Background="#1A2E1A" CornerRadius="8" Padding="14,10" Margin="0,0,0,16" BorderBrush="#2ECC7133" BorderThickness="1">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Path Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" Width="20" Height="20" Stretch="Uniform" Fill="#2ECC71" Margin="0,0,10,0"/>
+                                            <TextBlock Text="Ekipman bilgilerin kaydedildi!" FontSize="12" FontWeight="SemiBold" Foreground="#2ECC71" VerticalAlignment="Center"/>
                                         </StackPanel>
                                     </Border>
-                                    <Button x:Name="EquipEditBtn" Style="{StaticResource DarkBtn}" Height="32" FontSize="11" Click="EquipEditBtn_Click"><StackPanel Orientation="Horizontal"><Image Source="pack://application:,,,/Assets/Icons/duzenle%20icon.png" Width="22" Height="22" RenderOptions.BitmapScalingMode="HighQuality" Margin="0,0,6,0"/><TextBlock Text="Düzenle" FontSize="11" VerticalAlignment="Center"/></StackPanel></Button>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <!-- Fare -->
+                                        <Border Grid.Column="0" Grid.Row="0" Background="#191919" CornerRadius="8" Padding="12,10" Margin="0,0,4,6" BorderBrush="#2A2A2A" BorderThickness="1">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="28"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                <Path Data="M9 2C6.79 2 5 3.79 5 6v4c0 2.21 1.79 4 4 4h2c2.21 0 4-1.79 4-4V6c0-2.21-1.79-4-4-4H9zm0 2h2c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2H9c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM8 16.5v3h8v-3H8z" Width="22" Height="22" Stretch="Uniform" Fill="#888" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Fare" FontSize="9" Foreground="#666"/>
+                                                    <TextBlock x:Name="SavedMouse" Text="-" FontSize="11" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <!-- Klavye -->
+                                        <Border Grid.Column="1" Grid.Row="0" Background="#191919" CornerRadius="8" Padding="12,10" Margin="4,0,0,6" BorderBrush="#2A2A2A" BorderThickness="1">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="28"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                <Path Data="M20 5H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 12H4V7h16v10zM10 9h2v2h-2V9zm0 3h2v2h-2v-2zm-3-3h2v2H7V9zm0 3h2v2H7v-2zm6-3h2v2h-2V9zm0 3h2v2h-2v-2zm3 3H7v2h9v-2zm0-6h2v2h-2V9z" Width="22" Height="22" Stretch="Uniform" Fill="#888" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Klavye" FontSize="9" Foreground="#666"/>
+                                                    <TextBlock x:Name="SavedKeyboard" Text="-" FontSize="11" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <!-- Monitör -->
+                                        <Border Grid.Column="0" Grid.Row="1" Background="#191919" CornerRadius="8" Padding="12,10" Margin="0,0,4,6" BorderBrush="#2A2A2A" BorderThickness="1">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="28"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                <Path Data="M20 3H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h6v2H8v2h8v-2h-2v-2h6c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H4V5h16v12z" Width="22" Height="22" Stretch="Uniform" Fill="#888" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Monitör" FontSize="9" Foreground="#666"/>
+                                                    <TextBlock x:Name="SavedMonitor" Text="-" FontSize="11" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <!-- Kulaklık -->
+                                        <Border Grid.Column="1" Grid.Row="1" Background="#191919" CornerRadius="8" Padding="12,10" Margin="4,0,0,6" BorderBrush="#2A2A2A" BorderThickness="1">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="28"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                <Path Data="M12 1c-4.41 0-8 3.59-8 8v3c0 2.76 2.24 5 5 5h2v-6H6v-2c0-3.31 2.69-6 6-6s6 2.69 6 6v2h-5v6h2c2.76 0 5-2.24 5-5V9c0-4.41-3.59-8-8-8zM9 19v2h6v-2H9z" Width="22" Height="22" Stretch="Uniform" Fill="#888" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Kulaklık" FontSize="9" Foreground="#666"/>
+                                                    <TextBlock x:Name="SavedHeadset" Text="-" FontSize="11" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                        <!-- Mousepad (full width) -->
+                                        <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Background="#191919" CornerRadius="8" Padding="12,10" Margin="0,0,0,0" BorderBrush="#2A2A2A" BorderThickness="1" HorizontalAlignment="Left" Width="220">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions><ColumnDefinition Width="28"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                                                <Path Data="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H4V4h16v16zM6 8h12v2H6V8zm0 4h12v2H6v-2zm0 4h8v2H6v-2z" Width="22" Height="22" Stretch="Uniform" Fill="#888" VerticalAlignment="Center"/>
+                                                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock Text="Mousepad" FontSize="9" Foreground="#666"/>
+                                                    <TextBlock x:Name="SavedMousepad" Text="-" FontSize="11" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </Grid>
+                                    <Button x:Name="EquipEditBtn" Style="{StaticResource DarkBtn}" Height="32" FontSize="11" Click="EquipEditBtn_Click" Margin="0,14,0,0" HorizontalAlignment="Left" Width="120">
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" Width="18" Height="18" Stretch="Uniform" Fill="#CCC" Margin="0,0,6,0"/>
+                                            <TextBlock Text="Düzenle" FontSize="11" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Button>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
@@ -923,7 +1007,7 @@
                         <Border x:Name="AgentEditor" Visibility="Collapsed" Background="{StaticResource CardBg}" CornerRadius="10" Padding="24,20" Margin="0,0,0,16" BorderBrush="#2A2A2A" BorderThickness="1">
                             <StackPanel>
                                 <TextBlock Text="Yeni Profil" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,14"/>
-                                <TextBox x:Name="AgentProfileName" Style="{StaticResource DarkInput}" +" FontSize="12" Margin="0,0,0,12">
+                                <TextBox x:Name="AgentProfileName" Style="{StaticResource DarkInput}" Text="" FontSize="12" Margin="0,0,0,12">
                                     <TextBox.Resources>
                                         <SolidColorBrush x:Key="MaterialDesignTextBoxBackground" Color="Transparent"/>
                                     </TextBox.Resources>
@@ -966,7 +1050,7 @@
                                 </ItemsControl>
 
                                 <Border Background="#2A2A2A" CornerRadius="6" Padding="10,8">
-                                    <TextBlock x:Name="StatusText" +Profil adı gir, pozisyon ekle ve kaydet." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="StatusText" Text="Profil adı gir, pozisyon ekle ve kaydet." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap"/>
                                 </Border>
                             </StackPanel>
                         </Border>
@@ -991,7 +1075,7 @@
                             <StackPanel>
                                 <Grid Margin="0,0,0,12">
                                     <TextBlock Text="Tıklama Hızı (CPS)" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}" HorizontalAlignment="Left"/>
-                                    <TextBlock x:Name="SpeedValue" +10 CPS" FontSize="13" FontWeight="Bold" Foreground="#00E5FF" HorizontalAlignment="Right"/>
+                                    <TextBlock x:Name="SpeedValue" Text="10 CPS" FontSize="13" FontWeight="Bold" Foreground="#00E5FF" HorizontalAlignment="Right"/>
                                 </Grid>
                                 <Slider x:Name="SpeedSlider" Style="{StaticResource MonoSlider}" Minimum="1" Maximum="100" Value="10" ValueChanged="SpeedSlider_ValueChanged"/>
                                 <Grid Margin="0,12,0,0">
@@ -999,8 +1083,8 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" +Süre (sn)" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                    <TextBox x:Name="DurationInput" Grid.Column="1" Style="{StaticResource DarkInput}" +5" Width="80" HorizontalAlignment="Left"/>
+                                    <TextBlock Grid.Column="0" Text="Süre (sn)" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                    <TextBox x:Name="DurationInput" Grid.Column="1" Style="{StaticResource DarkInput}" Text="5" Width="80" HorizontalAlignment="Left"/>
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -1044,7 +1128,7 @@
                             <StackPanel>
                                 <Grid Margin="0,0,0,12">
                                     <TextBlock Text="Hareket Aralığı" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}" HorizontalAlignment="Left"/>
-                                    <TextBlock x:Name="AfkIntervalValue" +2 saniye" FontSize="13" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
+                                    <TextBlock x:Name="AfkIntervalValue" Text="2 saniye" FontSize="13" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
                                 </Grid>
                                 <Slider x:Name="AfkIntervalSlider" Style="{StaticResource MonoSlider}" Minimum="1" Maximum="10" Value="2" ValueChanged="AfkIntervalSlider_ValueChanged"/>
                             </StackPanel>
@@ -1054,7 +1138,7 @@
                                 <CheckBox x:Name="AfkInfiniteCheckbox" Content="Sonsuz" Style="{StaticResource DarkCheck}" Margin="0,0,0,14" Checked="AfkInfinite_Changed" Unchecked="AfkInfinite_Changed"/>
                                 <StackPanel x:Name="AfkDurationPanel">
                                     <TextBlock Text="Toplam Süre (saniye)" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,10"/>
-                                    <TextBox x:Name="AfkDurationInput" Style="{StaticResource DarkInput}" +60"/>
+                                    <TextBox x:Name="AfkDurationInput" Style="{StaticResource DarkInput}" Text="60"/>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
@@ -1065,21 +1149,21 @@
                             <StackPanel>
                                 <TextBlock Text="AFK MODE NASIL KULLANILIR?" FontSize="13" FontWeight="Bold" Foreground="#AAAAAA" Margin="0,0,0,8"/>
                                 <TextBlock FontSize="11" Foreground="#CCCCCC" TextWrapping="Wrap" LineHeight="16">
-                                    <Run +1. "/>
-                                    <Run +Yapmak istediçiniz hareketleri seçin (W,A,S,D,Space,Ateş)" FontWeight="SemiBold"/>
+                                    <Run Text="1. "/>
+                                    <Run Text="Yapmak istediçiniz hareketleri seçin (W,A,S,D,Space,Ateş)" FontWeight="SemiBold"/>
                                     <LineBreak/>
-                                    <Run +2. "/>
-                                    <Run +Hareket aralığını ayarlayın (1-10 saniye)" FontWeight="SemiBold"/>
+                                    <Run Text="2. "/>
+                                    <Run Text="Hareket aralığını ayarlayın (1-10 saniye)" FontWeight="SemiBold"/>
                                     <LineBreak/>
-                                    <Run +3. "/>
-                                    <Run +Süre belirleyin veya 'Sonsuz' seçin" FontWeight="SemiBold"/>
+                                    <Run Text="3. "/>
+                                    <Run Text="Süre belirleyin veya 'Sonsuz' seçin" FontWeight="SemiBold"/>
                                     <LineBreak/>
-                                    <Run +4. "/>
-                                    <Run +Oyuna geçin ve 'AFK Mode Başlat' butonuna basın" FontWeight="SemiBold"/>
+                                    <Run Text="4. "/>
+                                    <Run Text="Oyuna geçin ve 'AFK Mode Başlat' butonuna basın" FontWeight="SemiBold"/>
                                     <LineBreak/>
                                     <LineBreak/>
-                                    <Run +İpucu: " FontWeight="Bold" Foreground="#AAAAAA"/>
-                                    <Run +F6 tuşu ile hızlıca başlatabilirsiniz. Rastgele hareketler yaparak AFK kalmazsınız."/>
+                                    <Run Text="İpucu: " FontWeight="Bold" Foreground="#AAAAAA"/>
+                                    <Run Text="F6 tuşu ile hızlıca başlatabilirsiniz. Rastgele hareketler yaparak AFK kalmazsınız."/>
                                 </TextBlock>
                             </StackPanel>
                         </Border>
@@ -1091,14 +1175,14 @@
                         <Border Background="{StaticResource CardBg}" CornerRadius="10" Padding="24,20" Margin="0,0,0,16">
                             <StackPanel>
                                 <TextBlock Text="Spam Metni" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,14"/>
-                                <TextBox x:Name="SpamTextInput" Style="{StaticResource DarkInput}" Height="90" TextWrapping="Wrap" AcceptsReturn="True" +AutoClicker"/>
+                                <TextBox x:Name="SpamTextInput" Style="{StaticResource DarkInput}" Height="90" TextWrapping="Wrap" AcceptsReturn="True" Text="AutoClicker"/>
                             </StackPanel>
                         </Border>
                         <Border Background="{StaticResource CardBg}" CornerRadius="10" Padding="24,20" Margin="0,0,0,16">
                             <StackPanel>
                                 <Grid Margin="0,0,0,12">
                                     <TextBlock Text="Spam Hızı" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}" HorizontalAlignment="Left"/>
-                                    <TextBlock x:Name="SpamSpeedValue" +1 ms" FontSize="13" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
+                                    <TextBlock x:Name="SpamSpeedValue" Text="1 ms" FontSize="13" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
                                 </Grid>
                                 <Slider x:Name="SpamSpeedSlider" Style="{StaticResource MonoSlider}" Minimum="1" Maximum="2000" Value="1" ValueChanged="SpamSpeedSlider_ValueChanged"/>
                             </StackPanel>
@@ -1106,7 +1190,7 @@
                         <Border Background="{StaticResource CardBg}" CornerRadius="10" Padding="24,20" Margin="0,0,0,20">
                             <StackPanel>
                                 <TextBlock Text="Tekrar Sayısı" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,10"/>
-                                <TextBox x:Name="SpamCountInput" Style="{StaticResource DarkInput}" +10"/>
+                                <TextBox x:Name="SpamCountInput" Style="{StaticResource DarkInput}" Text="10"/>
                             </StackPanel>
                         </Border>
                         <TextBlock Text="F7 kısayolu ile de başlatabilirsiniz" FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" Margin="0,0,0,8"/>
@@ -1116,21 +1200,21 @@
                             <StackPanel>
                                 <TextBlock Text="YAZI SPAM NASIL KULLANILIR?" FontSize="13" FontWeight="Bold" Foreground="#AAAAAA" Margin="0,0,0,8"/>
                                 <TextBlock FontSize="11" Foreground="#CCCCCC" TextWrapping="Wrap" LineHeight="16">
-                                    <Run +1. "/>
-                                    <Run +Spam yapmak istediçiniz metni yazın" FontWeight="SemiBold"/>
+                                    <Run Text="1. "/>
+                                    <Run Text="Spam yapmak istediçiniz metni yazın" FontWeight="SemiBold"/>
                                     <LineBreak/>
-                                    <Run +2. "/>
-                                    <Run +Spam hızını ayarlayın (1-2000ms arası)" FontWeight="SemiBold"/>
+                                    <Run Text="2. "/>
+                                    <Run Text="Spam hızını ayarlayın (1-2000ms arası)" FontWeight="SemiBold"/>
                                     <LineBreak/>
-                                    <Run +3. "/>
-                                    <Run +Kaç kez tekrarlanacağını belirleyin" FontWeight="SemiBold"/>
+                                    <Run Text="3. "/>
+                                    <Run Text="Kaç kez tekrarlanacağını belirleyin" FontWeight="SemiBold"/>
                                     <LineBreak/>
-                                    <Run +4. "/>
-                                    <Run +Valorant chat'ine geçin ve 'Spam Başlat' butonuna basın" FontWeight="SemiBold"/>
+                                    <Run Text="4. "/>
+                                    <Run Text="Valorant chat'ine geçin ve 'Spam Başlat' butonuna basın" FontWeight="SemiBold"/>
                                     <LineBreak/>
                                     <LineBreak/>
-                                    <Run +İpucu: " FontWeight="Bold" Foreground="#AAAAAA"/>
-                                    <Run +F7 tuşu ile hızlıca başlatabilirsiniz. Takım chat'ine otomatik mesaj gönderir."/>
+                                    <Run Text="İpucu: " FontWeight="Bold" Foreground="#AAAAAA"/>
+                                    <Run Text="F7 tuşu ile hızlıca başlatabilirsiniz. Takım chat'ine otomatik mesaj gönderir."/>
                                 </TextBlock>
                             </StackPanel>
                         </Border>
@@ -1201,19 +1285,19 @@
                                             <TextBlock Text="İç çizgiler" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,8"/>
                                             <Grid Margin="0,0,0,8">
                                                 <TextBlock Text="Uzunluk" FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                                <TextBlock x:Name="InnerLengthValue" +8" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
+                                                <TextBlock x:Name="InnerLengthValue" Text="8" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
                                             </Grid>
                                             <Slider x:Name="InnerLengthSlider" Style="{StaticResource MonoSlider}" Minimum="0" Maximum="80" Value="8" Margin="0,0,0,8" ValueChanged="CrosshairSlider_ValueChanged"/>
                                             
                                             <Grid Margin="0,0,0,8">
                                                 <TextBlock Text="Kalınlık" FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                                <TextBlock x:Name="InnerThicknessValue" +2" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
+                                                <TextBlock x:Name="InnerThicknessValue" Text="2" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
                                             </Grid>
                                             <Slider x:Name="InnerThicknessSlider" Style="{StaticResource MonoSlider}" Minimum="1" Maximum="30" Value="2" Margin="0,0,0,8" ValueChanged="CrosshairSlider_ValueChanged"/>
                                             
                                             <Grid Margin="0,0,0,8">
                                                 <TextBlock Text="Boşluk" FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                                <TextBlock x:Name="InnerGapValue" +2" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
+                                                <TextBlock x:Name="InnerGapValue" Text="2" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
                                             </Grid>
                                             <Slider x:Name="InnerGapSlider" Style="{StaticResource MonoSlider}" Minimum="0" Maximum="50" Value="2" Margin="0,0,0,12" ValueChanged="CrosshairSlider_ValueChanged"/>
 
@@ -1222,19 +1306,19 @@
                                             <StackPanel x:Name="OuterLinesPanel" Visibility="Collapsed">
                                                 <Grid Margin="0,0,0,8">
                                                     <TextBlock Text="Uzunluk" FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                                    <TextBlock x:Name="OuterLengthValue" +4" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
+                                                    <TextBlock x:Name="OuterLengthValue" Text="4" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
                                                 </Grid>
                                                 <Slider x:Name="OuterLengthSlider" Style="{StaticResource MonoSlider}" Minimum="0" Maximum="60" Value="4" Margin="0,0,0,8" ValueChanged="CrosshairSlider_ValueChanged"/>
                                                 
                                                 <Grid Margin="0,0,0,8">
                                                     <TextBlock Text="Kalınlık" FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                                    <TextBlock x:Name="OuterThicknessValue" +1" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
+                                                    <TextBlock x:Name="OuterThicknessValue" Text="1" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
                                                 </Grid>
                                                 <Slider x:Name="OuterThicknessSlider" Style="{StaticResource MonoSlider}" Minimum="1" Maximum="20" Value="1" Margin="0,0,0,8" ValueChanged="CrosshairSlider_ValueChanged"/>
                                                 
                                                 <Grid Margin="0,0,0,8">
                                                     <TextBlock Text="Dış Boşluk" FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                                    <TextBlock x:Name="OuterGapValue" +2" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
+                                                    <TextBlock x:Name="OuterGapValue" Text="2" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
                                                 </Grid>
                                                 <Slider x:Name="OuterGapSlider" Style="{StaticResource MonoSlider}" Minimum="0" Maximum="30" Value="2" Margin="0,0,0,12" ValueChanged="CrosshairSlider_ValueChanged"/>
                                             </StackPanel>
@@ -1244,7 +1328,7 @@
                                             <StackPanel x:Name="CenterDotPanel" Visibility="Collapsed">
                                                 <Grid Margin="0,0,0,8">
                                                     <TextBlock Text="Boyut" FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                                    <TextBlock x:Name="CenterDotSizeValue" +2" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
+                                                    <TextBlock x:Name="CenterDotSizeValue" Text="2" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
                                                 </Grid>
                                                 <Slider x:Name="CenterDotSizeSlider" Style="{StaticResource MonoSlider}" Minimum="1" Maximum="40" Value="2" Margin="0,0,0,12" ValueChanged="CrosshairSlider_ValueChanged"/>
                                             </StackPanel>
@@ -1252,7 +1336,7 @@
                                             <!-- Saydamlık -->
                                             <Grid Margin="0,0,0,8">
                                                 <TextBlock Text="Saydamlık" FontSize="11" Foreground="{StaticResource TextGray}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                                                <TextBlock x:Name="OpacityValue" +100%" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
+                                                <TextBlock x:Name="OpacityValue" Text="100%" FontSize="11" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" HorizontalAlignment="Right"/>
                                             </Grid>
                                             <Slider x:Name="OpacitySlider" Style="{StaticResource MonoSlider}" Minimum="10" Maximum="100" Value="100" ValueChanged="CrosshairSlider_ValueChanged"/>
                                         </StackPanel>
@@ -1265,7 +1349,7 @@
                                         <StackPanel>
                                             <TextBlock Text="Önizleme" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextWhite}" HorizontalAlignment="Center" Margin="0,0,0,16"/>
                                             <!-- Profil Adı -->
-                                            <TextBox x:Name="ProfileNameInput" Style="{StaticResource DarkInput}" +Yeni Profil" Margin="0,0,0,16"/>
+                                            <TextBox x:Name="ProfileNameInput" Style="{StaticResource DarkInput}" Text="Yeni Profil" Margin="0,0,0,16"/>
                                             <!-- Crosshair Önizleme Alanı -->
                                             <Border Background="#0A0A0A" Width="280" Height="180" CornerRadius="8" Margin="0,0,0,16">
                                                 <Canvas x:Name="CrosshairPreview" Width="280" Height="180" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -1287,45 +1371,7 @@
                         <Border Background="{StaticResource CardBg}" CornerRadius="10" Padding="24,20" Margin="0,0,0,16">
                             <StackPanel>
                                 <TextBlock Text="Kısayol Tuşları" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,16"/>
-                                <Grid Margin="0,0,0,12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="160"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" +AFK Mode" FontSize="13" Foreground="{StaticResource TextWhite}" VerticalAlignment="Center"/>
-                                    <ComboBox x:Name="HotkeyAfk" Grid.Column="1" Style="{StaticResource DarkCombo}" Height="38" SelectionChanged="HotkeyCombo_Changed">
-                                        <ComboBoxItem IsSelected="True" Foreground="#1A1A1A">F6</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F7</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F8</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F9</ComboBoxItem>
-                                    </ComboBox>
-                                </Grid>
-                                <Grid Margin="0,0,0,12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="160"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" +Yazı Spam" FontSize="13" Foreground="{StaticResource TextWhite}" VerticalAlignment="Center"/>
-                                    <ComboBox x:Name="HotkeySpam" Grid.Column="1" Style="{StaticResource DarkCombo}" Height="38" SelectionChanged="HotkeyCombo_Changed">
-                                        <ComboBoxItem Foreground="#1A1A1A">F6</ComboBoxItem>
-                                        <ComboBoxItem IsSelected="True" Foreground="#1A1A1A">F7</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F8</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F9</ComboBoxItem>
-                                    </ComboBox>
-                                </Grid>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="160"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" +Ajan Seçimi" FontSize="13" Foreground="{StaticResource TextWhite}" VerticalAlignment="Center"/>
-                                    <ComboBox x:Name="HotkeyAgent" Grid.Column="1" Style="{StaticResource DarkCombo}" Height="38" SelectionChanged="HotkeyCombo_Changed">
-                                        <ComboBoxItem Foreground="#1A1A1A">F6</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F7</ComboBoxItem>
-                                        <ComboBoxItem IsSelected="True" Foreground="#1A1A1A">F8</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F9</ComboBoxItem>
-                                    </ComboBox>
-                                </Grid>
+
                             </StackPanel>
                         </Border>
                         <Border Background="{StaticResource CardBg}" CornerRadius="10" Padding="24,20" Margin="0,0,0,16">
@@ -1370,12 +1416,12 @@
                                         <StackPanel>
                                             <StackPanel Orientation="Horizontal">
                                                 <Image x:Name="SettingsRankIkon" Width="16" Height="16" Margin="0,0,6,0" VerticalAlignment="Center" Visibility="Collapsed" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                                <TextBlock x:Name="HesapAdiText" +Giriş yapılmadı" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}" VerticalAlignment="Center"/>
+                                                <TextBlock x:Name="HesapAdiText" Text="Giriş yapılmadı" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}" VerticalAlignment="Center"/>
                                             </StackPanel>
-                                            <TextBlock x:Name="HesapRutbeText" +" FontSize="11" Foreground="{StaticResource TextGray}" Margin="0,3,0,0"/>
+                                            <TextBlock x:Name="HesapRutbeText" Text="" FontSize="11" Foreground="{StaticResource TextGray}" Margin="0,3,0,0"/>
                                         </StackPanel>
                                         <Border Grid.Column="1" Background="#1A3A2A" CornerRadius="4" Padding="8,3" VerticalAlignment="Center">
-                                            <TextBlock x:Name="HesapDurumText" +Bağlı" FontSize="10" FontWeight="Bold" Foreground="#00D26A"/>
+                                            <TextBlock x:Name="HesapDurumText" Text="Bağlı" FontSize="10" FontWeight="Bold" Foreground="#00D26A"/>
                                         </Border>
                                     </Grid>
                                 </Border>
@@ -1402,64 +1448,13 @@
                     </Grid>
                     <!-- SUPPORT PAGE -->
                     <Grid x:Name="SupportPage" Visibility="Collapsed">
-                        <StackPanel VerticalAlignment="Top">
-                        <Border Background="{StaticResource CardBg}" CornerRadius="10" Padding="24,20" Margin="0,0,0,16">
-                            <StackPanel>
-                                <TextBlock Text="İletişim" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,16"/>
-                                <Border Background="{StaticResource CardDark}" CornerRadius="8" Padding="16,14" Margin="0,0,0,10" Cursor="Hand" MouseLeftButtonDown="Instagram_Click">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Image Grid.Column="0" Source="instagram.png" Width="24" Height="24" Margin="0,0,12,0"/>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="Instagram" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}"/>
-                                            <TextBlock Text="@autoclicker.v" FontSize="11" Foreground="{StaticResource TextGray}"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2" +&#8594;" FontSize="16" Foreground="{StaticResource TextGray}" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Border>
-                                <Border Background="{StaticResource CardDark}" CornerRadius="8" Padding="16,14" Margin="0,0,0,10" Cursor="Hand" MouseLeftButtonDown="Youtube_Click">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Image Grid.Column="0" Source="youtube.png" Width="24" Height="24" Margin="0,0,12,0"/>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="YouTube" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}"/>
-                                            <TextBlock Text="AutoClicker Channel" FontSize="11" Foreground="{StaticResource TextGray}"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2" +&#8594;" FontSize="16" Foreground="{StaticResource TextGray}" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Border>
-                                <Border Background="{StaticResource CardDark}" CornerRadius="8" Padding="16,14" Cursor="Hand" MouseLeftButtonDown="Tiktok_Click">
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Image Grid.Column="0" Source="tiktok.png" Width="24" Height="24" Margin="0,0,12,0"/>
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="TikTok" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}"/>
-                                            <TextBlock Text="@autoclicker.v" FontSize="11" Foreground="{StaticResource TextGray}"/>
-                                        </StackPanel>
-                                        <TextBlock Grid.Column="2" +&#8594;" FontSize="16" Foreground="{StaticResource TextGray}" VerticalAlignment="Center"/>
-                                    </Grid>
-                                </Border>
-                            </StackPanel>
-                        </Border>
-                        <Border Background="#1A1A1A" CornerRadius="8" Padding="16,14" BorderBrush="#3A3A3A" BorderThickness="1">
-                            <StackPanel>
-                                <TextBlock Text="İpucu" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AccentWhite}" Margin="0,0,0,6"/>
-                                <TextBlock Text="Herhangi bir sorun yaşarsanız sosyal medya hesaplarımızdan bize ulaşabilirsiniz." FontSize="12" Foreground="{StaticResource TextGray}" TextWrapping="Wrap"/>
-                            </StackPanel>
-                        </Border>
-                            </StackPanel>
+                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                            <TextBlock Text="🎮" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                            <TextBlock Text="Çok Yakında" FontSize="24" FontWeight="Bold"
+                                       Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                            <TextBlock Text="Bu özellik yakında eklenecektir." FontSize="13"
+                                       Foreground="#888888" HorizontalAlignment="Center"/>
+                        </StackPanel>
                     </Grid>
                     <!-- PLAY PAGE -->
                     <Grid x:Name="PlayPage" Visibility="Collapsed">
@@ -1482,7 +1477,7 @@
                                     <TextBlock Text="v3.9.0" FontSize="12" FontWeight="Bold" Foreground="White"/>
                                 </Border>
                                 <TextBlock Text="Valorant ve Minecraft için gelişmiş otomasyon aracı." FontSize="13" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,0,0,8"/>
-                                <TextBlock Text="Ajan kilitleme, AFK modu ve yazı spam özellikleri ile oyun deneyiminizi geliştirin." FontSize="12" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="400"/>
+                                <TextBlock Text="Crosshair yönetimi ve sanal mikrofon özellikleri ile oyun deneyiminizi geliştirin." FontSize="12" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="400"/>
                             </StackPanel>
                         </Border>
 
@@ -1501,12 +1496,25 @@
                                         Visibility="{Binding UpdateAvailable, Converter={StaticResource BoolToVis}}">
                                     <StackPanel>
                                         <TextBlock FontSize="13" FontWeight="SemiBold" Foreground="White">
-                                            <Run +Yeni Sürüm Mevcut" FontWeight="Bold"/>
+                                            <Run Text="Yeni Sürüm Mevcut" FontWeight="Bold"/>
                                         </TextBlock>
                                         <TextBlock x:Name="InfoPageVersionText" Text="{Binding RemoteVersion, StringFormat='v{0}'}"
                                                    FontSize="12" Foreground="#888888" Margin="0,4,0,0"/>
                                         <TextBlock Text="{Binding ReleaseNotes}" FontSize="11" Foreground="#AAAAAA"
                                                    TextWrapping="Wrap" Margin="0,8,0,0" MaxHeight="60"/>
+                                        <Button Command="{Binding GuncellemeIndirCommand}" Background="#EF4444" Foreground="White"
+                                                Height="38" FontSize="13" FontWeight="Bold" BorderThickness="0" Cursor="Hand"
+                                                Margin="0,12,0,0" HorizontalAlignment="Center" Width="220">
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <TextBlock Text="⬇ Güncellemeyi İndir" FontSize="13" FontWeight="Bold" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </Button>
+                                        <StackPanel Margin="0,8,0,0" Visibility="{Binding IsDownloading, Converter={StaticResource BoolToVis}}">
+                                            <ProgressBar Value="{Binding DownloadProgress}" Minimum="0" Maximum="100"
+                                                         Height="6" Foreground="#EF4444" Background="#333333" BorderThickness="0"/>
+                                            <TextBlock Text="{Binding DownloadStatus}" FontSize="11" Foreground="#AAAAAA"
+                                                       HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Border>
                                 <Border Background="#222222" CornerRadius="8" Padding="16,14" BorderBrush="#333333" BorderThickness="1"
@@ -1570,7 +1578,7 @@
                                             </Style>
                                         </Border.Style>
                                     </Border>
-                                    <TextBlock x:Name="FakeMicStatusText" Grid.Column="1" +VB-Cable kontrol ediliyor..." FontSize="13" Foreground="#aaaaaa" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                    <TextBlock x:Name="FakeMicStatusText" Grid.Column="1" Text="VB-Cable kontrol ediliyor..." FontSize="13" Foreground="#aaaaaa" VerticalAlignment="Center" TextWrapping="Wrap"/>
                                     <Border Grid.Column="2" CornerRadius="8" Background="#1a1a1a" BorderBrush="#22FFFFFF" BorderThickness="1" Visibility="Collapsed" Margin="12,0,0,0">
                                         <Button x:Name="FakeMicVbDownloadBtn" Content="VB-Cable İndir" FontSize="12" Foreground="White" Background="Transparent" BorderThickness="0" Padding="12,7" Cursor="Hand" Click="FakeMicVbDownload_Click"/>
                                     </Border>
@@ -1673,6 +1681,284 @@
                          ViewportSize="{Binding ElementName=MainScrollViewer, Path=ViewportHeight, Mode=OneWay}"
                          Visibility="{Binding ElementName=MainScrollViewer, Path=ComputedVerticalScrollBarVisibility, Mode=OneWay}"/>
             </Grid>
+
+            <!-- KLYZE AI PAGE - no background, inherits app base -->
+            <Grid x:Name="KlyzeAiPage" Visibility="Collapsed" DataContext="{Binding KlyzeAiVM}">
+                <!-- ===== WELCOME VIEW ===== -->
+                <Grid Visibility="{Binding WelcomeModu, Converter={StaticResource BoolToVis}}">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Width="620">
+
+                        <!-- Header -->
+                        <TextBlock Text="What can I help you ship?"
+                                   FontSize="27" FontWeight="Bold" Foreground="#F2F2F0"
+                                   HorizontalAlignment="Center"
+                                   Margin="0,0,0,26"/>
+
+                        <!-- Input Box -->
+                        <Border x:Name="KlyzeAiInputBorder"
+                                MinHeight="88"
+                                Background="#1A1A1A"
+                                CornerRadius="15"
+                                BorderBrush="#12FFFFFF"
+                                BorderThickness="0,1,0,0"
+                                Padding="16,14,16,10">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" MinHeight="20"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Text Input Area -->
+                                <Grid Grid.Row="0" MinHeight="20">
+                                    <TextBox x:Name="KlyzeAiTextBox"
+                                             Text="{Binding GirisMetni, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                             FontSize="14" Foreground="#F2F2F0"
+                                             Background="Transparent"
+                                             BorderThickness="0"
+                                             AcceptsReturn="True"
+                                             TextWrapping="Wrap"
+                                             CaretBrush="#F2F2F0"
+                                             VerticalAlignment="Top"
+                                             VerticalContentAlignment="Top"
+                                             MaxHeight="200"
+                                             ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+                                    <TextBlock Text="Ask v0 a question…"
+                                               FontSize="14" Foreground="#666"
+                                               IsHitTestVisible="False"
+                                               VerticalAlignment="Top"
+                                               Padding="0,1,0,0">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding GirisMetni}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding GirisMetni}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+
+                                <!-- Toolbar -->
+                                <Grid Grid.Row="1" Margin="0,12,0,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Paperclip -->
+                                    <Border Grid.Column="0" Width="28" Height="28"
+                                            Cursor="Hand" ToolTip="Dosya ekle"
+                                            Background="Transparent">
+                                        <Path Data="M14 7v6a5 5 0 01-10 0V6.5A3.5 3.5 0 017.5 3h1A3.5 3.5 0 0112 6.5V13a2 2 0 01-4 0V7"
+                                               Stroke="#777" StrokeThickness="1.5" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                               StrokeLineJoin="Round" Fill="Transparent"
+                                               Stretch="Uniform" Margin="4"/>
+                                    </Border>
+
+                                    <!-- +Project pill -->
+                                    <Border Grid.Column="2"
+                                            CornerRadius="999"
+                                            BorderBrush="#555" BorderThickness="1.5"
+                                            Background="Transparent"
+                                            Cursor="Hand"
+                                            Margin="0,0,8,0"
+                                            Padding="12,6"
+                                            x:Name="ProjectPill">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Opacity" Value="0.7"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="+" Foreground="#888" FontSize="13"
+                                                       Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Project" Foreground="#888" FontSize="13"
+                                                       VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Send button -->
+                                    <Border Grid.Column="3"
+                                            Width="32" Height="32"
+                                            CornerRadius="16"
+                                            Background="#2E2E2E"
+                                            x:Name="SendBtnBorder">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Opacity" Value="0.7"/>
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Button Command="{Binding GonderCommand}"
+                                                Style="{StaticResource AiCleanBtn}"
+                                                ToolTip="Gönder"
+                                                Width="32" Height="32">
+                                            <TextBlock Text="↑" Foreground="#CCC" FontSize="16"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       FontWeight="SemiBold"/>
+                                        </Button>
+                                    </Border>
+                                </Grid>
+                            </Grid>
+                        </Border>
+
+
+                    </StackPanel>
+                </Grid>
+
+                <!-- ===== CHAT VIEW ===== -->
+                <Grid Visibility="{Binding WelcomeModu, Converter={StaticResource InvBoolToVis}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Messages area -->
+                    <ScrollViewer Grid.Row="0" x:Name="AiChatScroll"
+                                  VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled"
+                                  PanningMode="VerticalOnly"
+                                  Margin="35,20,35,0">
+                        <ItemsControl ItemsSource="{Binding AktifMesajlar}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Margin="0,0,0,8" MaxWidth="500"
+                                            UseLayoutRounding="True">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Setter Property="HorizontalAlignment" Value="Left"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding KullaniciMesaji}" Value="True">
+                                                        <Setter Property="HorizontalAlignment" Value="Right"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <Border CornerRadius="14" Padding="14,10">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Background" Value="#252525"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding KullaniciMesaji}" Value="True">
+                                                            <Setter Property="Background" Value="#1A3A5C"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <Grid>
+                                                <!-- Final content -->
+                                                <TextBlock Text="{Binding Icerik}"
+                                                           TextWrapping="Wrap"
+                                                           Foreground="#F2F2F0"
+                                                           FontSize="13"
+                                                           LineHeight="20"/>
+                                                <!-- Streaming text -->
+                                                <TextBlock Text="{Binding StreamingMetin}"
+                                                           TextWrapping="Wrap"
+                                                           Foreground="#F2F2F0"
+                                                           FontSize="13"
+                                                           LineHeight="20">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding StreamAktif}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                                <!-- Loading dots -->
+                                                <TextBlock Text="{Binding DurumEtiketi}"
+                                                           Foreground="#888"
+                                                           FontSize="13">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding Yukleniyor}" Value="True">
+                                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </Grid>
+                                        </Border>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <!-- Input area (chat bottom) -->
+                    <Border Grid.Row="1"
+                            Background="#1A1A1A"
+                            CornerRadius="15"
+                            BorderBrush="#12FFFFFF"
+                            BorderThickness="0,1,0,0"
+                            Padding="16,12"
+                            Margin="35,10,35,20">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Grid.Column="0"
+                                     Text="{Binding GirisMetni, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     FontSize="14" Foreground="#F2F2F0"
+                                     Background="Transparent"
+                                     BorderThickness="0"
+                                     AcceptsReturn="True"
+                                     TextWrapping="Wrap"
+                                     CaretBrush="#F2F2F0"
+                                     MaxHeight="120"
+                                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                                     KeyDown="KlyzeAiGirisKutusu_KeyDown"/>
+                            <Border Grid.Column="1"
+                                    Width="32" Height="32"
+                                    CornerRadius="16"
+                                    Background="#2E2E2E"
+                                    Margin="8,0,0,0">
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Opacity" Value="0.7"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Button Command="{Binding GonderCommand}"
+                                        Style="{StaticResource AiCleanBtn}"
+                                        ToolTip="Gönder"
+                                        Width="32" Height="32">
+                                    <TextBlock Text="↑" Foreground="#CCC" FontSize="16"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               FontWeight="SemiBold"/>
+                                </Button>
+                            </Border>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
         </Grid>
 
         <!-- SAĞ ÇUBUK -->
@@ -1729,11 +2015,11 @@
             <!-- BİLDİRİM AÇILIR PANELİ – sağ çubuktaki zil tıklanınca açılır -->
             <!-- =================================================================== -->
             <Border x:Name="BildirimDropdownOverlay" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
-                    Panel.ZIndex="149" Visibility="Collapsed"
+                    Panel.ZIndex="201" Visibility="Collapsed"
                     Background="Transparent" MouseLeftButtonDown="BildirimDropdownOverlay_Click"/>
 
             <Border x:Name="BildirimDropdown" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3"
-                    Panel.ZIndex="150" Visibility="Collapsed"
+                    Panel.ZIndex="202" Visibility="Collapsed"
                     HorizontalAlignment="Right" VerticalAlignment="Top"
                     Margin="0,56,12,0"
                     Background="#111111"
@@ -1745,10 +2031,22 @@
                 </Border.Effect>
                 <Grid>
                     <!-- Durum A: Güncelleme Yok -->
-                    <TextBlock x:Name="PanelNoUpdate" +Yeni bildirim yok"
+                    <TextBlock x:Name="PanelNoUpdate" Text="Yeni bildirim yok"
                                FontSize="13" Foreground="#666666"
                                HorizontalAlignment="Center" VerticalAlignment="Center"
                                Padding="24" Visibility="Visible"/>
+
+                    <!-- Duyuru Mesajı -->
+                    <Border x:Name="PanelBildirim" Visibility="Collapsed"
+                            Background="#1A1A2E" CornerRadius="10" Margin="12"
+                            BorderThickness="1" BorderBrush="#2A2A4A">
+                        <StackPanel Margin="14">
+                            <TextBlock x:Name="PanelBildirimBaslik" FontSize="14" FontWeight="SemiBold"
+                                       Foreground="#FFFFFF"/>
+                            <TextBlock x:Name="PanelBildirimMesaj" FontSize="12" Foreground="#AAAAAA"
+                                       TextWrapping="Wrap" Margin="0,6,0,0" LineHeight="18"/>
+                        </StackPanel>
+                    </Border>
 
                     <!-- Durum B: Güncelleme Var -->
                     <StackPanel x:Name="PanelUpdate" Margin="16" Visibility="Collapsed">
@@ -1765,7 +2063,7 @@
                                 Margin="0,16,0,0" Cursor="Hand"
                                 MouseLeftButtonDown="PanelGuncelleBtn_Click">
                             <Grid>
-                                <TextBlock x:Name="PanelGuncelleBtnText" +Güncelle"
+                                <TextBlock x:Name="PanelGuncelleBtnText" Text="Güncelle"
                                            FontSize="13" FontWeight="SemiBold" Foreground="#000000"
                                            HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 <!-- İlerleme çubuğu (görünmez varsayılan) -->
@@ -1780,7 +2078,7 @@
 
                         <!-- Hata mesajı + Tekrar Dene -->
                         <StackPanel x:Name="PanelErrorArea" Visibility="Collapsed" Margin="0,8,0,0">
-                            <TextBlock x:Name="PanelErrorText" +İndirme Başarısız"
+                            <TextBlock x:Name="PanelErrorText" Text="İndirme Başarısız"
                                        FontSize="12" Foreground="#EF4444" HorizontalAlignment="Center"/>
                             <TextBlock Text="Tekrar Dene" FontSize="11" Foreground="#888888"
                                        HorizontalAlignment="Center" Cursor="Hand" Margin="0,4,0,0"
@@ -1880,6 +2178,56 @@
               x:Name="LoginOverlay" Panel.ZIndex="200"
               Visibility="{Binding GirisEkraniGoster, Converter={StaticResource BoolToVis}}">
             <ContentControl x:Name="LoginPageControl"/>
+        </Grid>
+
+        <!-- GÜNCELLEME OVERLAY - her şeyin üstünde, otomatik açılır -->
+        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
+              x:Name="UpdateOverlay" Panel.ZIndex="300"
+              Visibility="{Binding UpdateAvailable, Converter={StaticResource BoolToVis}}">
+            <Grid.Background>
+                <SolidColorBrush Color="Black" Opacity="0.85"/>
+            </Grid.Background>
+            <Border Background="#141414" BorderBrush="#333333" BorderThickness="1"
+                    CornerRadius="16" Padding="36,32" MaxWidth="400"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="Yeni Sürüm Mevcut" FontSize="20" FontWeight="Bold"
+                               Foreground="White" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                    <TextBlock Text="{Binding RemoteVersion, StringFormat='v{0}'}"
+                               FontSize="14" Foreground="#888888"
+                               HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                    <Border Background="#1A1A2E" CornerRadius="10" Padding="14" Margin="0,0,0,20">
+                        <ScrollViewer MaxHeight="120" VerticalScrollBarVisibility="Auto">
+                            <TextBlock Text="{Binding ReleaseNotes}" FontSize="12" Foreground="#AAAAAA"
+                                       TextWrapping="Wrap" LineHeight="18"/>
+                        </ScrollViewer>
+                    </Border>
+                    <Button x:Name="UpdateBtn" Height="48" FontSize="14" FontWeight="Bold"
+                            BorderThickness="0" Cursor="Hand" Click="UpdateBtn_Click">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border x:Name="bd" Background="White" CornerRadius="12">
+                                    <TextBlock Text="İndir ve Kur" FontSize="14" FontWeight="Bold"
+                                               Foreground="#0f0d0d"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <ControlTemplate.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="bd" Property="Opacity" Value="0.88"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                    <TextBlock x:Name="UpdateStatusText" FontSize="11" Foreground="#666666"
+                               HorizontalAlignment="Center" Margin="0,10,0,0" TextWrapping="Wrap"/>
+                    <Border x:Name="UpdateProgressBorder" Height="4" CornerRadius="4"
+                            Background="#222222" Margin="0,8,0,0" Visibility="Collapsed">
+                        <Border x:Name="UpdateProgressFill" Height="4" CornerRadius="4"
+                                Background="White" HorizontalAlignment="Left" Width="0"/>
+                    </Border>
+                </StackPanel>
+            </Border>
         </Grid>
 
             </Grid>

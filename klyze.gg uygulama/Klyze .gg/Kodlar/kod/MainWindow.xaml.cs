@@ -190,9 +190,7 @@ namespace ValorantAutoClicker
             _allSearchItems = new List<SearchItem>
             {
                 new SearchItem { Name = "Ana Sayfa", Description = "Ana sayfaya dön", Icon = "🏠", Page = PageType.Home },
-                new SearchItem { Name = "Ajan Seçimi", Description = "Otomatik ajan kilitleme", Icon = "🎯", Page = PageType.Agent },
-                new SearchItem { Name = "AFK Mode", Description = "Otomatik hareket ile AFK kalma", Icon = "💤", Page = PageType.Afk },
-                new SearchItem { Name = "Yazı Spam", Description = "Sohbete otomatik mesaj gönderme", Icon = "💬", Page = PageType.Spam },
+
                 new SearchItem { Name = "Crosshair", Description = "Crosshair ayarları ve yönetimi", Icon = "🎯", Page = PageType.Crosshair },
                 new SearchItem { Name = "Fake Ses", Description = "Sanal mikrofon ile ses oynatma", Icon = "🎤", Page = PageType.FakeMic },
                 new SearchItem { Name = "Oyna", Description = "Maç bulma ve lobi yönetimi", Icon = "🎮", Page = PageType.Play },
@@ -321,9 +319,6 @@ namespace ValorantAutoClicker
 
             // Nav buton aktif durumları
             SetNavActive(MenuHome, page == PageType.Home);
-            SetNavActive(MenuAgent, page == PageType.Agent);
-            SetNavActive(MenuAfk, page == PageType.Afk);
-            SetNavActive(MenuSpam, page == PageType.Spam);
             SetNavActive(MenuCrosshair, page == PageType.Crosshair);
             SetNavActive(MenuFakeMic, page == PageType.FakeMic);
             SetNavActive(MenuPlay, page == PageType.Play);
@@ -669,7 +664,7 @@ namespace ValorantAutoClicker
         {
             if (ToolsSubmenu == null) return;
             _toolsExpanded = !_toolsExpanded;
-            double targetHeight = _toolsExpanded ? 225 : 0;
+            double targetHeight = _toolsExpanded ? 88 : 0;
             var anim = new DoubleAnimation(ToolsSubmenu.Height, targetHeight,
                 new Duration(TimeSpan.FromMilliseconds(220)))
             {

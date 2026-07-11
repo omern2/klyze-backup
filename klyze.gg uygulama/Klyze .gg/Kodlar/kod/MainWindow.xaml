@@ -554,24 +554,6 @@
                         <Border x:Name="ToolsSubmenu" Height="0" ClipToBounds="True"
                                 Background="#181818" BorderBrush="#2A2A2A" BorderThickness="0,0,0,1">
                             <StackPanel>
-                                <Button x:Name="MenuAgent" Style="{StaticResource NavBtn}" Click="MenuAgent_Click" Height="44">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="24,0,0,0">
-                                        <Image Source="ajan_secimi.png" Width="20" Height="20" RenderOptions.BitmapScalingMode="HighQuality" Opacity="0.8"/>
-                                        <TextBlock x:Name="LblAgent" Text="Ajan Seçimi" FontSize="11" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button x:Name="MenuAfk" Style="{StaticResource NavBtn}" Click="MenuAfk_Click" Height="44">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="24,0,0,0">
-                                        <Image Source="afk_mode.png" Width="20" Height="20" RenderOptions.BitmapScalingMode="HighQuality" Opacity="0.8"/>
-                                        <TextBlock x:Name="LblAfk" Text="AFK Mode" FontSize="11" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                                    </StackPanel>
-                                </Button>
-                                <Button x:Name="MenuSpam" Style="{StaticResource NavBtn}" Click="MenuSpam_Click" Height="44">
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="24,0,0,0">
-                                        <Image Source="yazi_spam.png" Width="20" Height="20" RenderOptions.BitmapScalingMode="HighQuality" Opacity="0.8"/>
-                                        <TextBlock x:Name="LblSpam" Text="Yazı Spam" FontSize="11" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                                    </StackPanel>
-                                </Button>
                                 <Button x:Name="MenuCrosshair" Style="{StaticResource NavBtn}" Click="MenuCrosshair_Click" Height="44">
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="24,0,0,0">
                                         <Image Source="crasair.png" Width="20" Height="20" RenderOptions.BitmapScalingMode="HighQuality" Opacity="0.8"/>
@@ -744,9 +726,9 @@
                                     <TextBlock Text="Profesyonel oyuncular için geliştirilmiş, çok yönlü bir oyun otomasyon ve analiz platformu" FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,0,0,14" TextTrimming="CharacterEllipsis"/>
                                     <TextBlock FontSize="12" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="20">
                                         <Run Text="Klyze, Valorant başta olmak üzere birden fazla oyunda performansınızı artırmak için tasarlanmış kapsamlı bir araç setidir. "/>
-                                        <Run Text="Ajan kilitleme ve AFK modu gibi otomasyon araçlarıyla oyun içi işlemlerinizi hızlandırırken, "/>
-                                        <Run Text="Tracker.gg entegrasyonu sayesinde rakiplerinizi analiz edebilir, detaylı maç istatistikleriyle oyununuzu bir üst seviyeye taşıyabilirsiniz. "/>
-                                        <Run Text="Crosshair yönetimi, yazı spam ve daha fazlası tek bir çatı altında."/>
+                                        <Run Text="Sanal mikrofon ve crosshair yönetimi gibi araçlarla oyun deneyiminizi zenginleştirirken, "/>
+                                        <Run Text="Riot API entegrasyonu sayesinde rakiplerinizi analiz edebilir, detaylı maç istatistikleriyle oyununuzu bir üst seviyeye taşıyabilirsiniz. "/>
+                                        <Run Text="Crosshair yönetimi ve daha fazlası tek bir çatı altında."/>
                                     </TextBlock>
                                 </StackPanel>
                                 <Image Grid.Column="1" Source="uygulama_logusu.png" Width="64" Height="64" Opacity="0.15" Margin="16,0,0,0"/>
@@ -769,7 +751,7 @@
                                         <TextBlock Text="🔧" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                     <TextBlock Text="Araçlar" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,4"/>
-                                    <TextBlock Text="Ajan kilitleme, AFK modu ve yazı spam — tüm otomasyon araçları tek dokunuşla hazır." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
+                                    <TextBlock Text="Crosshair yönetimi ve sanal mikrofon — tüm araçlar tek dokunuşla hazır." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="2" Background="{StaticResource CardBg}" CornerRadius="10" Padding="18,16" BorderBrush="#2A2A2A" BorderThickness="1">
@@ -778,7 +760,7 @@
                                         <TextBlock Text="📊" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
                                     <TextBlock Text="Analiz" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,4"/>
-                                    <TextBlock Text="Tracker.gg ile oyuncu profili sorgulama, maç istatistikleri ve detaylı performans analizi." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
+                                    <TextBlock Text="Riot API ile oyuncu profili sorgulama, maç istatistikleri ve detaylı performans analizi." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="4" Background="{StaticResource CardBg}" CornerRadius="10" Padding="18,16" BorderBrush="#2A2A2A" BorderThickness="1">
@@ -828,7 +810,7 @@
                                 </Border>
                                 <StackPanel Grid.Row="4" Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
                                     <TextBlock Text="Kısayol ile Başlat" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}"/>
-                                    <TextBlock Text="F6 AFK  •  F7 Spam  •  F8 Ajan  •  F9 Crosshair  (Ayarlardan değiştir)" FontSize="10" Foreground="#FF4655"/>
+                                    <TextBlock Text="F8 Crosshair  •  F9 Fake Ses  (Ayarlardan değiştir)" FontSize="10" Foreground="#FF4655"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
@@ -1271,45 +1253,7 @@
                         <Border Background="{StaticResource CardBg}" CornerRadius="10" Padding="24,20" Margin="0,0,0,16">
                             <StackPanel>
                                 <TextBlock Text="Kısayol Tuşları" FontSize="14" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,16"/>
-                                <Grid Margin="0,0,0,12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="160"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="AFK Mode" FontSize="13" Foreground="{StaticResource TextWhite}" VerticalAlignment="Center"/>
-                                    <ComboBox x:Name="HotkeyAfk" Grid.Column="1" Style="{StaticResource DarkCombo}" Height="38" SelectionChanged="HotkeyCombo_Changed">
-                                        <ComboBoxItem IsSelected="True" Foreground="#1A1A1A">F6</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F7</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F8</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F9</ComboBoxItem>
-                                    </ComboBox>
-                                </Grid>
-                                <Grid Margin="0,0,0,12">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="160"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Yazı Spam" FontSize="13" Foreground="{StaticResource TextWhite}" VerticalAlignment="Center"/>
-                                    <ComboBox x:Name="HotkeySpam" Grid.Column="1" Style="{StaticResource DarkCombo}" Height="38" SelectionChanged="HotkeyCombo_Changed">
-                                        <ComboBoxItem Foreground="#1A1A1A">F6</ComboBoxItem>
-                                        <ComboBoxItem IsSelected="True" Foreground="#1A1A1A">F7</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F8</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F9</ComboBoxItem>
-                                    </ComboBox>
-                                </Grid>
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="160"/>
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="Ajan Seçimi" FontSize="13" Foreground="{StaticResource TextWhite}" VerticalAlignment="Center"/>
-                                    <ComboBox x:Name="HotkeyAgent" Grid.Column="1" Style="{StaticResource DarkCombo}" Height="38" SelectionChanged="HotkeyCombo_Changed">
-                                        <ComboBoxItem Foreground="#1A1A1A">F6</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F7</ComboBoxItem>
-                                        <ComboBoxItem IsSelected="True" Foreground="#1A1A1A">F8</ComboBoxItem>
-                                        <ComboBoxItem Foreground="#1A1A1A">F9</ComboBoxItem>
-                                    </ComboBox>
-                                </Grid>
+
                             </StackPanel>
                         </Border>
                         <Border Background="{StaticResource CardBg}" CornerRadius="10" Padding="24,20" Margin="0,0,0,16">
@@ -1466,7 +1410,7 @@
                                     <TextBlock Text="v3.2.1" FontSize="12" FontWeight="Bold" Foreground="White"/>
                                 </Border>
                                 <TextBlock Text="Valorant ve Minecraft için gelişmiş otomasyon aracı." FontSize="13" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" Margin="0,0,0,8"/>
-                                <TextBlock Text="Ajan kilitleme, AFK modu ve yazı spam özellikleri ile oyun deneyiminizi geliştirin." FontSize="12" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="400"/>
+                                <TextBlock Text="Crosshair yönetimi ve sanal mikrofon özellikleri ile oyun deneyiminizi geliştirin." FontSize="12" Foreground="{StaticResource TextGray}" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="400"/>
                             </StackPanel>
                         </Border>
 
