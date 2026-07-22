@@ -603,6 +603,22 @@
                     <!-- Bottom nav -->
                     <StackPanel Grid.Row="1">
                         <Separator Background="{StaticResource BorderCol}" Margin="10,4"/>
+                        <Button x:Name="MenuGruplar" Style="{StaticResource NavBtn}" Click="MenuGruplar_Click">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="16,0,0,0">
+                                <Border Width="26" Height="26" Background="Transparent">
+                                    <Image Source="pack://application:,,,/Assets/Icons/büyütec icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                </Border>
+                                <TextBlock x:Name="LblGruplar" Text="Grup Bul" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
+                            </StackPanel>
+                        </Button>
+                        <Button x:Name="MenuKullanicilar" Style="{StaticResource NavBtn}" Click="MenuKullanicilar_Click">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="16,0,0,0">
+                                <Border Width="26" Height="26" Background="Transparent">
+                                    <Image Source="pack://application:,,,/Assets/Icons/sıralama.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                </Border>
+                                <TextBlock x:Name="LblKullanicilar" Text="Kullanıcılar" FontSize="12" Foreground="{StaticResource TextGray}" VerticalAlignment="Center" Margin="10,0,0,0" Visibility="Collapsed"/>
+                            </StackPanel>
+                        </Button>
                         <Button x:Name="MenuPlay" Style="{StaticResource NavBtn}" Click="MenuPlay_Click">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="16,0,0,0">
                                 <Border Width="26" Height="26" Background="Transparent">
@@ -748,19 +764,19 @@
                                 <StackPanel Grid.Column="0">
                                     <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
                                         <Border Background="#3A3A3A" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
-                                            <TextBlock Text="v3.9.0" FontSize="11" FontWeight="Bold" Foreground="White"/>
+                                            <TextBlock Text="v3.20.1" FontSize="11" FontWeight="Bold" Foreground="White"/>
                                         </Border>
                                         <Border Background="#2A2A2A" CornerRadius="4" Padding="8,3">
                                             <TextBlock Text="Aktif" FontSize="11" FontWeight="Bold" Foreground="#888888"/>
                                         </Border>
                                     </StackPanel>
-                                    <TextBlock Text="Klyze'e Hoş Geldiniz" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,6"/>
-                                    <TextBlock Text="Klyze v3.18.0 - Google giriş, otomatik güncelleme ve performans iyileştirmeleri" FontSize="13" Foreground="{StaticResource TextGray}" Margin="0,0,0,14" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="KLYZE'E HOŞ GELDİNİZ" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,6"/>
+                                    <TextBlock Text="Valorant için üretilmiş en kapsamlı araç seti — Rakip analizi, crosshair yöneticisi, otomasyon ve daha fazlası" FontSize="13" Foreground="White" Margin="0,0,0,14" TextTrimming="CharacterEllipsis"/>
                                     <TextBlock FontSize="12" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="20">
-                                        <Run Text="Klyze, Valorant başta olmak üzere birden fazla oyunda performansınızı artırmak için tasarlanmış kapsamlı bir araç setidir. "/>
-                                        <Run Text="Sanal mikrofon ve crosshair yönetimi gibi araçlarla oyun deneyiminizi zenginleştirirken, "/>
-                                        <Run Text="Riot API entegrasyonu sayesinde rakiplerinizi analiz edebilir, detaylı maç istatistikleriyle oyununuzu bir üst seviyeye taşıyabilirsiniz. "/>
-                                        <Run Text="Crosshair yönetimi ve daha fazlası tek bir çatı altında."/>
+                                        <Run Text="Klyze, gerçek Valorant oyuncuları için geliştirilmiş bir performans paketidir. "/>
+                                        <Run Text="Crosshair yönetiminden sanal mikrofona, rakip analizinden lobby otomasyonuna kadar ihtiyacın olan her şey tek bir yerde. "/>
+                                        <Run Text="Riot API ile canlı maç istatistiklerini takip et, rakiplerini çözümle ve oyununu bir üst ranka taşı. "/>
+                                        <Run Text="Profesyonel oyuncuların tercihi — sen de takıma katıl."/>
                                     </TextBlock>
                                 </StackPanel>
                                 <Image Grid.Column="1" Source="uygulama_logusu.png" Width="64" Height="64" Opacity="0.15" Margin="16,0,0,0"/>
@@ -783,7 +799,7 @@
                                         <Image Source="pack://application:,,,/Assets/Icons/ara%C3%A7lar%20icon.png" Width="22" Height="22" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                     </Border>
                                     <TextBlock Text="Araçlar" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,4"/>
-                                    <TextBlock Text="Crosshair yönetimi ve sanal mikrofon - tüm araçlar tek dokunuşla hazır." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
+                                    <TextBlock Text="Crosshair yöneticisi, sanal mikrofon ve otomasyon — profesyonel oyuncular için tasarlandı." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="2" Background="{StaticResource CardBg}" CornerRadius="10" Padding="18,16" BorderBrush="#2A2A2A" BorderThickness="1">
@@ -792,7 +808,7 @@
                                         <Image Source="pack://application:,,,/Assets/Icons/analiz%20icon.png" Width="24" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                     </Border>
                                     <TextBlock Text="Analiz" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,4"/>
-                                    <TextBlock Text="Riot API ile oyuncu profili sorgulama, maç istatistikleri ve detaylı performans analizi." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
+                                    <TextBlock Text="Rakiplerini çözümle, KD/ADR/WR takibi yap, maç istatistiklerini gör ve rankını yükselt." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="4" Background="{StaticResource CardBg}" CornerRadius="10" Padding="18,16" BorderBrush="#2A2A2A" BorderThickness="1">
@@ -801,7 +817,7 @@
                                         <Image Source="pack://application:,,,/Assets/Icons/oyna%20icon.png" Width="24" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
                                     </Border>
                                     <TextBlock Text="Oyun" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextWhite}" Margin="0,0,0,4"/>
-                                    <TextBlock Text="Crosshair yönetimi, lobby bulma ve oyun içi ayarlar - oyuna tam hakimiyet." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
+                                    <TextBlock Text="Lobi yönetimi, oyun içi ayarlar ve taktik araçlar — sahada tam kontrol sende." FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="15"/>
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -826,7 +842,7 @@
                                 </Border>
                                 <StackPanel Grid.Row="0" Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
                                     <TextBlock Text="Modül Seç" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}"/>
-                                    <TextBlock Text="Arama çubuğunu kullan veya sol menüden bir modüle tıkla" FontSize="10" Foreground="{StaticResource TextGray}"/>
+                                    <TextBlock Text="Sol menüden bir modül seç veya arama çubuğunu kullan, hemen başla" FontSize="10" Foreground="{StaticResource TextGray}"/>
                                 </StackPanel>
 
                                 <Border Grid.Row="2" Grid.Column="0" Width="28" Height="28" Background="#3A3A3A" CornerRadius="14">
@@ -834,7 +850,7 @@
                                 </Border>
                                 <StackPanel Grid.Row="2" Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
                                     <TextBlock Text="Ayarları Yapılandır" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}"/>
-                                    <TextBlock Text="Hız, süre, pozisyon gibi parametreleri kendi oyun tarzına göre düzenle" FontSize="10" Foreground="{StaticResource TextGray}"/>
+                                    <TextBlock Text="DPI, tuş atamaları ve mod ayarlarını kendi oyun stiline göre özelleştir" FontSize="10" Foreground="{StaticResource TextGray}"/>
                                 </StackPanel>
 
                                 <Border Grid.Row="4" Grid.Column="0" Width="28" Height="28" Background="#3A3A3A" CornerRadius="14">
@@ -842,160 +858,53 @@
                                 </Border>
                                 <StackPanel Grid.Row="4" Grid.Column="1" Margin="12,0,0,0" VerticalAlignment="Center">
                                     <TextBlock Text="Kısayol ile Başlat" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}"/>
-                                    <TextBlock Text="F8 Crosshair  |  F9 Fake Ses  (Ayarlardan değiştir)" FontSize="10" Foreground="#FF4655"/>
+                                    <TextBlock Text="F8 Crosshair  •  F9 Fake Ses  •  F10 Lobi  (Ayarlardan değiştir)" FontSize="10" Foreground="White"/>
                                 </StackPanel>
                             </Grid>
                         </Border>
 
-                        <!-- Ekipman Kartı -->
-                        <TextBlock Text="Ekipman Bilgileriniz" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextGray}" Margin="0,0,0,12"/>
-                        <Border Background="{StaticResource CardBg}" CornerRadius="12" Padding="22,20" Margin="0,0,0,16" BorderBrush="#2A2A2A" BorderThickness="1">
-                            <StackPanel>
-                                <!-- FORM MODU -->
-                                <StackPanel x:Name="EquipFormPanel">
-                                    <TextBlock Text="Oyun ekipmanlarını gir, kaydedelim." FontSize="11" Foreground="#666" Margin="0,0,0,18"/>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <!-- Fare -->
-                                        <Border Grid.Column="0" Grid.Row="0" Background="#191919" CornerRadius="10" Padding="14,14" Margin="0,0,6,10" BorderBrush="#2A2A2A" BorderThickness="1">
-                                            <StackPanel>
-                                                <Path Data="M9 2C6.79 2 5 3.79 5 6v4c0 2.21 1.79 4 4 4h2c2.21 0 4-1.79 4-4V6c0-2.21-1.79-4-4-4H9zm0 2h2c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2H9c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM8 16.5v3h8v-3H8z" Width="28" Height="28" Stretch="Uniform" Fill="#888" Margin="0,0,0,8" HorizontalAlignment="Center"/>
-                                                <TextBlock Text="Fare" FontSize="10" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,6"/>
-                                                <TextBox x:Name="EquipMouse" Style="{StaticResource DarkInput}" Text="" FontSize="11" HorizontalAlignment="Stretch"/>
-                                            </StackPanel>
-                                        </Border>
-                                        <!-- Klavye -->
-                                        <Border Grid.Column="1" Grid.Row="0" Background="#191919" CornerRadius="10" Padding="14,14" Margin="3,0,3,10" BorderBrush="#2A2A2A" BorderThickness="1">
-                                            <StackPanel>
-                                                <Path Data="M20 5H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 12H4V7h16v10zM10 9h2v2h-2V9zm0 3h2v2h-2v-2zm-3-3h2v2H7V9zm0 3h2v2H7v-2zm6-3h2v2h-2V9zm0 3h2v2h-2v-2zm3 3H7v2h9v-2zm0-6h2v2h-2V9z" Width="28" Height="28" Stretch="Uniform" Fill="#888" Margin="0,0,0,8" HorizontalAlignment="Center"/>
-                                                <TextBlock Text="Klavye" FontSize="10" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,6"/>
-                                                <TextBox x:Name="EquipKeyboard" Style="{StaticResource DarkInput}" Text="" FontSize="11" HorizontalAlignment="Stretch"/>
-                                            </StackPanel>
-                                        </Border>
-                                        <!-- Monitör -->
-                                        <Border Grid.Column="2" Grid.Row="0" Background="#191919" CornerRadius="10" Padding="14,14" Margin="6,0,0,10" BorderBrush="#2A2A2A" BorderThickness="1">
-                                            <StackPanel>
-                                                <Path Data="M20 3H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h6v2H8v2h8v-2h-2v-2h6c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H4V5h16v12z" Width="28" Height="28" Stretch="Uniform" Fill="#888" Margin="0,0,0,8" HorizontalAlignment="Center"/>
-                                                <TextBlock Text="Monitör" FontSize="10" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,6"/>
-                                                <TextBox x:Name="EquipMonitor" Style="{StaticResource DarkInput}" Text="" FontSize="11" HorizontalAlignment="Stretch"/>
-                                            </StackPanel>
-                                        </Border>
-                                        <!-- Kulaklık -->
-                                        <Border Grid.Column="0" Grid.Row="1" Background="#191919" CornerRadius="10" Padding="14,14" Margin="0,0,6,0" BorderBrush="#2A2A2A" BorderThickness="1">
-                                            <StackPanel>
-                                                <Path Data="M12 1c-4.41 0-8 3.59-8 8v3c0 2.76 2.24 5 5 5h2v-6H6v-2c0-3.31 2.69-6 6-6s6 2.69 6 6v2h-5v6h2c2.76 0 5-2.24 5-5V9c0-4.41-3.59-8-8-8zM9 19v2h6v-2H9z" Width="28" Height="28" Stretch="Uniform" Fill="#888" Margin="0,0,0,8" HorizontalAlignment="Center"/>
-                                                <TextBlock Text="Kulaklık" FontSize="10" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,6"/>
-                                                <TextBox x:Name="EquipHeadset" Style="{StaticResource DarkInput}" Text="" FontSize="11" HorizontalAlignment="Stretch"/>
-                                            </StackPanel>
-                                        </Border>
-                                        <!-- Mousepad -->
-                                        <Border Grid.Column="1" Grid.Row="1" Background="#191919" CornerRadius="10" Padding="14,14" Margin="3,0,3,0" BorderBrush="#2A2A2A" BorderThickness="1">
-                                            <StackPanel>
-                                                <Path Data="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H4V4h16v16zM6 8h12v2H6V8zm0 4h12v2H6v-2zm0 4h8v2H6v-2z" Width="28" Height="28" Stretch="Uniform" Fill="#888" Margin="0,0,0,8" HorizontalAlignment="Center"/>
-                                                <TextBlock Text="Mousepad" FontSize="10" Foreground="#666" HorizontalAlignment="Center" Margin="0,0,0,6"/>
-                                                <TextBox x:Name="EquipMousepad" Style="{StaticResource DarkInput}" Text="" FontSize="11" HorizontalAlignment="Stretch"/>
-                                            </StackPanel>
-                                        </Border>
-                                    </Grid>
-                                    <Button Style="{StaticResource PrimaryBtn}" Height="38" FontSize="12" Click="EquipSaveBtn_Click" Margin="0,14,0,0">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <Path Data="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z" Width="20" Height="20" Stretch="Uniform" Fill="White" Margin="0,0,8,0"/>
-                                            <TextBlock Text="Ekipmanları Kaydet" FontSize="12" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
-
-                                <!-- KAYITLI MOD -->
-                                <StackPanel x:Name="EquipSavedPanel" Visibility="Collapsed">
-                                    <Border Background="#1A2E1A" CornerRadius="8" Padding="14,10" Margin="0,0,0,16" BorderBrush="#2ECC7133" BorderThickness="1">
-                                        <StackPanel Orientation="Horizontal">
-                                            <Path Data="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" Width="20" Height="20" Stretch="Uniform" Fill="#2ECC71" Margin="0,0,10,0"/>
-                                            <TextBlock Text="Ekipman bilgilerin kaydedildi!" FontSize="12" FontWeight="SemiBold" Foreground="#2ECC71" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Border>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                            <RowDefinition Height="Auto"/>
-                                        </Grid.RowDefinitions>
-                                        <!-- Fare -->
-                                        <Border Grid.Column="0" Grid.Row="0" Background="#191919" CornerRadius="8" Padding="12,10" Margin="0,0,4,6" BorderBrush="#2A2A2A" BorderThickness="1">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions><ColumnDefinition Width="28"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                                <Path Data="M9 2C6.79 2 5 3.79 5 6v4c0 2.21 1.79 4 4 4h2c2.21 0 4-1.79 4-4V6c0-2.21-1.79-4-4-4H9zm0 2h2c1.1 0 2 .9 2 2v4c0 1.1-.9 2-2 2H9c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zM8 16.5v3h8v-3H8z" Width="22" Height="22" Stretch="Uniform" Fill="#888" VerticalAlignment="Center"/>
-                                                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                                                    <TextBlock Text="Fare" FontSize="9" Foreground="#666"/>
-                                                    <TextBlock x:Name="SavedMouse" Text="-" FontSize="11" Foreground="White" TextTrimming="CharacterEllipsis"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <!-- Klavye -->
-                                        <Border Grid.Column="1" Grid.Row="0" Background="#191919" CornerRadius="8" Padding="12,10" Margin="4,0,0,6" BorderBrush="#2A2A2A" BorderThickness="1">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions><ColumnDefinition Width="28"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                                <Path Data="M20 5H4c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 12H4V7h16v10zM10 9h2v2h-2V9zm0 3h2v2h-2v-2zm-3-3h2v2H7V9zm0 3h2v2H7v-2zm6-3h2v2h-2V9zm0 3h2v2h-2v-2zm3 3H7v2h9v-2zm0-6h2v2h-2V9z" Width="22" Height="22" Stretch="Uniform" Fill="#888" VerticalAlignment="Center"/>
-                                                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                                                    <TextBlock Text="Klavye" FontSize="9" Foreground="#666"/>
-                                                    <TextBlock x:Name="SavedKeyboard" Text="-" FontSize="11" Foreground="White" TextTrimming="CharacterEllipsis"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <!-- Monitör -->
-                                        <Border Grid.Column="0" Grid.Row="1" Background="#191919" CornerRadius="8" Padding="12,10" Margin="0,0,4,6" BorderBrush="#2A2A2A" BorderThickness="1">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions><ColumnDefinition Width="28"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                                <Path Data="M20 3H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h6v2H8v2h8v-2h-2v-2h6c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H4V5h16v12z" Width="22" Height="22" Stretch="Uniform" Fill="#888" VerticalAlignment="Center"/>
-                                                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                                                    <TextBlock Text="Monitör" FontSize="9" Foreground="#666"/>
-                                                    <TextBlock x:Name="SavedMonitor" Text="-" FontSize="11" Foreground="White" TextTrimming="CharacterEllipsis"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <!-- Kulaklık -->
-                                        <Border Grid.Column="1" Grid.Row="1" Background="#191919" CornerRadius="8" Padding="12,10" Margin="4,0,0,6" BorderBrush="#2A2A2A" BorderThickness="1">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions><ColumnDefinition Width="28"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                                <Path Data="M12 1c-4.41 0-8 3.59-8 8v3c0 2.76 2.24 5 5 5h2v-6H6v-2c0-3.31 2.69-6 6-6s6 2.69 6 6v2h-5v6h2c2.76 0 5-2.24 5-5V9c0-4.41-3.59-8-8-8zM9 19v2h6v-2H9z" Width="22" Height="22" Stretch="Uniform" Fill="#888" VerticalAlignment="Center"/>
-                                                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                                                    <TextBlock Text="Kulaklık" FontSize="9" Foreground="#666"/>
-                                                    <TextBlock x:Name="SavedHeadset" Text="-" FontSize="11" Foreground="White" TextTrimming="CharacterEllipsis"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                        <!-- Mousepad (full width) -->
-                                        <Border Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="2" Background="#191919" CornerRadius="8" Padding="12,10" Margin="0,0,0,0" BorderBrush="#2A2A2A" BorderThickness="1" HorizontalAlignment="Left" Width="220">
-                                            <Grid>
-                                                <Grid.ColumnDefinitions><ColumnDefinition Width="28"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                                                <Path Data="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 18H4V4h16v16zM6 8h12v2H6V8zm0 4h12v2H6v-2zm0 4h8v2H6v-2z" Width="22" Height="22" Stretch="Uniform" Fill="#888" VerticalAlignment="Center"/>
-                                                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                                                    <TextBlock Text="Mousepad" FontSize="9" Foreground="#666"/>
-                                                    <TextBlock x:Name="SavedMousepad" Text="-" FontSize="11" Foreground="White" TextTrimming="CharacterEllipsis"/>
-                                                </StackPanel>
-                                            </Grid>
-                                        </Border>
-                                    </Grid>
-                                    <Button x:Name="EquipEditBtn" Style="{StaticResource DarkBtn}" Height="32" FontSize="11" Click="EquipEditBtn_Click" Margin="0,14,0,0" HorizontalAlignment="Left" Width="120">
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <Path Data="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" Width="18" Height="18" Stretch="Uniform" Fill="#CCC" Margin="0,0,6,0"/>
-                                            <TextBlock Text="Düzenle" FontSize="11" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Button>
-                                </StackPanel>
+                        <!-- Valorant Haberleri -->
+                        <TextBlock Text="Valorant Haberleri" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource TextGray}" Margin="0,0,0,12"/>
+                        <Border Background="{StaticResource CardBg}" CornerRadius="10" Padding="16,14" Margin="0,0,0,16" BorderBrush="#2A2A2A" BorderThickness="1" Visibility="{Binding NewsYukleniyor, Converter={StaticResource BoolToVis}}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="Yükleniyor..." FontSize="11" Foreground="#666"/>
                             </StackPanel>
                         </Border>
+                        <Border Background="{StaticResource CardBg}" CornerRadius="10" Padding="16,14" Margin="0,0,0,16" BorderBrush="#2A2A2A" BorderThickness="1" Visibility="{Binding NewsHata, Converter={StaticResource BoolToVis}}">
+                            <TextBlock Text="Haberler yüklenemedi" FontSize="11" Foreground="#666" HorizontalAlignment="Center"/>
+                        </Border>
+                        <ItemsControl ItemsSource="{Binding NewsItems}" Margin="0,0,0,16" Visibility="{Binding NewsVar, Converter={StaticResource BoolToVis}}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Background="{StaticResource CardBg}" CornerRadius="10" Padding="16,14" Margin="0,0,0,8" BorderBrush="#2A2A2A" BorderThickness="1" Cursor="Hand">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Grid.Column="0">
+                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                                    <Border Background="#3A3A3A" CornerRadius="4" Padding="6,2" Margin="0,0,8,0">
+                                                        <TextBlock Text="{Binding Category}" FontSize="9" FontWeight="SemiBold" Foreground="White"/>
+                                                    </Border>
+                                                    <TextBlock Text="{Binding Date}" FontSize="9" Foreground="#666" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource TextWhite}" TextWrapping="Wrap" Margin="0,0,0,4"/>
+                                                <TextBlock Text="{Binding Description}" FontSize="10" Foreground="{StaticResource TextGray}" TextWrapping="Wrap" LineHeight="16" MaxHeight="32"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="1" Width="20" Height="20" CornerRadius="10" Background="#2A2A2A" VerticalAlignment="Center" Margin="12,0,0,0">
+                                                <TextBlock Text="→" FontSize="11" Foreground="#888" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
 
                             </StackPanel>
                     </Grid>
@@ -1461,6 +1370,21 @@
                         <ContentControl x:Name="PlayPageControl"/>
                     </Grid>
 
+                    <!-- GRUPLAR PAGE -->
+                    <Grid x:Name="GruplarPage" Visibility="Collapsed">
+                        <ContentControl x:Name="GruplarPageControl"/>
+                    </Grid>
+
+                    <!-- KULLANICILAR PAGE -->
+                    <Grid x:Name="KullanicilarPage" Visibility="Collapsed">
+                        <ContentControl x:Name="KullanicilarPageControl"/>
+                    </Grid>
+
+                    <!-- PROFILIM PAGE -->
+                    <Grid x:Name="ProfilimPage" Visibility="Collapsed">
+                        <ContentControl x:Name="ProfilimPageControl"/>
+                    </Grid>
+
                     <!-- ANALIZ PAGE -->
                     <Grid x:Name="AnalizPage" Visibility="Collapsed">
                         <ContentControl x:Name="AnalizPageControl"/>
@@ -1559,6 +1483,10 @@
                                     <TranslateTransform Y="12"/>
                                 </Border.RenderTransform>
                                 <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
@@ -1579,9 +1507,53 @@
                                         </Border.Style>
                                     </Border>
                                     <TextBlock x:Name="FakeMicStatusText" Grid.Column="1" Text="VB-Cable kontrol ediliyor..." FontSize="13" Foreground="#aaaaaa" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                                    <Border Grid.Column="2" CornerRadius="8" Background="#1a1a1a" BorderBrush="#22FFFFFF" BorderThickness="1" Visibility="Collapsed" Margin="12,0,0,0">
-                                        <Button x:Name="FakeMicVbDownloadBtn" Content="VB-Cable İndir" FontSize="12" Foreground="White" Background="Transparent" BorderThickness="0" Padding="12,7" Cursor="Hand" Click="FakeMicVbDownload_Click"/>
+                                    <Border x:Name="FakeMicVbDownloadBorder" Grid.Column="2" CornerRadius="8" Background="#1a1a1a" BorderBrush="#22FFFFFF" BorderThickness="1" Visibility="Collapsed" Margin="12,0,0,0">
+                                        <Button x:Name="FakeMicVbDownloadBtn" Content="VB-Cable İndir" FontSize="12" Foreground="White" Background="Transparent" BorderThickness="0" Padding="20,10" Cursor="Hand" Click="FakeMicVbDownload_Click" FocusVisualStyle="{x:Null}">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border x:Name="bd" Background="Transparent" CornerRadius="8">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter TargetName="bd" Property="Background" Value="#33FFFFFF"/>
+                                                                    </Trigger>
+                                                                    <EventTrigger RoutedEvent="Button.PreviewMouseLeftButtonDown">
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="0.95" Duration="0:0:0.08"/>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="0.95" Duration="0:0:0.08"/>
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </EventTrigger>
+                                                                    <EventTrigger RoutedEvent="Button.PreviewMouseLeftButtonUp">
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.1"/>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.1"/>
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </EventTrigger>
+                                                                    <EventTrigger RoutedEvent="Button.MouseLeave">
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.1"/>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.1"/>
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </EventTrigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                     </Border>
+                                    <ProgressBar Grid.Row="1" Grid.ColumnSpan="3" Value="{Binding FakeMicVM.VbProgress}" Minimum="0" Maximum="100" Height="4" Margin="0,10,0,0" Visibility="{Binding FakeMicVM.IsVbBusy, Converter={StaticResource BoolToVis}}" Background="#2a2a2a" Foreground="#22c55e" BorderThickness="0"/>
                                 </Grid>
                             </Border>
 
@@ -1591,11 +1563,97 @@
                                     <TranslateTransform Y="12"/>
                                 </Border.RenderTransform>
                                 <StackPanel Orientation="Horizontal">
-                                    <Border CornerRadius="8" Background="#1a1a1a" BorderBrush="#1AFFFFFF" BorderThickness="1">
-                                        <Button x:Name="FakeMicAddBtn" Content="+ Ekle" Background="Transparent" Foreground="White" BorderThickness="0" Padding="16,10" Cursor="Hand" FontSize="13" FontWeight="SemiBold" Click="FakeMicAddBtn_Click"/>
+                                    <Border x:Name="FakeMicAddBorder" CornerRadius="8" Background="#1a1a1a" BorderBrush="#1AFFFFFF" BorderThickness="1">
+                                        <Button x:Name="FakeMicAddBtn" Content="+ Ekle" Background="Transparent" Foreground="White" BorderThickness="0" Padding="24,12" Cursor="Hand" FontSize="13" FontWeight="SemiBold" Click="FakeMicAddBtn_Click" FocusVisualStyle="{x:Null}">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border x:Name="bd" Background="Transparent" CornerRadius="8">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter TargetName="bd" Property="Background" Value="#33FFFFFF"/>
+                                                                    </Trigger>
+                                                                    <EventTrigger RoutedEvent="Button.PreviewMouseLeftButtonDown">
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="0.95" Duration="0:0:0.08"/>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="0.95" Duration="0:0:0.08"/>
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </EventTrigger>
+                                                                    <EventTrigger RoutedEvent="Button.PreviewMouseLeftButtonUp">
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.1"/>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.1"/>
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </EventTrigger>
+                                                                    <EventTrigger RoutedEvent="Button.MouseLeave">
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.1"/>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.1"/>
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </EventTrigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                     </Border>
-                                    <Border CornerRadius="8" Background="#1a1a1a" BorderBrush="#1AFFFFFF" BorderThickness="1" Margin="8,0,0,0">
-                                        <Button x:Name="FakeMicRemoveBtn" Content="Tümünü Sil" Background="Transparent" Foreground="#ef4444" BorderThickness="0" Padding="16,10" Cursor="Hand" FontSize="13" Click="FakeMicRemoveBtn_Click"/>
+                                    <Border x:Name="FakeMicRemoveBorder" CornerRadius="8" Background="#1a1a1a" BorderBrush="#1AFFFFFF" BorderThickness="1" Margin="8,0,0,0">
+                                        <Button x:Name="FakeMicRemoveBtn" Content="Tümünü Sil" Background="Transparent" Foreground="#ef4444" BorderThickness="0" Padding="24,12" Cursor="Hand" FontSize="13" Click="FakeMicRemoveBtn_Click" FocusVisualStyle="{x:Null}">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Template">
+                                                        <Setter.Value>
+                                                            <ControlTemplate TargetType="Button">
+                                                                <Border x:Name="bd" Background="Transparent" CornerRadius="8">
+                                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                </Border>
+                                                                <ControlTemplate.Triggers>
+                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                        <Setter TargetName="bd" Property="Background" Value="#33FFFFFF"/>
+                                                                    </Trigger>
+                                                                    <EventTrigger RoutedEvent="Button.PreviewMouseLeftButtonDown">
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="0.95" Duration="0:0:0.08"/>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="0.95" Duration="0:0:0.08"/>
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </EventTrigger>
+                                                                    <EventTrigger RoutedEvent="Button.PreviewMouseLeftButtonUp">
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.1"/>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.1"/>
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </EventTrigger>
+                                                                    <EventTrigger RoutedEvent="Button.MouseLeave">
+                                                                        <BeginStoryboard>
+                                                                            <Storyboard>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)" To="1.0" Duration="0:0:0.1"/>
+                                                                                <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)" To="1.0" Duration="0:0:0.1"/>
+                                                                            </Storyboard>
+                                                                        </BeginStoryboard>
+                                                                    </EventTrigger>
+                                                                </ControlTemplate.Triggers>
+                                                            </ControlTemplate>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
                                     </Border>
                                 </StackPanel>
                             </Border>
@@ -1817,8 +1875,7 @@
                             </Grid>
                         </Border>
 
-
-                    </StackPanel>
+                            </StackPanel>
                 </Grid>
 
                 <!-- ===== CHAT VIEW ===== -->
@@ -2176,6 +2233,7 @@
             </Border>
         <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2"
               x:Name="LoginOverlay" Panel.ZIndex="200"
+              Background="#80000000"
               Visibility="{Binding GirisEkraniGoster, Converter={StaticResource BoolToVis}}">
             <ContentControl x:Name="LoginPageControl"/>
         </Grid>
